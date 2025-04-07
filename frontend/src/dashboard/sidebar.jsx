@@ -1,21 +1,45 @@
+/* eslint-disable no-unused-vars */
 
 
-import { NavLink, } from "react-router-dom";
+import { NavLink, useNavigate, } from "react-router-dom";
 import { FaChessBoard, FaPodcast, FaUser, FaUserAstronaut } from "react-icons/fa";
 import { CiLogout, CiViewBoard } from "react-icons/ci";
 import { LiaDropbox } from "react-icons/lia";
 import { useSelector } from "react-redux";
+import LogoutModal from "../components/logoutmodal";
+import { useState } from "react";
 
 const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
-
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const darkmode = useSelector((state)=> state.darkMode)
   const closeSidebar = () => {
     setSidebarOpen(false); 
   };
-
-
-  const darkmode = useSelector((state)=> state.darkMode)
    
+  const handleLogout = async () => {
+    try {
+      
+      setLoading(true);
+      setTimeout(() => {
+        setOpen(false); 
+        navigate('/login'); 
+        setLoading(false); 
+      }, 5000);
+    } catch (error) {
+      console.error("Error logging out: ", error);
+     
+  }
+}
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+ 
   return (
 <div className="">
   <aside
@@ -47,7 +71,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
         <span className={`${darkmode? "text-white":''} text-sm`}>Menu</span>
         <li onClick={closeSidebar}>
           <NavLink
-            to="#"
+            to="/submitproject"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
             <FaPodcast size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
@@ -56,7 +80,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
         </li>
         <li>
           <NavLink
-            to="#"
+            to="/leaderboard"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
             <CiViewBoard className={`w-5 h-5 text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
@@ -69,14 +93,14 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
         <span className={`${darkmode? "text-white":''} text-sm`}>Profile</span>
         <li onClick={closeSidebar}>
           <NavLink
-            to="#"
+            to="/profile"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
             <FaUser Astronaut size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
             <span className="ms-3">Profile</span>
           </NavLink>
         </li>
-        <li>
+        <li onClick={() => {closeSidebar(); handleOpen();}}>
           <NavLink
             to="#"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
@@ -85,6 +109,17 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
             <span className="ms-3">Logout</span>
           </NavLink>
         </li>
+
+        <>
+        <LogoutModal
+           
+           
+           open={open}
+           onClose={handleClose}
+           onLogout={handleLogout}
+           loading={loading}
+           />
+        </>
       </ul>
     </div>
   </aside>
