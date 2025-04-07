@@ -3,9 +3,9 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
-export default function SubmitProject() {
+export default function SubmitPage() {
   const [screenshots, setScreenshots] = useState([]);
-
+  
   const handleScreenshotChange = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
