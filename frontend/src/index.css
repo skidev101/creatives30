@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+      font-family: 'Poppins';
+      src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+  }
+  @layer base {
+    @font-face {
+      font-family: 'SpaceGrotesk';
+      src: url('/fonts/SpaceGrotesk-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+  }
+
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+    
+  }
+
+  .font-grotesk {
+ font-family:  "SpaceGrotesk";
+  }
+
+  @keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientAnimation 3s ease infinite; 
+}
