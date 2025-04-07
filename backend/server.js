@@ -8,14 +8,18 @@ const firebaseInit = require('./firebase');
 const verifyIdToken = require('./middleware/verifyIdToken');
 const PORT = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+  res.send("Hello world")
+})
+
 firebaseInit();
+
+
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send("Hello world")
-})
+
 app.use(verifyIdToken);
 app.use('/login', require('./routes/login'));
 app.use('/register', require('./routes/register'));
