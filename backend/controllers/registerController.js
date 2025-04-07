@@ -8,8 +8,8 @@ const handleNewUser = async (req, res) => {
   const { uid } = req.user;
   
   try {
-    let user = await User.findOne({uid});
-    if (user) return res.status(409).send('user already exists');
+    let foundUser = await User.findOne({uid});
+    if (foundUser) return res.status(409).send('user already exists');
     
     const hashedPwd = await bcrypt.hash(pwd, 10);
     const username = `@user_${uid.slice(0,5)}`;

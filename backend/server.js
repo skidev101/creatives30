@@ -16,7 +16,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send("Hello world")
 })
-app.use(verifyIdToken());
+app.use(verifyIdToken);
 app.use('/login', require('./routes/login'));
 app.use('/register', require('./routes/register'));
 
