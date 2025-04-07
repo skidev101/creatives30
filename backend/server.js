@@ -34,3 +34,6 @@ dbConn()
       console.log('Error occured while connecting to DB');
       process.exit(1);
     })
+    
+    
+module.exports = app
