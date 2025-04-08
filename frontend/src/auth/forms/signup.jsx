@@ -58,7 +58,7 @@ export default function Signup() {
             
             
             const idToken = await user.getIdToken();
-          
+            console.log("token", idToken)
             const response = await fetch('https://xen4-backend.vercel.app/register', {
                 method: 'POST',
                 headers: {
@@ -68,7 +68,6 @@ export default function Signup() {
                 body: JSON.stringify({
                     email,
                     pwd: password,
-                    fullname
                 })
             });
 
@@ -82,6 +81,8 @@ export default function Signup() {
             }
 
             if (!response.ok) {
+                console.log(responseData)
+                console.log(responseData.message)
                 throw new Error(responseData.message || 'Registration failed');
             }
 

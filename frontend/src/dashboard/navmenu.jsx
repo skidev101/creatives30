@@ -45,7 +45,7 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
 
     return (
       <>
-      <section className={`flex fixed top-0 w-full font-grotesk lg:w-[80%] items-center justify-between px-4 py-2 border-b  ${darkmode ? 'border-neutral-800' : 'border-slate-200'}  lg:py-4 ${darkmode ? 'bg-[#111313] dark:bg-[#111313]' : 'bg-neutral-50'}`}>
+      <section className={`flex fixed top-0 w-full font-grotesk lg:w-[80%] items-center justify-between px-4 py-2 border-b z-10  ${darkmode ? 'border-neutral-800' : 'border-slate-200'}  lg:py-4 ${darkmode ? 'bg-[#111313] dark:bg-[#111313]' : 'bg-neutral-50'}`}>
   <span className={`text-base font-semibold ${darkmode ? 'text-neutral-100' : 'text-zinc-800'} md:text-xl hidden lg:block`}>
     {currentPage}
   </span>

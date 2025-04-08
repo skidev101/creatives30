@@ -50,8 +50,11 @@ export const FadeOut = ({ children, duration = 0.5, delay = 0  }) => {
 export const FadeUp = ({ children, duration = 0.5, distance = 50, delay = 0 }) => {
   const controls = useAnimation();
   const ref = useRef(null);
-  const inView = useInView(ref, { once: false });
-  
+  const { inView } = useInView({
+    triggerOnce: false,
+    threshold: 0.1, // Optional: Controls when to trigger based on the visibility of the element
+  });
+
   useEffect(() => {
     if (inView) {
       controls.start({ opacity: 1, y: 0, transition: { duration, delay } });
@@ -59,9 +62,14 @@ export const FadeUp = ({ children, duration = 0.5, distance = 50, delay = 0 }) =
       controls.start({ opacity: 0, y: distance });
     }
   }, [inView, controls, distance, duration, delay]);
-  
+
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: distance }} animate={controls}>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: distance }}
+      animate={controls}
+      style={{ display: 'block' }}
+    >
       {children}
     </motion.div>
   );
@@ -125,6 +133,19 @@ export const FadeRight = ({ children, duration = 0.5, distance = 50, delay = 0, 
   
   return (
     <motion.div ref={ref} initial={{ opacity: 0, x: distance }} animate={controls} className={className}>
+      {children}
+    </motion.div>
+  );
+};
+
+export const FadeInUp = ({ children, duration = 0.3, distance = 50, delay = 0 }) => {
+  return (
+    <motion.div
+      initial={{ y: distance, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: distance, opacity: 0 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 300, duration, delay }}
+    >
       {children}
     </motion.div>
   );
