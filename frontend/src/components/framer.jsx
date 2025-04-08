@@ -129,3 +129,15 @@ export const FadeRight = ({ children, duration = 0.5, distance = 50, delay = 0, 
     </motion.div>
   );
 };
+export const FadeInUp = ({ children, duration = 0.3, distance = 50, delay = 0 }) => {
+  return (
+    <motion.div
+      initial={{ y: distance, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: distance, opacity: 0 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 300, duration, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+};

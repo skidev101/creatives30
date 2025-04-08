@@ -7,6 +7,7 @@ import ForgetPassword from './auth/forms/forgetpassword';
 import SubmitProject from './submitproject/submit';
 import Profile from './profile/profile';
 import Leaderboard from './leaderboard/leaderboard';
+import Project from './projects/project';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/submitproject" element={<SubmitProject/>} />
         <Route path="/profile" element={<Profile/>} />
         <Route path="/leaderboard" element={<Leaderboard/>} />
+        <Route path="/projects" element={<Project/>} />
       </Routes>
      
     </Router>

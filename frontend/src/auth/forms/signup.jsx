@@ -81,6 +81,8 @@ export default function Signup() {
             }
 
             if (!response.ok) {
+                console.log(responseData)
+                console.log(responseData.message)
                 throw new Error(responseData.message || 'Registration failed');
                 //delete user from firebase using deleteUser(user)
                 // also add timeout for sign in incase of bad network
