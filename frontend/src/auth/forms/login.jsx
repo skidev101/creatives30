@@ -38,7 +38,8 @@ export default function Login() {
         if (response.ok) {
 	        setLoading(false);
 					const data = await response.json();
-          console.log(data);
+          console.log(data); //recieves username and roles
+          //check user roles from response to navigate to appropriate dashboard
           navigate('/dash');
         }
       } catch(err) {

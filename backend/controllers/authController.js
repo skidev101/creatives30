@@ -8,9 +8,9 @@ const handleLogin = async (req, res) => {
   try {
     const user = await User.findOne({uid});
     if (!user) return res.status(402).send('user not found');
-    return res.send(user);
+    res.status(200).send(`user ${user.username} and role${user.roles} is now logged in!`);
   } catch(err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send('Internal server error');
   }
 }

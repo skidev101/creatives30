@@ -1,4 +1,4 @@
-const admin = require('../firebase.js')
+const admin = require('firebase-admin');
 
 const verifyIdToken = async (req, res) => {
 	const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -13,10 +13,10 @@ const verifyIdToken = async (req, res) => {
 	
 	try {
 		const decodedToken = await admin.auth().verifyIdToken(idToken);
-		res.json(decodedToken);
+		console.log(decodedToken);
 		req.user = decodedToken;
 	} catch(err) {
-		res.status(401).send(err);
+		res.status(401).send('invalid request');
 		console.error(err);
 	}
 }
