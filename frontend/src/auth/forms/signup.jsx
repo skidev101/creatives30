@@ -66,7 +66,8 @@ export default function Signup() {
                 body: JSON.stringify({
                     email,
                     pwd: password,
-                })
+                }),
+                credentials: 'include'
             });
 
             console.log(response.json());

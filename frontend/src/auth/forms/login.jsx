@@ -33,7 +33,8 @@ export default function Login() {
 				  headers: {
 						'Content-Type': 'application/json',
 						'Authorization': `Bearer ${idToken}`
-				  }
+				  },
+          credentials: 'include',
         });
         if (response.ok) {
 	        setLoading(false);
