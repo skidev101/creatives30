@@ -3,10 +3,10 @@ import { useState } from "react";
 
 import NavMenu from "../dashboard/navmenu";
 import Sidebar from "../dashboard/sidebar";
-import Layout from "../leaderboard/layout";
+import Layout from "../projects/layout";
 
 
-const Leaderboard = () => {
+const Project = () => {
   
    const [isSidebarOpen, setSidebarOpen] = useState(false);
  
@@ -28,7 +28,7 @@ const Leaderboard = () => {
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
       
-      currentPage="Leaderboard" />
+      currentPage="Projects" />
       <Layout />
     </section>
   </section>
@@ -39,4 +39,4 @@ const Leaderboard = () => {
   );
 };
 
-export default Leaderboard;
+export default Project;

@@ -7,7 +7,7 @@ import { auth } from '../firebase';
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [fullname, setFullName] = useState('');
+    // const [fullname, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmPassword] = useState('');
@@ -30,11 +30,11 @@ export default function Signup() {
         setError({ fullname: '', email: '', password: '', confirmpassword: '', general: '' });
 
         // Validation
-        if (!fullname || fullname.length < 4) {
-            setError(prev => ({ ...prev, fullname: "Name should be more than 4 characters" }));
-            setLoading(false);
-            return;
-        }
+        // if (!fullname || fullname.length < 4) {
+        //     setError(prev => ({ ...prev, fullname: "Name should be more than 4 characters" }));
+        //     setLoading(false);
+        //     return;
+        // }
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError(prev => ({ ...prev, email: "Please enter a valid email" }));
             setLoading(false);
@@ -55,10 +55,8 @@ export default function Signup() {
         
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            
-            
             const idToken = await user.getIdToken();
-          
+            
             const response = await fetch('https://xen4-backend.vercel.app/register', {
                 method: 'POST',
                 headers: {
@@ -68,10 +66,11 @@ export default function Signup() {
                 body: JSON.stringify({
                     email,
                     pwd: password,
-                    fullname
-                })
+                }),
+                credentials: 'include'
             });
 
+            console.log(response.json());
             
             const responseText = await response.text();
             let responseData;
@@ -82,7 +81,11 @@ export default function Signup() {
             }
 
             if (!response.ok) {
+                console.log(responseData)
+                console.log(responseData.message)
                 throw new Error(responseData.message || 'Registration failed');
+                //delete user from firebase using deleteUser(user)
+                // also add timeout for sign in incase of bad network
             }
 
             navigate('/submitproject');
@@ -135,7 +138,7 @@ export default function Signup() {
 
                 <form className="form flex flex-col gap-3 font-grotesk" onSubmit={handleSignUp}>
                   
-                    <div className="flex flex-col gap-1">
+                    {/*<div className="flex flex-col gap-1">
                         <label htmlFor="name" className="block">Full name *</label>
                         <input
                             type="text"
@@ -145,7 +148,7 @@ export default function Signup() {
                             value={fullname}
                         />
                         {error.fullname && <span className="text-sm text-red-400">{error.fullname}</span>}
-                    </div>
+                    </div>*/}
 
                     <div className="flex flex-col gap-1">
                         <label htmlFor="email" className="block">Email *</label>
