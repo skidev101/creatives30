@@ -28,17 +28,19 @@ export default function Login() {
 				const user = credential.user;
 				const idToken = await user.getIdToken();
 				
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch('https://xen4-backend.vercel.app/login', {
 					method: 'POST',
 				  headers: {
 						'Content-Type': 'application/json',
 						'Authorization': `Bearer ${idToken}`
-				  }
+				  },
+          credentials: 'include',
         });
         if (response.ok) {
 	        setLoading(false);
 					const data = await response.json();
-          console.log(data);
+          console.log(data); //recieves username and roles
+          //check user roles from response to navigate to appropriate dashboard
           navigate('/dash');
         }
       } catch(err) {
