@@ -28,7 +28,7 @@ const Project = () => {
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
       
-      currentPage="Project" />
+      currentPage="Projects" />
       <Layout />
     </section>
   </section>

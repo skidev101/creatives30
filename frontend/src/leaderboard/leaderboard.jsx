@@ -28,7 +28,7 @@ const Leaderboard = () => {
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
       
-      currentPage="leaderboard" />
+      currentPage="Leaderboard" />
       <Layout />
     </section>
   </section>

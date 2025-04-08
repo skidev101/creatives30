@@ -5,6 +5,7 @@ import { FiChevronLeft, FiStar, FiExternalLink, FiX } from 'react-icons/fi';
 import { ProjectCard } from './projectcard';
 import { ProjectModal } from './projectmodal';
 import { userProjects } from './projectarray';
+import { Link } from 'react-router-dom';
 
 
 export default function ProjectsPage() {
@@ -19,12 +20,12 @@ export default function ProjectsPage() {
     <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
       <div className="flex justify-between  mb-6">
         <div>
-        <a
-          href="/leaderboard"
+        <Link
+          to={"/leaderboard"}
           className={`flex items-center mr-4 ${darkmode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-black'}`}
         >
           <FiChevronLeft className="mr-1" /> Back to Leaderboard
-        </a>
+        </Link>
 
         </div>
      <div className='flex  flex-grow justify-end'>
