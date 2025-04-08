@@ -57,7 +57,7 @@ export default function Signup() {
             const user = userCredential.user;
             const idToken = await user.getIdToken();
             
-            const response = await fetch('https://xen4-backend/register', {
+            const response = await fetch('https://xen4-backend.vercel.app/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

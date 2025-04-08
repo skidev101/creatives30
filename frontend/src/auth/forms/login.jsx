@@ -28,7 +28,7 @@ export default function Login() {
 				const user = credential.user;
 				const idToken = await user.getIdToken();
 				
-        const response = await fetch('https://xen4-backend/login', {
+        const response = await fetch('https://xen4-backend.vercel.app/login', {
 					method: 'POST',
 				  headers: {
 						'Content-Type': 'application/json',
