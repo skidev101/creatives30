@@ -57,9 +57,9 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
           >
             <div className="flex items-center justify-center text-center absolute top-6 ">
               <span className="mr-2">
-                <LiaDropbox className="text-xl" />
+                <LiaDropbox className={`text-xl ${darkmode ? 'text-blue-400':'text-blue-600'}`} />
               </span>
-              <span className={`md:text-xl  ${darkmode ? 'text-neutral-100' : 'text-zinc-800'}  text-center font-bold`}>
+              <span className={`md:text-xl  ${darkmode ? 'text-blue-400' : 'text-blue-600'}  text-center font-bold`}>
                 Code &lt;30&gt;
               </span>
             </div>
@@ -68,13 +68,13 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
       </ul>
 
       <ul className="space-y-3 font-medium px-4 py-4">
-        <span className={`${darkmode? "text-white":''} text-sm`}>Menu</span>
+        <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Menu</span>
         <li onClick={closeSidebar}>
           <NavLink
             to="/submitproject"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
-            <FaPodcast size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
+            <FaPodcast size="25" className={` group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
             <span className="ms-3">Project Submit</span>
           </NavLink>
         </li>
@@ -83,34 +83,36 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
             to="/leaderboard"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
-            <CiViewBoard className={`w-5 h-5 text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
+            <CiViewBoard className={`w-5 h-5  group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
             <span className="flex-1 ms-3 whitespace-nowrap">Leaderboard</span>
           </NavLink>
         </li>
       </ul>
 
       <ul className="space-y-3 font-medium px-4">
-        <span className={`${darkmode? "text-white":''} text-sm`}>Profile</span>
+        <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Profile</span>
         <li onClick={closeSidebar}>
           <NavLink
             to="/profile"
-            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            className={`flex items-center p-3  rounded-lg ${darkmode ? 'text-white hover:bg-gray-700 ' : 'hover:bg-gray-100 text-gray-900'}`}
           >
-            <FaUser Astronaut size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
+            <FaUserAstronaut size="25" className={` group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400 ' : 'text-blue-900'}`} />
             <span className="ms-3">Profile</span>
           </NavLink>
         </li>
-        <li onClick={() => {closeSidebar(); handleOpen();}}>
+      </ul>
+      
+      <ul className="space-y-3 font-medium px-4 relative top-40">
+      <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Logout</span>
+      <li className=" " onClick={() => {closeSidebar(); handleOpen();}}>
           <NavLink
             to="#"
-            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            className={`flex items-center p-3 text-red-700 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
-            <CiLogout size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
+            <CiLogout size="25" className={`text-red-700 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
             <span className="ms-3">Logout</span>
           </NavLink>
         </li>
-
-        <>
         <LogoutModal
            
            
@@ -119,7 +121,6 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
            onLogout={handleLogout}
            loading={loading}
            />
-        </>
       </ul>
     </div>
   </aside>

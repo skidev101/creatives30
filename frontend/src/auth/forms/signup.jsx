@@ -28,13 +28,8 @@ export default function Signup() {
         e.preventDefault();
         setLoading(true);
         setError({ fullname: '', email: '', password: '', confirmpassword: '', general: '' });
-
+    
         // Validation
-        // if (!fullname || fullname.length < 4) {
-        //     setError(prev => ({ ...prev, fullname: "Name should be more than 4 characters" }));
-        //     setLoading(false);
-        //     return;
-        // }
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError(prev => ({ ...prev, email: "Please enter a valid email" }));
             setLoading(false);
@@ -50,13 +45,16 @@ export default function Signup() {
             setLoading(false);
             return;
         }
-
+    
         try {
         
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+    
+           
             const idToken = await user.getIdToken();
-            
+    
+           
             const response = await fetch('https://xen4-backend.vercel.app/register', {
                 method: 'POST',
                 headers: {
@@ -69,31 +67,22 @@ export default function Signup() {
                 }),
                 credentials: 'include'
             });
-
-            console.log(response.json());
-            
-            const responseText = await response.text();
-            let responseData;
-            try {
-                responseData = JSON.parse(responseText);
-            } catch {
-                responseData = { message: responseText };
-            }
-
+    
+        
+            const responseData = await response.json();
+            console.log(responseData);
+    
             if (!response.ok) {
-                console.log(responseData)
-                console.log(responseData.message)
                 throw new Error(responseData.message || 'Registration failed');
-                //delete user from firebase using deleteUser(user)
-                // also add timeout for sign in incase of bad network
             }
-
+            console.log("New user created with email:", user.email);
+           
             navigate('/submitproject');
-            
+    
         } catch (error) {
             console.error('Registration error:', error);
+    
             
-      
             let errorMessage = error.message;
             if (error.code) {
                 switch (error.code) {
@@ -108,8 +97,10 @@ export default function Signup() {
                         break;
                 }
             }
-
+    
             setError(prev => ({ ...prev, general: errorMessage }));
+    
+            // delete Firebase user if backend failed
             if (auth.currentUser) {
                 try {
                     await auth.currentUser.delete();
@@ -117,10 +108,12 @@ export default function Signup() {
                     console.error('Error deleting Firebase user:', deleteError);
                 }
             }
+    
         } finally {
             setLoading(false);
         }
     };
+    
 
 
     return (
