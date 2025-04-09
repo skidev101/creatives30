@@ -47,14 +47,14 @@ export default function Signup() {
         }
     
         try {
-            // Create user in Firebase
+        
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
     
-            // Get Firebase ID token
+           
             const idToken = await user.getIdToken();
     
-            // Send to your backend
+           
             const response = await fetch('https://xen4-backend.vercel.app/register', {
                 method: 'POST',
                 headers: {
@@ -68,7 +68,7 @@ export default function Signup() {
                 credentials: 'include'
             });
     
-            // ✅ Read body once and log it
+        
             const responseData = await response.json();
             console.log(responseData);
     
@@ -76,13 +76,13 @@ export default function Signup() {
                 throw new Error(responseData.message || 'Registration failed');
             }
             console.log("New user created with email:", user.email);
-            // Success — redirect
+           
             navigate('/submitproject');
     
         } catch (error) {
             console.error('Registration error:', error);
     
-            // Firebase-specific errors
+            
             let errorMessage = error.message;
             if (error.code) {
                 switch (error.code) {
@@ -100,7 +100,7 @@ export default function Signup() {
     
             setError(prev => ({ ...prev, general: errorMessage }));
     
-            // Optional: delete Firebase user if backend failed
+            // delete Firebase user if backend failed
             if (auth.currentUser) {
                 try {
                     await auth.currentUser.delete();
