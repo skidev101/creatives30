@@ -24,7 +24,7 @@ const Streak = () => {
 
   const darkmode = useSelector((state) => state.darkMode);
 
-  // Mock data initialization
+  
   useEffect(() => {
     const today = new Date();
     const vals = [];
@@ -66,7 +66,7 @@ const Streak = () => {
     <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Progress</h2>
+          <h2 className={`text-lg font-semibold ${darkmode ? 'text-white':''}`}>Progress</h2>
           <span className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
             {completedDays} of 30 days
           </span>
@@ -79,32 +79,25 @@ const Streak = () => {
         <div className="flex items-center space-x-3">
           <FiTrendingUp className={`text-2xl ${darkmode ? 'text-green-400' : 'text-green-600'}`} />
           <div>
-            <p className="text-sm font-medium">Current Streak</p>
-            <p className="text-xl font-bold">{currentStreak} days</p>
+            <p className={`text-sm font-medium ${darkmode ? 'text-neutral-400':''}`} >Current Streak</p>
+            <p className={`text-xl font-bold ${darkmode ? 'text-white':''}`}  >{currentStreak} days</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
           <FiAward className={`text-2xl ${darkmode ? 'text-yellow-400' : 'text-yellow-600'}`} />
           <div>
-            <p className="text-sm font-medium">Longest Streak</p>
-            <p className="text-xl font-bold">{longestStreak} days</p>
+            <p  className={`text-sm font-medium ${darkmode ? 'text-neutral-400':''}`}>Longest Streak</p>
+            <p className={`text-xl font-bold ${darkmode ? 'text-white':''}`} >{longestStreak} days</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
           <FiCalendar className={`text-2xl ${darkmode ? 'text-blue-400' : 'text-blue-600'}`} />
           <div>
-            <p className="text-sm font-medium">Days Completed</p>
-            <p className="text-xl font-bold">{completedDays}/30</p>
+            <p  className={`text-sm font-medium ${darkmode ? 'text-neutral-400':''}`}>Days Completed</p>
+            <p className={`text-xl font-bold ${darkmode ? 'text-white':''}`} >{completedDays}/30</p>
           </div>
         </div>
       </div>
-
-      
-     
-
-    
-
-  
     </div>
   );
 };

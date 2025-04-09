@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
 import img from '../assets/image.png';
 import { FiAward, FiFolder, FiTrendingUp, FiActivity } from 'react-icons/fi';
@@ -28,11 +29,11 @@ export const Welcome = () => {
     const StatCard = ({ icon: Icon, title, value, color }) => (
         <motion.div 
             whileHover={{ y: -2 }}
-            className={`flex items-center space-x-4 p-4 rounded-xl transition-all ${
+            className={`flex items-center space-x-1 p-2 rounded-xl transition-all ${
                 darkmode ? 'bg-neutral-900 hover:bg-neutral-800' : 'bg-gray-50 hover:bg-gray-100'
             }`}
         >
-            <div className={`p-3 rounded-full ${darkmode ? `${color}-900/30` : `${color}-100`}`}>
+            <div className={`p-2 rounded-full ${darkmode ? `${color}-900/30` : `${color}-100`}`}>
                 <Icon className={`text-xl ${darkmode ? `text-${color}-400` : `text-${color}-600`}`} />
             </div>
             <div>
@@ -43,7 +44,7 @@ export const Welcome = () => {
     );
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 font-grotesk">
             {/* Profile Section */}
             <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
@@ -69,8 +70,6 @@ export const Welcome = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Stats Section */}
             <section className={`w-full max-w-4xl mx-auto p-6 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
             } shadow-sm border ${

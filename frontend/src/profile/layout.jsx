@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 
-import ProfilePage from "./page";
+
 import { FadeLeft } from "../components/framer";
 import { Welcome } from "./welcome";
 import Heatmap from "./heatmap";
-import ProfileProjects from "./test1";
-import Streak from "./test2";
-import Achievements from "./test3";
+import Streak from "./streak";
+import Achievements from "./achievements";
+import UserProjects from "./userprojects";
 
 
 
@@ -33,7 +33,7 @@ const Layout = () => {
       <div
         className="h-min w-full lg:w-[calc(50%_-_10px)] animate-fadeUp delay-300"
       >
-         <ProfileProjects  />
+         <UserProjects />
       </div>
 
       <div className="h-min w-full flex-grow lg:w-[calc(45%_-_10px)] animate-fadeUp delay-400">

@@ -11,8 +11,7 @@ const Heatmap = () => {
   const getColor = (count, date) => {
     if (isAfter(new Date(date), new Date())) return darkmode ? 'bg-neutral-800' : 'bg-gray-100'; // Upcoming days
     if (count === 0) return darkmode ? 'bg-neutral-800' : 'bg-white'; // Missed days
-   
-    return 'bg-blue-300'; // Low activity
+    return 'bg-blue-300'; 
   };
 
   useEffect(() => {
@@ -30,8 +29,10 @@ const Heatmap = () => {
 
   return (
     <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+ <h3 className={`text-[12px] font-semibold mb-4 uppercase tracking-wider ${
+                    darkmode ? 'text-neutral-400' : 'text-gray-500'
+                }`}>Streak</h3>
     <div className="mb-8 flex justify-center flex-col items-center">
-      <h2 className="text-lg font-semibold mb-4">Activity Heatmap</h2>
       <div className="grid grid-cols-5 gap-[8px] w-fit">
         {data.map((day) => (
           <motion.div
