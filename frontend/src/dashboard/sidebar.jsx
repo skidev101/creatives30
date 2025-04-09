@@ -96,7 +96,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
             to="/profile"
             className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
-            <FaUser Astronaut size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
+            <FaUserAstronaut size="25" className={`text-gray-500 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
             <span className="ms-3">Profile</span>
           </NavLink>
         </li>

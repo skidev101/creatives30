@@ -14,3 +14,15 @@
     background-size: 200% 200%;
     animation: gradientAnimation 3s ease infinite; 
 }
+/* styles/globals.css */
+.color-empty { fill: #ebedf0; }
+.color-level-1 { fill: #c6e48b; }
+.color-level-2 { fill: #7bc96f; }
+.color-level-3 { fill: #239a3b; }
+.color-level-4 { fill: #196127; }
+
+.color-empty   { background-color: #ebedf0; }
+.color-level-1 { background-color: #9be9a8; }
+.color-level-2 { background-color: #40c463; }
+.color-level-3 { background-color: #30a14e; }
+.color-level-4 { background-color: #216e39; }

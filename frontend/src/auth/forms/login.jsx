@@ -41,7 +41,7 @@ export default function Login() {
 					const data = await response.json();
           console.log(data); //recieves username and roles
           //check user roles from response to navigate to appropriate dashboard
-          navigate('/dash');
+          navigate('/submitproject');
         }
       } catch(err) {
 	      setLoading(false);
