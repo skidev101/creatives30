@@ -20,9 +20,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 
+
 app.use(verifyIdToken);
-app.use('/login', require('../routes/login'));
 app.use('/register', require('../routes/register'));
+app.use('/login', require('../routes/login'));
 
 
 

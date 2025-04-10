@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
 const handleNewUser = async (req, res) => {
-  const {email, pwd} = req.body;
+  const { email, pwd } = req.body;
   if (!email || !pwd) return res.status(400).send("Empty request");
   const { uid } = req.user;
   console.log(req.user);
@@ -17,15 +17,15 @@ const handleNewUser = async (req, res) => {
     
     const hashedPwd = await bcrypt.hash(pwd, 10);
     const username = `@user_${uid.slice(0,5)}`;
-    const user = await User.create({
+    const newUser = await User.create({
       uid,
       email,
       username,
       password: hashedPwd
     });
-    if (user) {
+    if (newUser) {
       console.log(user);
-      res.status(200).send(`user ${username} created successfully with role${user.roles}`);
+      res.status(200).send(`user ${newUser.username} created successfully with role${newUser.roles}`);
     }
   } catch(err) {
     console.log(err);
