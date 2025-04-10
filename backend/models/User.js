@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     select: false,
     required: true
   },
-  picture: {
+  profileImgURL: {
 		type: String
   }
 })
