@@ -17,15 +17,15 @@ const handleNewUser = async (req, res) => {
     
     const hashedPwd = await bcrypt.hash(pwd, 10);
     const username = `@user_${uid.slice(0,5)}`;
-    const user = await User.create({
+    const newUser = await User.create({
       uid,
       email,
       username,
       password: hashedPwd
     });
-    if (user) {
+    if (newUser) {
       console.log(user);
-      res.status(200).send(`user ${username} created successfully with role${user.roles}`);
+      res.status(200).send(`user ${newUser.username} created successfully with role${newUser.roles}`);
     }
   } catch(err) {
     console.log(err);
