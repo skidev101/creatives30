@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 export const Welcome = () => {
     const darkmode = useSelector((state) => state.darkMode);
-
+const user = useSelector((state)=> state.user)
     const currentHour = new Date().getHours();
     let greeting;
 
@@ -65,7 +65,7 @@ export const Welcome = () => {
                             {greeting} 
                         </h2>
                         <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                            Billie
+                        {user?.email || "guest"}
                         </p>
                     </div>
                 </div>

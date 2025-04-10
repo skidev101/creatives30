@@ -3,6 +3,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../action';
 
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +22,7 @@ export default function Signup() {
         general: '' 
     });
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const toggleConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
@@ -76,7 +78,11 @@ export default function Signup() {
                 throw new Error(responseData.message || 'Registration failed');
             }
             console.log("New user created with email:", user.email);
-           
+            dispatch(setUser({
+                uid: user.uid,
+                email: user.email,
+              }))
+              
             navigate('/submitproject');
     
         } catch (error) {

@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 const initialState =  {
     darkMode: false,
-    alertMode : false,
+     user:''
     
 }
 const reducer = ( state = initialState, action) => {
@@ -13,6 +13,11 @@ switch (action.type) {
         
             
         }
+        case "SET_USER":
+            return{
+                ...state,
+                user: action.payload
+            }
     default:
         return state;
         
