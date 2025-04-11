@@ -2,6 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { handleNewUser } = require('../controllers/registerController');
 
-router.post('/register', handleNewUser);
+router.post('/', handleNewUser);
 
 module.exports = router
