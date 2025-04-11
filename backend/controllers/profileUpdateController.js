@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Projects = require('../models/Project');
+//const Projects = require('../models/Project');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -22,8 +22,10 @@ const updateProfile = async (req, res) => {
 	
 	try {
 		const updatedUser = await User.findOneAndUpdate({uid}, updates, {new: true});
-		const updatedProject = await Project.findOneAndUpdate({uid}, {username: updates.username}, {new: true});
-		res.status(201).send('profile updated successfully');
+		//const updatedProject = await Project.findOneAndUpdate({uid}, {username: updates.username}, {new: true});
+		res.status(201).send(updatedUser);
+		console.log(updatedUser);
+		
 	} catch (err) {
 		console.error(err);
 		res.status(500).send('internal server error');
