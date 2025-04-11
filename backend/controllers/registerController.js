@@ -26,7 +26,10 @@ const handleNewUser = async (req, res) => {
     });
     if (newUser) {
       console.log(newUser);
-      res.status(200).send(`user ${newUser.username} created successfully with role ${newUser.roles}`);
+      res.status(201).json({
+				username: newUser.username,
+				roles: newUser.roles
+      });
     }
   } catch(err) {
     console.log(err);
