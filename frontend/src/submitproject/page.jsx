@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 export default function SubmitPage() {
   const [screenshots, setScreenshots] = useState([]);
-  
+  const user = useSelector((state)=> state.user)
   const handleScreenshotChange = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
@@ -36,7 +36,7 @@ export default function SubmitPage() {
           Welcome Back!
         </p>
         <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
-          Billie Dominic
+          {user?.email || "guest"}
         </p>
       </div>
     </div>

@@ -3,52 +3,104 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../action';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [email,setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState({ 
+      email: '', 
+      password: '', 
+      general: '' 
+  });
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
     const handleLogin = async (e) => {
-      e.preventDefault()
-      if(!email || !password) {
-        return alert('Email and password are required');
+      e.preventDefault();
+      setLoading(true);
+      setError({ email: '', password: '', general: '' });
+    
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setError(prev => ({ ...prev, email: "Please enter a valid email" }));
+        setLoading(false);
+        return;
       }
-      if (password.length <= 6){
-				 alert('password should be more than 6');
-      }
+    
       try {
-	      setLoading(true);
         const credential = await signInWithEmailAndPassword(auth, email, password);
-				const user = credential.user;
-				const idToken = await user.getIdToken();
-				
+        const user = credential.user;
+        const idToken = await user.getIdToken();
+    
         const response = await fetch('https://xen4-backend.vercel.app/login', {
-					method: 'POST',
-				  headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${idToken}`
-				  },
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
           credentials: 'include',
         });
+    
         if (response.ok) {
-	        setLoading(false);
-					const data = await response.json();
-          console.log(data); //recieves username and roles
-          //check user roles from response to navigate to appropriate dashboard
+          const data = await response.json();
+          console.log(data); // Receives username and roles
+    
+          dispatch(setUser({
+            uid: user.uid,
+            email: user.email,
+          }));
+    
           navigate('/submitproject');
+        } else {
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.log("Backend login error:", errorData);
+            throw new Error(errorData.message || 'Login failed');
+          }
+          
         }
-      } catch(err) {
-	      setLoading(false);
-        console.error(err);
-        alert(`An error occurred ${err}`);
+    
+      } 
+      
+      catch (error) {
+        console.error("Login error:", error);
+      
+        let errorMessage = 'An error occurred. Please try again.';
+      
+        if (error.code) {
+          switch (error.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+              errorMessage = 'Invalid email or password';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Invalid email address';
+              break;
+            case 'auth/too-many-requests':
+              errorMessage = 'Too many attempts. Please try again later.';
+              break;
+            default:
+              errorMessage = error.message; // fallback to Firebase's error message
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+      
+        setError(prev => ({ ...prev, general: errorMessage }));
       }
-    }
+       finally {
+        setLoading(false);
+      }
+    };
+    
     
     return (
         <section className="bg-black min-h-screen flex justify-center items-center pt-10 pb-10 font-grotesk p-4">
@@ -81,7 +133,11 @@ export default function Login() {
                     <span className="absolute left-1/2 transform -translate-x-1/2  px-2 text-[#fcf7f8]">or sign in with</span>
                     <div className="line w-full h-px bg-[#fcf7f8] opacity-10"></div>
                 </div>
-              
+                {error.general && (
+                    <div className="p-3 bg-red-500/20 text-red-400 rounded-lg text-sm">
+                        {error.general}
+                    </div>
+                )}
                 <form className="form flex flex-col gap-3 font-grotesk" onSubmit={handleLogin}>
                     <div className=" flex flex-col gap-1 ">
                         <label htmlFor="email" className="block">Email *</label>
@@ -93,6 +149,7 @@ export default function Login() {
               required
               onChange={e => setEmail(e.target.value)}
             />
+                                    {error.email && <span className="text-sm text-red-400">{error.email}</span>}
                     </div>
 
 
@@ -116,6 +173,7 @@ export default function Login() {
           <FaEye className="text-gray-500  relative left-4" />
         )}
       </span>
+      {error.password && <span className="text-sm text-red-400">{error.password}</span>}
     </div>
                     <a className="forgot-password-link text-blue-300 text-sm underline self-end" href="#">Forgot Password</a>
                     <button 
