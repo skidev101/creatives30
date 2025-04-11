@@ -29,96 +29,98 @@ export default function Signup() {
         e.preventDefault();
         setLoading(true);
         setError({ fullname: '', email: '', password: '', confirmpassword: '', general: '' });
-    
+      
         // Validation
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError(prev => ({ ...prev, email: "Please enter a valid email" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, email: "Please enter a valid email" }));
+          setLoading(false);
+          return;
         }
         if (!password || password.length < 6) {
-            setError(prev => ({ ...prev, password: "Password must be at least 6 characters" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, password: "Password must be at least 6 characters" }));
+          setLoading(false);
+          return;
         }
         if (password !== confirmpassword) {
-            setError(prev => ({ ...prev, confirmpassword: "Passwords do not match" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, confirmpassword: "Passwords do not match" }));
+          setLoading(false);
+          return;
         }
-    
+      
         try {
-        
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-    
-           
-            const idToken = await user.getIdToken();
-    
-           
-            const response = await fetch('https://xen4-backend.vercel.app/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                },
-                body: JSON.stringify({
-                    email,
-                    pwd: password,
-                }),
-                credentials: 'include'
-            });
-    
-        
-            const responseData = await response.json();
-            console.log(responseData);
-    
-            if (!response.ok) {
-                throw new Error(responseData.message || 'Registration failed');
-            }
-            console.log("New user created with email:", user.email);
-            console.log("New user created with username:", responseData.username);
-            dispatch(setUser({
-                uid: user.uid,
-                email: user.email,
-              }))
-              
-            navigate('/submitproject');
-    
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+      
+          
+          const idToken = await user.getIdToken();
+      
+          
+          const response = await fetch('https://xen4-backend.vercel.app/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`
+            },
+            body: JSON.stringify({
+              email,
+              pwd: password,
+            }),
+            credentials: 'include'
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Registration failed');
+          }
+      
+
+          const responseData = await response.json();
+          console.log("Backend response:", responseData); 
+      
+          dispatch(setUser({
+            uid: responseData.uid,
+            email: responseData.email,
+            username: responseData.username, 
+            roles: responseData.roles       
+          }));
+      
+          navigate('/submitproject');
+      
         } catch (error) {
-            console.error('Registration error:', error);
-    
-            
-            let errorMessage = error.message;
-            if (error.code) {
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'Email already in use';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address';
-                        break;
-                }
+          console.error('Registration error:', error);
+      
+          
+          let errorMessage = error.message;
+          if (error.code) {
+            switch (error.code) {
+              case 'auth/email-already-in-use':
+                errorMessage = 'Email already in use';
+                break;
+              case 'auth/weak-password':
+                errorMessage = 'Password is too weak';
+                break;
+              case 'auth/invalid-email':
+                errorMessage = 'Invalid email address';
+                break;
             }
-    
-            setError(prev => ({ ...prev, general: errorMessage }));
-    
-            // delete Firebase user if backend failed
-            if (auth.currentUser) {
-                try {
-                    await auth.currentUser.delete();
-                } catch (deleteError) {
-                    console.error('Error deleting Firebase user:', deleteError);
-                }
+          }
+      
+          setError(prev => ({ ...prev, general: errorMessage }));
+      
+          // Delete Firebase user if backend registration failed
+          if (auth.currentUser) {
+            try {
+              await auth.currentUser.delete();
+              console.log("Rollback: Deleted Firebase user after backend failure");
+            } catch (deleteError) {
+              console.error('Error deleting Firebase user:', deleteError);
             }
-    
+          }
+      
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
     
 
 
@@ -137,17 +139,6 @@ export default function Signup() {
 
                 <form className="form flex flex-col gap-3 font-grotesk" onSubmit={handleSignUp}>
                   
-                    {/*<div className="flex flex-col gap-1">
-                        <label htmlFor="name" className="block">Full name *</label>
-                        <input
-                            type="text"
-                            className="w-full h-[50px] p-3 border text-sm border-opacity-80 rounded-lg border-gray-500 focus:outline-none bg-transparent"
-                            placeholder="creative team"
-                            onChange={e => setFullName(e.target.value)}
-                            value={fullname}
-                        />
-                        {error.fullname && <span className="text-sm text-red-400">{error.fullname}</span>}
-                    </div>*/}
 
                     <div className="flex flex-col gap-1">
                         <label htmlFor="email" className="block">Email *</label>
