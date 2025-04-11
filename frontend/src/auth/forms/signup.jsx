@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../action';
@@ -15,7 +15,6 @@ export default function Signup() {
     const [confirmpassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({ 
-        fullname: '', 
         email: '', 
         password: '', 
         confirmpassword: '',
@@ -78,6 +77,7 @@ export default function Signup() {
                 throw new Error(responseData.message || 'Registration failed');
             }
             console.log("New user created with email:", user.email);
+            console.log("New user created with username:", responseData.username);
             dispatch(setUser({
                 uid: user.uid,
                 email: user.email,

@@ -21,11 +21,12 @@ const handleNewUser = async (req, res) => {
       uid,
       email,
       username,
+      roles: ['User'],
       password: hashedPwd
     });
     if (newUser) {
-      console.log(user);
-      res.status(200).send(`user ${newUser.username} created successfully with role${newUser.roles}`);
+      console.log(newUser);
+      res.status(200).send(`user ${newUser.username} created successfully with role ${newUser.roles}`);
     }
   } catch(err) {
     console.log(err);
