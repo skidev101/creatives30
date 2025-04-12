@@ -2,10 +2,34 @@ import React, { useState } from 'react';
 import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import { MessageAlert } from './success';
 
 export default function SubmitPage() {
   const [screenshots, setScreenshots] = useState([]);
   const user = useSelector((state)=> state.user)
+  const [loading, setLoading] = useState('')
+  const [form , setForm] = useState({
+    livelink :'',
+    day:'',
+    repolink:'',
+    languages:'',
+    framework:'',
+    description:''
+  })
+  const [error, setError] = useState({ 
+    livelink:'',
+    day:'',
+    repolink:'',
+    languages:'',
+    description:'',
+    general:''
+  });
+  const [successMessage, setSuccessMessage] = useState("");
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
+  };
+
   const handleScreenshotChange = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
@@ -16,11 +40,45 @@ export default function SubmitPage() {
   const handleRemoveScreenshot = (index) => {
     setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
   };
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError({ livelink: '', day: '', repolink: '', languages: '', description: '', general: '' });
   
-    console.log('Form submitted');
+    const errors = {};
+    if (!form.livelink) errors.livelink = "Provide your hosted URL";
+    if (!form.day) errors.day = "Provide your day of submission";
+    if (!form.repolink) errors.repolink = "Provide your repo URL";
+    if (!form.languages) errors.languages = "Provide languages used";
+    if (!form.description) errors.description = "Provide description";
+  
+    if (Object.keys(errors).length > 0) {
+      setError(errors);
+      setLoading(false);
+      return;
+    }
+  
+    try {
+    
+   
+      setSuccessMessage(`Project added`);
+      setForm({
+        livelink: '',
+        day: '',
+        repolink: '',
+        languages: '',
+        framework: '',
+        description: ''
+      });
+    } catch (error) {
+      console.log(error);
+      setError(prev => ({ ...prev, general: "Something went wrong!" }));
+    } finally {
+      setLoading(false);
+    }
   };
+  
   const darkmode = useSelector((state)=> state.darkMode)
    
   return (
@@ -36,15 +94,38 @@ export default function SubmitPage() {
           Welcome Back!
         </p>
         <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
-          {user?.email || "guest"}
+          {user?.username || "guest"}
         </p>
       </div>
     </div>
-  
+    {error.general && (
+      <section className='flex justify-center lg:px-80  items-center'>
+  <div className="p-3 bg-red-500/20 text-red-400 text-center flex justify-center items-center rounded-lg text-sm ">
+                        {error.general}
+                    </div>
+      </section>
+                  
+                )}
+                  <>
+              
+             <MessageAlert
+            open={!!successMessage}
+            message={successMessage}
+            onClose={() => setSuccessMessage("")}
+          />
+       
+    </>
     <form className="w-full space-y-6" onSubmit={handleSubmit}>
       <div className='flex justify-end'>
-        <button type="submit" className="mb-4 bg-blue-500 text-white py-2 px-4 rounded-lg">
-          Submit Project
+        <button type="submit" 
+        className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
+        disabled={loading}
+        >
+          {loading ?
+          'Processing':
+
+          ' Submit Project'
+          }
         </button>
       </div>
   
@@ -55,19 +136,27 @@ export default function SubmitPage() {
           </label>
           <input
             type="text"
+            name='livelink'
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
             placeholder="https://example.com"
+            onChange={handleInputChange}
+            value={form.livelink}
           />
+          {error.livelink && <span className="text-sm text-red-400">{error.livelink}</span>}
         </div>
         <div>
           <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
-            Uploading For Day
+            Uploading For Day *
           </label>
           <input
             type="number"
+            name='day'
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
             placeholder="10"
+            value={form.day}
+            onChange={handleInputChange}
           />
+           {error.day && <span className="text-sm text-red-400">{error.day}</span>}
         </div>
       </div>
   
@@ -79,9 +168,13 @@ export default function SubmitPage() {
           <input
             type="text"
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
-            name="repo"
+            name="repolink"
             placeholder="https://example.com"
+            value={form.repolink}
+            onChange={handleInputChange}
+
           />
+            {error.repolink && <span className="text-sm text-red-400">{error.repolink}</span>}
         </div>
         <div>
           <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
@@ -91,7 +184,9 @@ export default function SubmitPage() {
             type="text"
             className={`mt-1 bg-gray-100 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
             placeholder="React.js, Next.js, Vue.js etc"
-            
+            name='framework'
+            value={form.framework}
+            onChange={handleInputChange}
           />
         </div>
       </div>
@@ -104,9 +199,12 @@ export default function SubmitPage() {
           <input
             type="text"
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
-          
+            name='languages'
+            value={form.languages}
+            onChange={handleInputChange}
             placeholder="Html, css, js"
           />
+           {error.languages && <span className="text-sm text-red-400">{error.languages}</span>}
         </div>
         <div>
           <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
@@ -116,7 +214,11 @@ export default function SubmitPage() {
             type="text"
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
             placeholder="Description"
+            value={form.description}
+            onChange={handleInputChange}
+            name='description'
           />
+           {error.description && <span className="text-sm text-red-400">{error.description}</span>}
         </div>
       </div>
   
