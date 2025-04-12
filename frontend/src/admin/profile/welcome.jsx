@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
-import img from '../assets/image.png';
+import img from '../../assets/image.png';
 import { FiAward, FiFolder, FiTrendingUp, FiActivity } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
-export const Welcome = () => {
+export const WelcomeAdmin = () => {
     const darkmode = useSelector((state) => state.darkMode);
 const user = useSelector((state)=> state.user)
     const currentHour = new Date().getHours();
@@ -18,7 +18,7 @@ const user = useSelector((state)=> state.user)
         greeting = "Good Evening!";
     }
 
-    
+   
     const stats = {
         leaderboardPosition: 5,
         projectsSubmitted: 12,

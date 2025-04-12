@@ -1,19 +1,20 @@
-/* eslint-disable no-unused-vars */
+
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { FiSearch, FiChevronLeft, FiChevronRight, FiPlus } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import img from '../../assets/image.png';
+import VersionModal from './modal';
 export default function VersionPage() {
   const darkmode = useSelector((state) => state.darkMode);
    const user = useSelector((state)=> state.user)
   const [versions, setVersions] = useState([
-    { id: 'v1', name: 'Version 1', createdAt: new Date('2023-01-01') },
-    { id: 'v7', name: 'Version 7', createdAt: new Date('2023-07-01') }
+    { id: 'v1', name: ' 1', createdAt: new Date('2023-01-01') },
+    { id: 'v7', name: ' 7', createdAt: new Date('2023-07-01') }
   ]);
   const [activeVersion, setActiveVersion] = useState('v1');
   const [showVersionModal, setShowVersionModal] = useState(false);
-  const [newVersionName, setNewVersionName] = useState('');
+  const [newVersionNo, setNewVersionNo] = useState('');
   const [timeRange, setTimeRange] = useState('all');
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,7 +22,7 @@ export default function VersionPage() {
 
   // Generate different data based on version
   const generateUsers = (versionId) => {
-    const multiplier = versionId === 'v1' ? 1 : 2; // v7 shows higher numbers
+    const multiplier = versionId === 'v1' ? 1 : 2; 
     return Array.from({ length: 30 }, (_, i) => ({
       id: i + 1,
       name: `User ${i + 1}`,
@@ -33,16 +34,16 @@ export default function VersionPage() {
   const [users, setUsers] = useState(generateUsers(activeVersion));
 
   const handleCreateVersion = () => {
-    if (newVersionName.trim()) {
+    if (newVersionNo.trim()) {
       const newVersion = {
         id: `v${versions.length + 1}`,
-        name: newVersionName,
+        name: newVersionNo,
         createdAt: new Date()
       };
       setVersions([...versions, newVersion]);
       setActiveVersion(newVersion.id);
       setUsers(generateUsers(newVersion.id));
-      setNewVersionName('');
+      setNewVersionNo('');
       setShowVersionModal(false);
     }
   };
@@ -77,7 +78,7 @@ export default function VersionPage() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // ... rest of your existing code (timeRange, search, pagination logic) ...
+  
 
   return (
     <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
@@ -106,34 +107,14 @@ export default function VersionPage() {
 </div>
    
       {showVersionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-100">
-          <div className={`rounded-[14px] ${darkmode ? 'bg-[#1a1a1a]' : 'bg-white'} p-6 w-full max-w-md`}>
-            <h3 className={`text-lg font-bold mb-4 ${darkmode ? 'text-white' : 'text-gray-900'}`}>
-              Create New Version
-            </h3>
-            <input
-              type="text"
-              value={newVersionName}
-              onChange={(e) => setNewVersionName(e.target.value)}
-              placeholder="Version name"
-              className={`w-full p-2 rounded-md border mb-4 ${darkmode ? 'bg-[#111313] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowVersionModal(false)}
-                className={`px-4 py-2 rounded-md ${darkmode ? 'text-white hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'}`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateVersion}
-                className={`px-4 py-2 rounded-md ${darkmode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
+        <VersionModal 
+         darkmode={darkmode}
+         showVersionModal={showVersionModal}
+         newVersionNo={newVersionNo}
+         setNewVersionNo={setNewVersionNo}
+         setShowVersionModal={setShowVersionModal}
+         handleCreateVersion={handleCreateVersion}
+        />
       )}
 
    
@@ -160,7 +141,7 @@ export default function VersionPage() {
               className={`px-3 py-2 rounded-md border ${darkmode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
             >
               {versions.map(version => (
-                <option key={version.id} value={version.id}>{version.name}</option>
+                <option key={version.id} value={version.id}>Version {version.name}</option>
               ))}
             </select>
           </div>
