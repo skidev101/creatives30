@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
-import img from '../assets/image.png';
-import { FiAward, FiFolder, FiTrendingUp, FiActivity } from 'react-icons/fi';
+import img from '../../assets/image.png';
+import { FiDatabase,  FiActivity } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
-export const Welcome = () => {
+export const WelcomeAdmin = () => {
     const darkmode = useSelector((state) => state.darkMode);
-const user = useSelector((state)=> state.user)
+    const user = useSelector((state) => state.user);
     const currentHour = new Date().getHours();
     let greeting;
 
@@ -18,12 +18,11 @@ const user = useSelector((state)=> state.user)
         greeting = "Good Evening!";
     }
 
-    
-    const stats = {
-        leaderboardPosition: 5,
-        projectsSubmitted: 12,
-        streakDays: 7,
-        weeklyActivity: 'High'
+    const versionStats = {
+        totalSubmissions: 50,
+        activeUsers: 24,
+        completionRate: '82%',
+        version: 'v7'
     };
 
     const StatCard = ({ icon: Icon, title, value, color }) => (
@@ -38,14 +37,14 @@ const user = useSelector((state)=> state.user)
             </div>
             <div>
                 <p className={`text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>{title}</p>
-                <p className={`text-xl font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
+                <p className={`lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
             </div>
         </motion.div>
     );
 
     return (
         <div className="space-y-4 font-grotesk">
-            {/* Profile Section */}
+            
             <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
             } shadow-sm border ${
@@ -65,34 +64,40 @@ const user = useSelector((state)=> state.user)
                             {greeting} 
                         </h2>
                         <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                        {user?.email || "guest"}
+                            {user?.email || "guest"}
                         </p>
                     </div>
                 </div>
             </section>
+
             <section className={`w-full max-w-4xl mx-auto p-6 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
             } shadow-sm border ${
                 darkmode ? 'border-neutral-800' : 'border-gray-200'
             }`}>
-                <h3 className={`text-sm font-semibold mb-4 uppercase tracking-wider ${
-                    darkmode ? 'text-neutral-400' : 'text-gray-500'
-                }`}>Your Progress</h3>
+                <div className="flex justify-between items-center mb-4">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                        darkmode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                        Current Version
+                    </span>
+                </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                     <StatCard 
-                        icon={FiAward} 
-                        title="Leaderboard Rank" 
-                        value={`#${stats.leaderboardPosition}`} 
+                        icon={FiDatabase} 
+                        title="Total Submissions" 
+                        value={versionStats.totalSubmissions} 
                         color="blue" 
                     />
+                   
+                 
                     <StatCard 
-                        icon={FiFolder} 
-                        title="Projects Submitted" 
-                        value={stats.projectsSubmitted} 
-                        color="green" 
+                        icon={FiActivity} 
+                        title="Version" 
+                        value={versionStats.version} 
+                        color="yellow" 
                     />
-                
                 </div>
             </section>
         </div>
