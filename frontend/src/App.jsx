@@ -8,6 +8,10 @@ import SubmitProject from './submitproject/submit';
 import Profile from './profile/profile';
 import Leaderboard from './leaderboard/leaderboard';
 import Project from './projects/project';
+import AddAdmin from './admin/managements/page';
+
+import AdminProfile from './admin/profile/page';
+import Version from './admin/version/page';
 
 function App() {
   return (
@@ -21,6 +25,9 @@ function App() {
         <Route path="/profile" element={<Profile/>} />
         <Route path="/leaderboard" element={<Leaderboard/>} />
         <Route path="/projects" element={<Project/>} />
+        <Route path="/addadmins" element={<AddAdmin/>} />
+        <Route path="/version" element={<Version/>} />
+        <Route path="/adminprofile" element={<AdminProfile/>} />
       </Routes>
      
     </Router>
