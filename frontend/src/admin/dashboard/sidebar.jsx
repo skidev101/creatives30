@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
 
 
 import { NavLink, useNavigate, } from "react-router-dom";
-import { FaChessBoard, FaPodcast, FaUser, FaUserAstronaut } from "react-icons/fa";
+import {  FaPodcast,  FaUserAstronaut } from "react-icons/fa";
 import { CiLogout, CiViewBoard } from "react-icons/ci";
 import { LiaDropbox } from "react-icons/lia";
 import { useSelector } from "react-redux";

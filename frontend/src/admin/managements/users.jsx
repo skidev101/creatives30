@@ -75,7 +75,7 @@ const UsersList = () => {
         </table>
       </div>
 
-      {/* Empty state */}
+      
       {users.length === 0 && (
         <div className={`w-full py-12 text-center ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
           No users found

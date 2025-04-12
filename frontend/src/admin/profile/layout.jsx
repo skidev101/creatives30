@@ -2,10 +2,10 @@ import { useSelector } from "react-redux";
 
 import { FadeDown, FadeLeft, FadeRight, FadeUp } from "../../components/framer";
 
-import AdminProfile from "./adminprofile";
 import { WelcomeAdmin } from "./welcome";
 import { TodayStats } from "./stats";
 import { Top } from "./top";
+import VersionDetails from "./details";
 
 
 
@@ -35,18 +35,14 @@ const Layout = () => {
          </div>
    
          <div
-           className="h-min w-full lg:w-[calc(50%_-_10px)] "
+           className="h-min w-full lg:w-[calc(100%_-_10px)] "
          >
            <FadeUp>
-           {/* <AdminProfile /> */}
+          <VersionDetails />
            </FadeUp>
          </div>
    
-         <div className="h-min w-full flex-grow lg:w-[calc(45%_-_10px)] ">
-         <FadeDown>
-       
-         </FadeDown>
-         </div>
+      
    
        
      </section>

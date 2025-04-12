@@ -29,7 +29,7 @@ const AdminProfile= () => {
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
       
-      currentPage="Profile" />
+      currentPage="Admin Profile" />
       <Layout />
     </section>
   </section>

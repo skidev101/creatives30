@@ -1,59 +1,22 @@
+/* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
-import img from '../../assets/image.png';
+
 import { FiAward, FiFolder, FiTrendingUp, FiActivity, FiStar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 export const Top = () => {
     const darkmode = useSelector((state) => state.darkMode);
-    const user = useSelector((state) => state.user);
-    const currentHour = new Date().getHours();
-    let greeting;
 
-    if (currentHour < 12) {
-        greeting = "Good Morning!";
-    } else if (currentHour < 18) {
-        greeting = "Good Afternoon!";
-    } else {
-        greeting = "Good Evening!";
-    }
 
-    const stats = {
-        leaderboardPosition: 5,
-        projectsSubmitted: 12,
-        streakDays: 7,
-        weeklyActivity: 'High'
-    };
-
-    // Mock top 3 leaderboard data
     const topThree = [
         { id: 1, name: 'Alex Johnson', projects: 42, avatar: 'AJ' },
         { id: 2, name: 'Sam Wilson', projects: 38, avatar: 'SW' },
         { id: 3, name: 'Taylor Smith', projects: 35, avatar: 'TS' }
     ];
 
-    const StatCard = ({ icon: Icon, title, value, color }) => (
-        <motion.div 
-            whileHover={{ y: -2 }}
-            className={`flex items-center space-x-1 p-2 rounded-xl transition-all ${
-                darkmode ? 'bg-neutral-900 hover:bg-neutral-800' : 'bg-gray-50 hover:bg-gray-100'
-            }`}
-        >
-            <div className={`p-2 rounded-full ${darkmode ? `${color}-900/30` : `${color}-100`}`}>
-                <Icon className={`text-xl ${darkmode ? `text-${color}-400` : `text-${color}-600`}`} />
-            </div>
-            <div>
-                <p className={`text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>{title}</p>
-                <p className={`text-xl font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
-            </div>
-        </motion.div>
-    );
 
     return (
         <div className="space-y-4 font-grotesk">
-            {/* Profile Section */}
-           
-
-            {/* Combined Stats and Leaderboard Section */}
             <section className={`w-full max-w-4xl mx-auto p-6 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
             } shadow-sm border ${
@@ -61,9 +24,6 @@ export const Top = () => {
             }`}>
                 <div className="">
     
-            
-
-                    {/* Right Column - Top 3 Leaderboard */}
                     <div>
                         <h3 className={`text-sm font-semibold mb-4 uppercase tracking-wider ${
                             darkmode ? 'text-neutral-400' : 'text-gray-500'
