@@ -5,9 +5,12 @@ import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
 
 export default function SubmitPage() {
-  const [screenshots, setScreenshots] = useState([]);
+
   const user = useSelector((state)=> state.user)
-  const [loading, setLoading] = useState('')
+  const Useremail = user?.email
+  const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
+  const [loading, setLoading] = useState(false)
+  const [screenshots, setScreenshots] = useState([]);
   const [form , setForm] = useState({
     livelink :'',
     day:'',
@@ -32,10 +35,10 @@ export default function SubmitPage() {
 
   const handleScreenshotChange = (event) => {
     const files = Array.from(event.target.files);
-    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
-    const fileURLs = validFiles.map(file => URL.createObjectURL(file));
-    setScreenshots(prevScreenshots => [...prevScreenshots, ...fileURLs]);
+    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); 
+    setScreenshots(prevScreenshots => [...prevScreenshots, ...validFiles]);
   };
+  
 
   const handleRemoveScreenshot = (index) => {
     setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
@@ -60,8 +63,27 @@ export default function SubmitPage() {
     }
   
     try {
+      
+      const formData = new FormData();
+      formData.append('livelink', form.livelink);
+      formData.append('day', form.day);
+      formData.append('repolink', form.repolink);
+      formData.append('languages', form.languages);
+      formData.append('framework', form.framework);
+      formData.append('description', form.description);
+  
+      screenshots.forEach((file) => {
+        formData.append('screenshots', file);
+      });
+  
     
-   
+      const response = await fetch('/https://xen4-backend.vercel.app', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) throw new Error("Failed to submit");
+  
       setSuccessMessage(`Project added`);
       setForm({
         livelink: '',
@@ -71,6 +93,7 @@ export default function SubmitPage() {
         framework: '',
         description: ''
       });
+      setScreenshots([]);
     } catch (error) {
       console.log(error);
       setError(prev => ({ ...prev, general: "Something went wrong!" }));
@@ -79,16 +102,25 @@ export default function SubmitPage() {
     }
   };
   
+  
   const darkmode = useSelector((state)=> state.darkMode)
-   
+ 
   return (
     <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
     <div className={`flex flex-start items-center flex-row mb-4 border-b w-full ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
-      <img
-        src={img}
+      {Userimg ? 
+         <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
+         <span className='text-4xl'> {Userimg} </span>
+        </div>
+        :
+        <img
+        src={ img}
         alt="Profile"
         className="lg:h-15 lg:w-15 h-10 w-10 rounded-full object-cover mb-4"
       />
+    }
+   
+   
       <div className="flex flex-col pl-3">
         <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
           Welcome Back!
@@ -96,6 +128,7 @@ export default function SubmitPage() {
         <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
           {user?.username || "guest"}
         </p>
+     
       </div>
     </div>
     {error.general && (
@@ -243,10 +276,10 @@ export default function SubmitPage() {
           {screenshots.map((screenshot, index) => (
             <div key={index} className="relative">
               <img
-                src={screenshot}
-                alt={`Screenshot ${index + 1}`}
-                className="rounded-lg object-cover h-25 w-full"
-              />
+               src={URL.createObjectURL(screenshot)} 
+               alt={`Screenshot ${index + 1}`}
+               className="rounded-lg object-cover h-25 w-full"
+                />
               <button
                 type="button"
                 onClick={() => handleRemoveScreenshot(index)}

@@ -7,6 +7,9 @@ import { motion } from 'framer-motion';
 export const Welcome = () => {
     const darkmode = useSelector((state) => state.darkMode);
 const user = useSelector((state)=> state.user)
+const Useremail = user?.email
+const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
+
     const currentHour = new Date().getHours();
     let greeting;
 
@@ -45,7 +48,7 @@ const user = useSelector((state)=> state.user)
 
     return (
         <div className="space-y-4 font-grotesk">
-            {/* Profile Section */}
+
             <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${
                 darkmode ? 'bg-neutral-900' : 'bg-white'
             } shadow-sm border ${
@@ -53,12 +56,30 @@ const user = useSelector((state)=> state.user)
             }`}>
                 <div className="flex items-center space-x-4">
                     <div className="relative">
-                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
+
+                    {Userimg ? 
+                    <>
+                      <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
+         <span className='text-4xl'> {Userimg} </span>
+        </div>
+        <div className={`absolute bottom-3 -right-1 w-5 h-5 rounded-full border-2 ${
+                            darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'
+                        }`}></div>
+                    </>
+       
+        :
+        <>
+         <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
                             <img src={img} alt="Profile" className="w-full h-full object-cover" />
                         </div>
+                        
                         <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 ${
                             darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'
                         }`}></div>
+        </>
+                       
+                           }
+                      
                     </div>
                     <div>
                         <h2 className={`text-lg font-semibold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
