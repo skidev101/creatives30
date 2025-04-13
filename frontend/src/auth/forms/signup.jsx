@@ -1,119 +1,118 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../action';
 
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    // const [fullname, setFullName] = useState('');
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState({ 
-        fullname: '', 
         email: '', 
         password: '', 
         confirmpassword: '',
         general: '' 
     });
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const toggleConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
     const handleSignUp = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError({ fullname: '', email: '', password: '', confirmpassword: '', general: '' });
-    
-        // Validation
+        setError({ email: '', password: '', confirmpassword: '', general: '' });
+      
+        // Input validation (unchanged)
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError(prev => ({ ...prev, email: "Please enter a valid email" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, email: "Invalid email" }));
+          setLoading(false);
+          return;
         }
         if (!password || password.length < 6) {
-            setError(prev => ({ ...prev, password: "Password must be at least 6 characters" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, password: "Password too short" }));
+          setLoading(false);
+          return;
         }
         if (password !== confirmpassword) {
-            setError(prev => ({ ...prev, confirmpassword: "Passwords do not match" }));
-            setLoading(false);
-            return;
+          setError(prev => ({ ...prev, confirmpassword: "Passwords don't match" }));
+          setLoading(false);
+          return;
         }
-    
+      
         try {
         
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-    
-           
-            const idToken = await user.getIdToken();
-    
-           
-            const response = await fetch('https://xen4-backend.vercel.app/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                },
-                body: JSON.stringify({
-                    email,
-                    pwd: password,
-                }),
-                credentials: 'include'
-            });
-    
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+      
+          
+          const idToken = await user.getIdToken();
+      
         
-            const responseData = await response.json();
-            console.log(responseData);
-    
-            if (!response.ok) {
-                throw new Error(responseData.message || 'Registration failed');
-            }
-            console.log("New user created with email:", user.email);
-           
-            navigate('/submitproject');
-    
-        } catch (error) {
-            console.error('Registration error:', error);
-    
+          const response = await fetch('https://xen4-backend.vercel.app/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`
+            },
+            body: JSON.stringify({ 
+              email, 
+              pwd: password 
+            }),
+            credentials: 'include'
+          });
+      
+          const responseData = await response.json();
+          
+          if (!response.ok) {
             
-            let errorMessage = error.message;
-            if (error.code) {
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'Email already in use';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address';
-                        break;
-                }
+            if (responseData.errors) {
+              throw new Error(responseData.errors.join(', '));
             }
-    
-            setError(prev => ({ ...prev, general: errorMessage }));
-    
-            // delete Firebase user if backend failed
-            if (auth.currentUser) {
-                try {
-                    await auth.currentUser.delete();
-                } catch (deleteError) {
-                    console.error('Error deleting Firebase user:', deleteError);
-                }
+            throw new Error(responseData.message || 'Backend registration failed');
+          }
+      
+          console.log("Full backend response:", responseData);
+      
+
+          if (!responseData.username || !responseData.roles) {
+            throw new Error('Backend response missing user data');
+          }
+      
+       
+          dispatch(setUser({
+            uid: responseData.uid,
+            email: responseData.email,
+            username: responseData.username,
+            roles: responseData.roles
+          }));
+      
+          navigate('/submitproject');
+      
+        } catch (error) {
+          console.error("Signup error:", error);
+          setError(prev => ({ ...prev, general: error.message }));
+      
+          // Rollback: Delete Firebase user if backend failed
+          if (auth.currentUser) {
+            try {
+              await auth.currentUser.delete();
+              console.log("Rollback: Deleted Firebase user");
+            } catch (deleteError) {
+              console.error("Failed to rollback Firebase user:", deleteError);
             }
-    
+          }
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
-    
+      };
 
 
     return (
@@ -131,17 +130,6 @@ export default function Signup() {
 
                 <form className="form flex flex-col gap-3 font-grotesk" onSubmit={handleSignUp}>
                   
-                    {/*<div className="flex flex-col gap-1">
-                        <label htmlFor="name" className="block">Full name *</label>
-                        <input
-                            type="text"
-                            className="w-full h-[50px] p-3 border text-sm border-opacity-80 rounded-lg border-gray-500 focus:outline-none bg-transparent"
-                            placeholder="creative team"
-                            onChange={e => setFullName(e.target.value)}
-                            value={fullname}
-                        />
-                        {error.fullname && <span className="text-sm text-red-400">{error.fullname}</span>}
-                    </div>*/}
 
                     <div className="flex flex-col gap-1">
                         <label htmlFor="email" className="block">Email *</label>

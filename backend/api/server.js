@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));
+app.use('/googleLogin', require('../routes/googleLogin'));
 app.use('/update', require('../routes/update'));
 
 

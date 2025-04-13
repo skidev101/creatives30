@@ -37,7 +37,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
           >
             <FadeInUp duration={0.5} distance={50}>
             <div
-              className={`relative max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl ${darkmode ? 'bg-black' : 'bg-white'}`}
+              className={`relative max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl border ${darkmode ? 'bg-[#111613] border-gray-700 ' : 'bg-white border-gray-200'}`}
             >
              
               <button 
@@ -47,7 +47,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                 <FiX size={24} className={darkmode ? 'text-gray-300' : 'text-gray-700'} />
               </button>
   
-              <div className="p-6 md:p-8 max-h-[80vh] overflow-y-auto ">
+              <div className="p-6 md:p-8 max-h-[80vh] overflow-y-auto scrollbar-hide ">
                
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6 pt-7">
                   <div className="flex-1">

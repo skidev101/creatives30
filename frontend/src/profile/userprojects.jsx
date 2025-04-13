@@ -2,15 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { FiGithub, FiExternalLink,} from 'react-icons/fi';
+import { FiGithub, FiExternalLink, FiChevronRight, FiChevronLeft,} from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import img from '../assets/test.jpg'
 
 
 const UserProjects = () => {
-  const [expandedProjects, setExpandedProjects] = useState(false);
   const darkmode = useSelector((state) => state.darkMode);
+  const [projects, setProjects] = useState([]);
+ 
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 1;
+
+  const pageCount = Math.ceil(projects.length / rowsPerPage);
+  const paginatedprojects = projects.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePageChange = (page) => setCurrentPage(page);
 
   useEffect(() => {
   
@@ -27,7 +38,16 @@ const UserProjects = () => {
       {
         id: 2,
         title: "E-commerce Dashboard",
-        day: "Day 3 of 30",
+        day: "Day 4 of 30",
+        description: "Built with React and Node.js",
+        githubUrl: "#",
+        liveUrl: "#",
+        image: img,
+      },
+      {
+        id: 3,
+        title: "E-commerce Dashboard",
+        day: "Day 5 of 30",
         description: "Built with React and Node.js",
         githubUrl: "#",
         liveUrl: "#",
@@ -39,8 +59,7 @@ const UserProjects = () => {
 
   }, []);
 
-  const [projects, setProjects] = useState([]);
- 
+
  
 
   return (
@@ -48,16 +67,11 @@ const UserProjects = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className={`text-lg font-semibold ${darkmode ? "text-white":''}`}>Recent Projects</h2>
-          <button 
-            onClick={() => setExpandedProjects(!expandedProjects)}
-            className={`text-sm ${darkmode ? 'text-blue-400' : 'text-blue-600'}`}
-          >
-            {expandedProjects ? 'Show Less' : 'View All'}
-          </button>
+      
         </div>
         
         <div className="space-y-4">
-          {(expandedProjects ? projects : projects.slice(0, 3)).map((project) => (
+          {paginatedprojects.map((project) => (
             <motion.div
               key={project.id}
               whileHover={{ y: -2 }}
@@ -90,6 +104,39 @@ const UserProjects = () => {
             </motion.div>
           ))}
         </div>
+         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
+               <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                 Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, projects.length)} of {projects.length} entries
+               </div>
+       
+               <div className="flex items-center gap-1">
+                 <button
+                   onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                   disabled={currentPage === 1}
+                   className={`p-2 rounded-md ${darkmode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
+                 >
+                   <FiChevronLeft />
+                 </button>
+       
+                 {Array.from({ length: pageCount }, (_, i) => (
+                   <button
+                     key={i}
+                     onClick={() => handlePageChange(i + 1)}
+                     className={`w-8 h-8 rounded-md ${currentPage === i + 1 ? (darkmode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkmode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100')}`}
+                   >
+                     {i + 1}
+                   </button>
+                 ))}
+       
+                 <button
+                   onClick={() => handlePageChange(Math.min(pageCount, currentPage + 1))}
+                   disabled={currentPage === pageCount}
+                   className={`p-2 rounded-md ${darkmode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
+                 >
+                   <FiChevronRight />
+                 </button>
+               </div>
+             </div> 
       </div>
     </div>
   );

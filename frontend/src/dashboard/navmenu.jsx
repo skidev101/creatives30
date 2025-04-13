@@ -1,12 +1,4 @@
 
-import {
-    
-    Calendar,
-   
-    Logout,
-    Moon,
-    Sun1
-  } from "iconsax-react";
 
   import { FiMenu } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";

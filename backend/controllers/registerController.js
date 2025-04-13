@@ -26,8 +26,9 @@ const handleNewUser = async (req, res) => {
     if (newUser) {
       console.log(newUser);
       res.status(201).json({
+        uid: newUser.uid,      
 	      email: newUser.email,
-				username: newUser.username,
+        username: newUser.username,
 				roles: newUser.roles
       });
     }
