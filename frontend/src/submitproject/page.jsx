@@ -3,7 +3,8 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
-import { getStorage, ref, uploadBytes, getDownloadUrl } from 'firebase/storage';
+import { storage } from '../firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function SubmitPage() {
 
@@ -34,16 +35,20 @@ export default function SubmitPage() {
     setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
   };
 
-  const handleScreenshotChange = (event) => {
-    const files = Array.from(event.target.files);
-    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
-    const screenshotUrls = await Promise.all(validFiles.map(file) => {
-			const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
-			await uploadBytes(storageRef, file);
-			const downloadUrl = await getDownloadUrl(storageRef);
-			return downloadUrl;
-    });
-    setScreenshots(prevScreenshots => [...prevScreenshots, ...screenshotUrls]);
+  const handleScreenshotChange = async (event) => {
+    try {
+			const files = Array.from(event.target.files);
+	    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
+	    const screenshotURL = await Promise.all(validFiles.map((file) => {
+				const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
+				await uploadBytes(storageRef, file);
+				const downloadURL = await getDownloadURL(storageRef);
+				return downloadURL;
+	    }));
+	    setScreenshots(prevScreenshots => [...prevScreenshots, ...screenshotURL]);
+    } catch (err) {
+			console.log("Image Processing error,": err)
+    }
   };
   
 
@@ -70,23 +75,29 @@ export default function SubmitPage() {
     }
   
     try {
-      
-      const formData = new FormData();
-      formData.append('livelink', form.livelink);
-      formData.append('day', form.day);
-      formData.append('repolink', form.repolink);
-      formData.append('languages', form.languages);
-      formData.append('framework', form.framework);
-      formData.append('description', form.description);
+      const formData = {
+				...form,
+				screenshots
+      };
+      // const formData = new FormData();
+      // formData.append('livelink', form.livelink);
+      // formData.append('day', form.day);
+      // formData.append('repolink', form.repolink);
+      // formData.append('languages', form.languages);
+      // formData.append('framework', form.framework);
+      // formData.append('description', form.description);
   
-      screenshots.forEach((file) => {
-        formData.append('screenshots', file);
-      });
+      // screenshots.forEach((file) => {
+      //   formData.append('screenshots', file);
+      // });
   
     
-      const response = await fetch('/https://xen4-backend.vercel.app', {
+      const response = await fetch('https://xen4-backend.vercel.app/submit', {
         method: 'POST',
-        body: formData,
+        headers: {
+					'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
       });
   
       if (!response.ok) throw new Error("Failed to submit");
@@ -283,10 +294,10 @@ export default function SubmitPage() {
           {screenshots.map((screenshot, index) => (
             <div key={index} className="relative">
               <img
-               src={URL.createObjectURL(screenshot)} 
+               src={screenshot} 
                alt={`Screenshot ${index + 1}`}
                className="rounded-lg object-cover h-25 w-full"
-                />
+               />
               <button
                 type="button"
                 onClick={() => handleRemoveScreenshot(index)}
