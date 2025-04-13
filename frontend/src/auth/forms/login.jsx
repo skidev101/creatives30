@@ -143,7 +143,7 @@ export default function Login() {
                 </div>
 
                 <div className="social-buttons flex flex-col items-center mb-5 gap-6 font-grotesk">
-  <button className="social-button flex justify-center items-center w-full text-[#fcf7f8] border-gray-500 border py-3 px-4 gap-2 rounded-md shadow-md">
+  <button onClick={handleGoogleLogin}  className="social-button flex justify-center items-center w-full text-[#fcf7f8] border-gray-500 border py-3 px-4 gap-2 rounded-md shadow-md cursor-pointer">
     <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
       <path fill="#EA4335" d="M9 3.48c1.69 0 2.83.73 3.48 1.35l2.55-2.48C13.76.88 11.23 0 9 0 5.48 0 2.53 2.01 1 5.03l2.93 2.27C4.54 5.08 6.44 3.48 9 3.48z"></path>
       <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.18-1.84H9v3.48h4.84c-.21 1.14-.84 2.1-1.8 2.74v2.27h2.92c1.71-1.58 2.68-3.92 2.68-6.65z"></path>

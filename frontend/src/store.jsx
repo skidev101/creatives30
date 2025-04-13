@@ -1,4 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage"; 
 const initialState =  {
     darkMode: false,
      user:''
@@ -24,5 +26,15 @@ switch (action.type) {
 }
 
 }
-const store = configureStore({reducer})
-export default store;
+const persistConfig = {
+    key: "root",
+    storage,
+
+  };
+const persistedReducer = persistReducer(persistConfig,reducer);
+
+export const store = configureStore({
+    reducer: persistedReducer
+
+})
+export const persistor = persistStore(store);
