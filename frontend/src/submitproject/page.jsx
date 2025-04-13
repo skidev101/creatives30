@@ -3,6 +3,7 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
+import { getStorage, ref, uploadBytes, getDownloadUrl } from 'firebase/firestore';
 
 export default function SubmitPage() {
   const [screenshots, setScreenshots] = useState([]);
@@ -33,8 +34,13 @@ export default function SubmitPage() {
   const handleScreenshotChange = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
-    const fileURLs = validFiles.map(file => URL.createObjectURL(file));
-    setScreenshots(prevScreenshots => [...prevScreenshots, ...fileURLs]);
+    const screenshotUrls = await Promise.all(validFiles.map(file) => {
+			const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
+			await uploadBytes(storageRef, file);
+			const downloadUrl = await getDownloadUrl(storageRef);
+			return downloadUrl;
+    });
+    setScreenshots(prevScreenshots => [...prevScreenshots, ...screenshotUrls]);
   };
 
   const handleRemoveScreenshot = (index) => {
