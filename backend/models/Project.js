@@ -9,9 +9,18 @@ const projectSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	projects: {
-		type: Object
-	}
+	projects: [{
+		livelink: String,
+		day: String,
+		repolink: String,
+		languages: String,
+		framework: String,
+		description: String,
+		createdAt: {
+			type: Date,
+			default: Date.now
+		}
+	}]
 })
 
 module.exports = mongoose.model('Project', projectSchema)

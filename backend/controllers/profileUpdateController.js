@@ -1,11 +1,11 @@
 const User = require('../models/User');
-//const Projects = require('../models/Project');
+const Project = require('../models/Project');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const updateProfile = async (req, res) => {
-	const { email, pwd, username, profileImgURL } = req.body;
-	const { uid } = req.user;
+	const { uid, email, pwd, username, profileImgURL } = req.body;
+	//const { uid } = req.user;
 	
 	const updates = {};
 	if (email) updates.email = email;
@@ -22,9 +22,10 @@ const updateProfile = async (req, res) => {
 	
 	try {
 		const updatedUser = await User.findOneAndUpdate({uid}, updates, {new: true});
-		//const updatedProject = await Project.findOneAndUpdate({uid}, {username: updates.username}, {new: true});
-		res.status(201).send(updatedUser);
+		const updatedProject = await Project.findOneAndUpdate({uid}, {username: updates.username}, {new: true});
+		res.status(201).json({updatedUser: updatedUser});
 		console.log(updatedUser);
+		console.log(updateProfile);
 		
 	} catch (err) {
 		console.error(err);

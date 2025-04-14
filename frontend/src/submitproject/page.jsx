@@ -3,8 +3,9 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
-import { storage } from '../firebase';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
+//import { storage } from '../firebase';
+//import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function SubmitPage() {
 
@@ -12,7 +13,7 @@ export default function SubmitPage() {
   const Useremail = user?.email
   const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
   const [loading, setLoading] = useState(false)
-  const [screenshots, setScreenshots] = useState([]);
+  //const [screenshots, setScreenshots] = useState([]);
   const [form , setForm] = useState({
     livelink :'',
     day:'',
@@ -35,26 +36,26 @@ export default function SubmitPage() {
     setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
   };
 
-  const handleScreenshotChange = async (event) => {
-    try {
-			const files = Array.from(event.target.files);
-	    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
-	    const screenshotURL = await Promise.all(validFiles.map((file) => {
-				const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
-				await uploadBytes(storageRef, file);
-				const downloadURL = await getDownloadURL(storageRef);
-				return downloadURL;
-	    }));
-	    setScreenshots(prevScreenshots => [...prevScreenshots, ...screenshotURL]);
-    } catch (err) {
-			console.log("Image Processing error,": err)
-    }
-  };
+  // const handleScreenshotChange = async (event) => {
+  //   try {
+		//	const files = Array.from(event.target.files);
+	 //   const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
+	 //   const screenshotURL = await Promise.all(validFiles.map((file) => {
+		//		const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
+		//		await uploadBytes(storageRef, file);
+		//		const downloadURL = await getDownloadURL(storageRef);
+		//		return downloadURL;
+	 //   }));
+	 //   setScreenshots(prevScreenshots => [...prevScreenshots, ...downloadURL]);
+  //   } catch (err) {
+		//	console.log("Image Processing error,": err)
+  //   }
+  // };
   
 
-  const handleRemoveScreenshot = (index) => {
-    setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
-  };
+  // const handleRemoveScreenshot = (index) => {
+  //   setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -75,9 +76,15 @@ export default function SubmitPage() {
     }
   
     try {
+			const auth = getAuth();
+			const user = auth.currentUser;
+			if (!user) {
+				console.log('User is not authenticated');
+				return
+			}
+			const idToken = await user.getIdToken();
       const formData = {
-				...form,
-				screenshots
+				...form
       };
       // const formData = new FormData();
       // formData.append('livelink', form.livelink);
@@ -92,15 +99,20 @@ export default function SubmitPage() {
       // });
   
     
-      const response = await fetch('https://xen4-backend.vercel.app/submit', {
-        method: 'POST',
-        headers: {
-					'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      if (!response.ok) throw new Error("Failed to submit");
+     const response = await fetch('https://xen4-backend.vercel.app/submit', {
+       method: 'POST',
+       headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${idToken}`
+       },
+       body: JSON.stringify(formData),
+       credentials: 'include',
+     });
+     
+     if (!response.ok) throw new Error("Failed to submit");
+     
+     const data = response.json();
+     console.log(data);
   
       setSuccessMessage(`Project added`);
       setForm({
@@ -132,7 +144,7 @@ export default function SubmitPage() {
         </div>
         :
         <img
-        src={ img}
+        src={img}
         alt="Profile"
         className="lg:h-15 lg:w-15 h-10 w-10 rounded-full object-cover mb-4"
       />
@@ -273,7 +285,7 @@ export default function SubmitPage() {
         </div>
       </div>
   
-      <div className="flex justify-between items-center">
+      {/*<div className="flex justify-between items-center">
         <h3 className={`text-md font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>Upload Screenshots</h3>
         <label htmlFor="screenshot-upload" className="cursor-pointer flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg">
           <FaPlus className="mr-2" />
@@ -308,7 +320,7 @@ export default function SubmitPage() {
             </div>
           ))}
         </div>
-      )}
+      )}*/}
     </form>
   </div>
   );

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { handleGoogleLogin } = require('../controllers/googleLoginController');
+const { handleProjectSubmit } = require('../controllers/projectSubmitController');
 const verifyIdToken = require('../middleware/verifyIdToken'); 
 
-router.post('/', verifyIdToken, handleGoogleLogin);
+router.post('/', verifyIdToken, handleProjectSubmit);
 
 module.exports = router
