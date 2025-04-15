@@ -57,6 +57,8 @@ export default function SubmitPage() {
   //   setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
   // };
 
+  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -76,43 +78,39 @@ export default function SubmitPage() {
     }
   
     try {
-			const auth = getAuth();
-			const user = auth.currentUser;
-			if (!user) {
-				console.log('User is not authenticated');
-				return
-			}
-			const idToken = await user.getIdToken();
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        console.log('User is not authenticated');
+        setError(prev => ({ ...prev, general: "You must be logged in." }));
+        setLoading(false);
+        return;
+      }
+  
+      const idToken = await user.getIdToken(); 
+  
       const formData = {
-				...form
+        uid: user.uid,
+        ...form
       };
-      // const formData = new FormData();
-      // formData.append('livelink', form.livelink);
-      // formData.append('day', form.day);
-      // formData.append('repolink', form.repolink);
-      // formData.append('languages', form.languages);
-      // formData.append('framework', form.framework);
-      // formData.append('description', form.description);
   
-      // screenshots.forEach((file) => {
-      //   formData.append('screenshots', file);
-      // });
+      const response = await fetch('https://xen4-backend.vercel.app/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}` 
+        },
+        body: JSON.stringify(formData)
+      });
   
-    
-     const response = await fetch('https://xen4-backend.vercel.app/submit', {
-       method: 'POST',
-       headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${idToken}`
-       },
-       body: JSON.stringify(formData),
-       credentials: 'include',
-     });
-     
-     if (!response.ok) throw new Error("Failed to submit");
-     
-     const data = response.json();
-     console.log(data);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to submit");
+      }
+  
+      const data = await response.json();
+      console.log(data);
   
       setSuccessMessage(`Project added`);
       setForm({
@@ -123,14 +121,15 @@ export default function SubmitPage() {
         framework: '',
         description: ''
       });
-      setScreenshots([]);
+  
     } catch (error) {
-      console.log(error);
-      setError(prev => ({ ...prev, general: "Something went wrong!" }));
+      console.error(error);
+      setError(prev => ({ ...prev, general: error.message || "Something went wrong!" }));
     } finally {
       setLoading(false);
     }
   };
+  
   
   
   const darkmode = useSelector((state)=> state.darkMode)
