@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../../action';
+import { setUser } from '../action';
 
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +63,7 @@ export default function Signup() {
               'Authorization': `Bearer ${idToken}`
             },
             body: JSON.stringify({ 
+             uid: user.uid,
               email, 
               pwd: password 
             }),
