@@ -5,7 +5,6 @@ const corsOptions = require('../config/corsOptions');
 const cors = require('cors');
 const dbConn = require('../config/dbConn');
 const firebaseInit = require('../firebase');
-//const verifyIdToken = require('../middleware/verifyIdToken');
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
@@ -16,16 +15,19 @@ firebaseInit();
 
 
 
-//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json());
 
 
-//app.use(verifyIdToken);
+
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));
 app.use('/googleLogin', require('../routes/googleLogin'));
 app.use('/update', require('../routes/update'));
 app.use('/submit', require('../routes/submit'));
+
+// Admin routes
+app.use('/admin/version', require('../routes/admin/newVersion'));
 
 
 

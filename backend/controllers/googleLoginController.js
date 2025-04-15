@@ -29,7 +29,11 @@ const handleGoogleLogin = async (req, res) => {
 				res.status(500).send('an error occured while creating user');
 	    }
     } else {
-			res.status(200).send(`user ${foundUser.username} with role ${foundUser.roles} is now logged in!`);
+			res.status(200).json({
+				message: 'login successful',
+				user: foundUser.username,
+				roles: foundUser.roles
+			});
 			console.log(foundUser);
     }
 		

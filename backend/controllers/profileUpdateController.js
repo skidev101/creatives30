@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const updateProfile = async (req, res) => {
-	const { uid, email, pwd, username, profileImgURL } = req.body;
-	//const { uid } = req.user;
+	const { email, pwd, username, profileImgURL } = req.body;
+	const { uid } = req.user;
 	
 	const updates = {};
 	if (email) updates.email = email;

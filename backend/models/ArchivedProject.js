@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const projectSchema = new mongoose.Schema({
+const archivedProjectSchema = new mongoose.Schema({
 	uid: {
 		type: String,
 		required: true
@@ -11,8 +11,7 @@ const projectSchema = new mongoose.Schema({
 	},
 	version: {
 		type: Number,
-		required: true,
-		default: 0
+		required: true
 	},
 	projects: [{
 		livelink: String,
@@ -21,11 +20,12 @@ const projectSchema = new mongoose.Schema({
 		languages: String,
 		framework: String,
 		description: String,
-		createdAt: {
+		createdAt: String
+	}],
+	archivedAt: {
 			type: Date,
 			default: Date.now
-		}
-	}]
+	}
 })
 
-module.exports = mongoose.model('Project', projectSchema)
+module.exports = mongoose.model('ArchivedProject', archivedProjectSchema)
