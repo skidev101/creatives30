@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
+const VersionHistory = require('../models/VersionHistory');
 const mongoose = require('mongoose');
 
 const handleProjectSubmit = async (req, res) => {
@@ -22,11 +23,14 @@ const handleProjectSubmit = async (req, res) => {
 	  const foundUser = await User.findOne({uid});
 	  const username = foundUser.username;
 	  console.log(foundUser);
+	  const latestVersion = await VersionHistory.findOne().sort({  version: - 1 });
+	  const version = latestVersion ? latestVersion.version : 1;
     const foundUserProjects = await Project.findOne({uid});
     if (!foundUserProjects) {
 			const userProjects = await Project.create({
 				uid,
 				username,
+				version,
 				projects: [projectInfo]
 			});
 			res.status(201).json({

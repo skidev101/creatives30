@@ -13,7 +13,7 @@ const createNewVersion = async (req, res) => {
 	try {
 		const foundAdmin = await User.findOne({uid});
 		const username = foundAdmin.username;
-		const latestVersion = await Project.findOne().sort({ version:-1 });
+		const latestVersion = await Project.findOne().sort({ version: - 1 });
 		const newVersion = (latestVersion && latestVersion.version) ? latestVersion.version + 1 : 1;
 		const projectsToArchive = await Project.find({ version: latestVersion ? latestVersion.version : 0});
 	
