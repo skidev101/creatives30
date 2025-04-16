@@ -1,14 +1,15 @@
-/* eslint-disable no-unused-vars */
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import img from '../assets/image.png';
-import { FiAward, FiFolder, FiTrendingUp, FiActivity } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { FiEdit2 } from 'react-icons/fi';
+
+import { EditProfile } from './modal';
+import { Stats } from './stat';
 
 export const Welcome = () => {
     const darkmode = useSelector((state) => state.darkMode);
-const user = useSelector((state)=> state.user)
-const Useremail = user?.email
-const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
+    const user = useSelector((state) => state.user);
+    const Useremail = user?.email;
+    const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
 
     const currentHour = new Date().getHours();
     let greeting;
@@ -21,101 +22,55 @@ const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
         greeting = "Good Evening!";
     }
 
-    
-    const stats = {
-        leaderboardPosition: 5,
-        projectsSubmitted: 12,
-        streakDays: 7,
-        weeklyActivity: 'High'
-    };
-
-    const StatCard = ({ icon: Icon, title, value, color }) => (
-        <motion.div 
-            whileHover={{ y: -2 }}
-            className={`flex items-center space-x-1 p-2 rounded-xl transition-all ${
-                darkmode ? 'bg-neutral-900 hover:bg-neutral-800' : 'bg-gray-50 hover:bg-gray-100'
-            }`}
-        >
-            <div className={`p-2 rounded-full ${darkmode ? `${color}-900/30` : `${color}-100`}`}>
-                <Icon className={`text-xl ${darkmode ? `text-${color}-400` : `text-${color}-600`}`} />
-            </div>
-            <div>
-                <p className={`text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>{title}</p>
-                <p className={`text-xl font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
-            </div>
-        </motion.div>
-    );
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div className="space-y-4 font-grotesk">
-
-            <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${
-                darkmode ? 'bg-neutral-900' : 'bg-white'
-            } shadow-sm border ${
-                darkmode ? 'border-neutral-800' : 'border-gray-200'
-            }`}>
+            <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
                 <div className="flex items-center space-x-4">
                     <div className="relative">
-
-                    {Userimg ? 
-                    <>
-                      <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-         <span className='text-4xl'> {Userimg} </span>
-        </div>
-        <div className={`absolute bottom-3 -right-1 w-5 h-5 rounded-full border-2 ${
-                            darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'
-                        }`}></div>
-                    </>
-       
-        :
-        <>
-         <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
-                            <img src={img} alt="Profile" className="w-full h-full object-cover" />
-                        </div>
-                        
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 ${
-                            darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'
-                        }`}></div>
-        </>
-                       
-                           }
-                      
+                        {Userimg ?
+                            <>
+                                <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
+                                    <span className='text-4xl'> {Userimg} </span>
+                                </div>
+                                <div className={`absolute bottom-3 -right-1 w-5 h-5 rounded-full border-2 ${darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'}`}></div>
+                            </>
+                            :
+                            <>
+                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
+                                    <img src={user?.profileImgURL} alt="Profile" className="w-full h-full object-cover" />
+                                </div>
+                                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 ${darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'}`}></div>
+                            </>
+                        }
                     </div>
+
                     <div>
                         <h2 className={`text-lg font-semibold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
-                            {greeting} 
+                            {greeting}
                         </h2>
-                        <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                        {user?.email || "guest"}
+                        <p className={`break-normal w-10 text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
+                            {user?.email || "guest"}
                         </p>
                     </div>
+
+                    <button onClick={() => setIsOpen(true)} className="ml-auto p-2 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-800" title="Edit Profile">
+                        <FiEdit2 className={`text-lg ${darkmode ? 'text-white' : 'text-gray-700'}`} />
+                    </button>
                 </div>
             </section>
-            <section className={`w-full max-w-4xl mx-auto p-6 rounded-2xl ${
-                darkmode ? 'bg-neutral-900' : 'bg-white'
-            } shadow-sm border ${
-                darkmode ? 'border-neutral-800' : 'border-gray-200'
-            }`}>
-                <h3 className={`text-sm font-semibold mb-4 uppercase tracking-wider ${
-                    darkmode ? 'text-neutral-400' : 'text-gray-500'
-                }`}>Your Progress</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                    <StatCard 
-                        icon={FiAward} 
-                        title="Leaderboard Rank" 
-                        value={`#${stats.leaderboardPosition}`} 
-                        color="blue" 
-                    />
-                    <StatCard 
-                        icon={FiFolder} 
-                        title="Projects Submitted" 
-                        value={stats.projectsSubmitted} 
-                        color="green" 
-                    />
-                
-                </div>
-            </section>
+
+            <Stats />
+
+            {isOpen && (
+                <EditProfile
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    user={user}
+                    darkmode={darkmode}
+                />
+            )}
         </div>
     );
 };

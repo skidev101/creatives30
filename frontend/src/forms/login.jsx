@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../../action';
+import { setUser } from '../action';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
