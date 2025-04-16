@@ -5,8 +5,8 @@ const ArchivedProject = require('../../models/ArchivedProject');
 const mongoose = require('mongoose');
 
 const createNewVersion = async (req, res) => {
-  //const { uid } = req.user;
-	const { title, uid } = req.body;
+  const { uid } = req.user;
+	const { title } = req.body;
 	if (!title) return res.status(400).json({ message: 'empty request' });
 	const foundVersionTitle = await VersionHistory.findOne({ title });
 	if (foundVersionTitle) return res.status(400).json({

@@ -1,3 +1,6 @@
+//just ignore this file
+
+
 {
 	"uid": "helloworld123"
 	"livelink": "https://test.vercel.app",
@@ -11,4 +14,8 @@
 {
 	"uid": "world123",
 	"title": "ski edition"
+}
+
+{
+	"email": "dev@gmail.com"
 }
