@@ -20,7 +20,7 @@ firebaseInit();
 app.use(cors(corsOptions));
 app.use(express.json());
 
-
+app.use('/leaderboard', require('../routes/leaderboard'));
 
 app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
