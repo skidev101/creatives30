@@ -31,7 +31,7 @@ app.use('/submit', require('../routes/submit'));
 
 // Admin routes
 app.use(verifyAdmin);
-app.use('/admin/version', require('../routes/admin/newVersion'));
+app.use('/admin/newVersion', require('../routes/admin/newVersion'));
 app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 
 
