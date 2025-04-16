@@ -7,8 +7,11 @@ const mongoose = require('mongoose');
 const createNewVersion = async (req, res) => {
   //const { uid } = req.user;
 	const { title, uid } = req.body;
-	if (!title) return res.status(400).send("Empty request");
-	
+	if (!title) return res.status(400).json({ message: 'empty request' });
+	const foundVersionTitle = await VersionHistory.findOne({ title });
+	if (foundVersionTitle) return res.status(400).json({
+		message: `version with title ${title} already exist`
+	});
 	
 	try {
 		const foundAdmin = await User.findOne({uid});
@@ -16,7 +19,7 @@ const createNewVersion = async (req, res) => {
 		const latestVersion = await Project.findOne().sort({ version: - 1 });
 		const newVersion = (latestVersion && latestVersion.version) ? latestVersion.version + 1 : 1;
 		const projectsToArchive = await Project.find({ version: latestVersion ? latestVersion.version : 0});
-	
+	  
 		
 		if (projectsToArchive.length > 0) {
 			const ids = projectsToArchive.map((proj) => proj._id)
