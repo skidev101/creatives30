@@ -231,7 +231,7 @@ export default function Login() {
             
                 <p className="signup-link text-sm text-center text-[#fcf7f8]">
                     Don't have an account?
-                    <a className=" text-blue-300 underline" href="/signup"> Sign up now</a>
+                    <a className=" text-blue-300 underline" href="/register"> Sign up now</a>
                 </p>
             </div>
         </section>
