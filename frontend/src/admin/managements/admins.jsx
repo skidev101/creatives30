@@ -3,9 +3,16 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FiTrash2, FiPlus, FiX, FiCheck } from 'react-icons/fi';
 import AddAdminModal from './modal';
+import { getAuth } from 'firebase/auth';
 
 const AdminManagementUI = () => {
   const darkmode = useSelector((state) => state.darkMode);
+   const [loading, setLoading] = useState(false)
+     const [error, setError] = useState({
+      email:'',
+      general:''
+     });
+   
   const [admins, setAdmins] = useState([
     { id: '1', email: 'admin1@example.com', createdAt: '2023-05-15' },
     { id: '2', email: 'admin2@example.com', createdAt: '2023-06-20' },
@@ -14,16 +21,74 @@ const AdminManagementUI = () => {
   const [showModal, setShowModal] = useState(false);
   const [newAdmin, setNewAdmin] = useState({
     email: '',
-    password: '',
-    confirmPassword: ''
   });
-
+  const handleAddAdmin = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError({ email: '', general: '' });
   
-  const handleAddAdmin = () => {
-    console.log('Would add admin:', newAdmin);
-    setShowModal(false);
-    setNewAdmin({ email: '', password: '', confirmPassword: '' });
+    
+    const errors = {};
+    if (!newAdmin.email) {
+      errors.email = "Email is required";
+    }
+  
+    if (Object.keys(errors).length > 0) {
+      setError(errors);
+      setLoading(false);
+      return;
+    }
+  
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        setError(prev => ({ ...prev, general: "You must be logged in." }));
+        setLoading(false);
+        return;
+      }
+  
+      const idToken = await user.getIdToken();
+      const adminData = { email: newAdmin.email };
+  
+      const response = await fetch('https://xen4-backend.vercel.app/admin/addAdmin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}` 
+        },
+        body: JSON.stringify(adminData)
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add admin");
+      }
+  
+      const data = await response.json();
+      console.log('Admin added successfully:', data);
+      
+      setAdmins(prev => [...prev, {
+        id: Date.now().toString(),
+        email: newAdmin.email,
+        createdAt: new Date().toISOString().split('T')[0]
+      }]);
+      
+      setNewAdmin({ email: '' });
+      setShowModal(false);
+  
+    } catch (error) {
+      console.error('Error adding admin:', error);
+      setError(prev => ({ 
+        ...prev, 
+        general: error.message || "Failed to add admin" 
+      }));
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const handleRemoveAdmin = (id) => {
     console.log('Would remove admin with id:', id);
@@ -83,6 +148,7 @@ const AdminManagementUI = () => {
         setShowModal={setShowModal}
         darkmode={darkmode}
         handleAddAdmin={handleAddAdmin}
+        error={error}
        />
       )}
     </div>
