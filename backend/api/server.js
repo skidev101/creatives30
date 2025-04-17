@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use('/leaderboard', require('../routes/leaderboard'));
 app.use('/users', require('../routes/userProfile'));
-app.use('/version', require('../routes/versionStat'));
+// app.use('/version', require('../routes/versionStat'));
 
 app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));

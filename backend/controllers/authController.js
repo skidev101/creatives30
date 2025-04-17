@@ -14,7 +14,11 @@ const handleLogin = async (req, res) => {
     const foundUser = await User.findOne({uid});
     if (!foundUser) return res.status(404).send('user not found');
     
-    res.status(200).send(`user ${foundUser.username} with role ${foundUser.roles} is now logged in!`);
+    res.status(200).json({
+			message: 'login successful',
+			username: foundUser.username,
+			roles: foundUser.roles
+    });
 		console.log(foundUser);
 		
   } catch(err) {
