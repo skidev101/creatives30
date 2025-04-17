@@ -21,6 +21,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/leaderboard', require('../routes/leaderboard'));
+app.use('/users', require('../routes/userProfile'));
+app.use('/version', require('../routes/versionStat'));
 
 app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
@@ -33,6 +35,7 @@ app.use('/submit', require('../routes/submit'));
 app.use(verifyAdmin);
 app.use('/admin/newVersion', require('../routes/admin/newVersion'));
 app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
+
 
 
 
