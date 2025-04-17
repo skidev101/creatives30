@@ -1,13 +1,22 @@
 import { FaDiscord, FaFacebook, FaGithub, FaTwitter } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 export default function Sidebar({ isSidebarOpen , setIsSidebarOpen}) {
     const handleClose = () => {
         setIsSidebarOpen(false);
       };
+        const navigate = useNavigate()
+      const Login = () => {
+        navigate('/login')
+         }
+         const register = () => {
+          console.log("Sign up button clicked");
+          navigate('/register')
+           }
     return (
         <>
             {isSidebarOpen && (
-                <div className="fixed top-0 left-0 w-64 h-full bg-black border-r border-blue-200 shadow-lg z-50 p-4">
+                <div className="fixed top-0 left-0 w-64 h-full bg-black border-r border-blue-200 shadow-lg z-50 p-4 h-screen">
   <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-blue-800">Menu</h2>
             <button onClick={handleClose} className="text-white text-2xl hover:text-red-500 transition">
@@ -34,10 +43,14 @@ export default function Sidebar({ isSidebarOpen , setIsSidebarOpen}) {
 </div>
 
                     <div className="flex flex-col gap-4 mt-6">
-                        <button className="bg-[#fcf7f8] border-blue-400 border-2 cursor-pointer text-gray-800  font-medium py-2 rounded">
+                        <button
+                        onClick={Login}
+                         className="bg-[#fcf7f8] border-blue-400 border-2 cursor-pointer text-gray-800  font-medium py-2 rounded">
                             Login
                         </button>
-                        <button className="bg-blue-400 border border-blue-200 text-white font-medium py-2 rounded cursor-pointer ">
+                        <button 
+                        onClick={register}
+                        className="bg-blue-400 border border-blue-200 text-white font-medium py-2 rounded cursor-pointer ">
                             Sign up
                         </button>
                     
