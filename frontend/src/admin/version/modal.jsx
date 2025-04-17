@@ -5,7 +5,8 @@ export default function VersionModal ({
     newVersionNo,
     setNewVersionNo,
     setShowVersionModal,
-    handleCreateVersion
+    handleCreateVersion,
+    error
 }){
     return(
         <>
@@ -15,6 +16,15 @@ export default function VersionModal ({
             <h3 className={`text-lg font-bold mb-4 ${darkmode ? 'text-white' : 'text-gray-900'}`}>
               Create New Version
             </h3>
+
+             {error && (
+      <section className='flex justify-center mb-5 items-center'>
+  <div className="p-3 bg-red-500/20 text-red-400 text-center flex justify-center items-center rounded-lg text-sm ">
+                        {error}
+                    </div>
+      </section>
+                  
+                )}
             <input
               type="number"
               value={newVersionNo}

@@ -3,9 +3,15 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { FadeDown, FadeLeft, FadeRight, FadeUp } from '../components/framer';
 import { Link } from 'react-router-dom';
 import Nav from './nav';
+import { useEffect, useState } from 'react';
 
 const Hero = () => {
-   
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // avoids hydration mismatches and heavy initial load
+  }, []);
+  
   return (
     <section
     id='dev'
@@ -42,7 +48,7 @@ const Hero = () => {
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                to="#"
+                to="/login"
                 className="inline-block bg-gradient-to-r from-blue-900 to-[#fcf7f8] animate-gradient hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md"
               >
                 Get started
@@ -53,12 +59,14 @@ const Hero = () => {
 
           <div className="flex justify-center">
             <FadeRight>
-              <DotLottieReact
-                src="https://lottie.host/792a31b3-481a-4010-842e-1a1d0138239d/1wEewb2Urv.lottie"
-                loop
-                autoplay
-                className="lg:h-[700px] lg:w-[600px] md:w-[400px] md:h-[400px] w-[350px] h-[350px]"
-              />
+            {isClient && (
+                <DotLottieReact
+                  src="https://lottie.host/792a31b3-481a-4010-842e-1a1d0138239d/1wEewb2Urv.lottie"
+                  // loop
+                  // autoplay
+                  className="lg:h-[700px] lg:w-[600px] md:w-[400px] md:h-[400px] w-[350px] h-[350px]"
+                />
+              )}
             </FadeRight>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { FiSearch, FiChevronLeft, FiChevronRight, FiPlus } from 'react-icons/fi'
 import { Link } from 'react-router-dom';
 import img from '../../assets/image.png';
 import VersionModal from './modal';
+import { getAuth } from 'firebase/auth';
 export default function VersionPage() {
   const darkmode = useSelector((state) => state.darkMode);
    const user = useSelector((state)=> state.user)
@@ -33,18 +34,59 @@ export default function VersionPage() {
 
   const [users, setUsers] = useState(generateUsers(activeVersion));
 
-  const handleCreateVersion = () => {
-    if (newVersionNo.trim()) {
-      const newVersion = {
-        id: `v${versions.length + 1}`,
-        name: newVersionNo,
-        createdAt: new Date()
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const handleCreateVersion = async () => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        setError({ general: "You must be logged in." });
+        setLoading(false);
+        return;
+      }
+  
+      
+      const idToken = await user.getIdToken();
+  
+      const VData = {
+        title: newVersionNo,
+
+        user: { uid: "world123" } 
       };
-      setVersions([...versions, newVersion]);
-      setActiveVersion(newVersion.id);
-      setUsers(generateUsers(newVersion.id));
+  
+      const response = await fetch('https://xen4-backend.vercel.app/admin/newVersion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`, 
+        },
+        body: JSON.stringify(VData),
+      });
+  
+      if (!response.ok) throw new Error(await response.text());
+      
+      const data = await response.json();
+      console.log('Version created:', data);
+  
+      
+      setVersions([...versions, {
+        id: `v${data.version}`,
+        name: data.title,
+        createdAt: new Date(),
+      }]);
       setNewVersionNo('');
       setShowVersionModal(false);
+  
+    } catch (error) {
+      setError(error.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,7 +144,7 @@ export default function VersionPage() {
   >
     
     <FiPlus size={16} />
-    New Version
+     {loading ? "Creating":"New Version"}
   </button>
 </div>
    
@@ -114,6 +156,7 @@ export default function VersionPage() {
          setNewVersionNo={setNewVersionNo}
          setShowVersionModal={setShowVersionModal}
          handleCreateVersion={handleCreateVersion}
+          error={error}
         />
       )}
 
