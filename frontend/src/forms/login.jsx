@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
@@ -231,7 +231,7 @@ export default function Login() {
             
                 <p className="signup-link text-sm text-center text-[#fcf7f8]">
                     Don't have an account?
-                    <a className=" text-blue-300 underline" href="/register"> Sign up now</a>
+                    <Link className=" text-blue-300 underline" to="/register"> Sign up</Link>
                 </p>
             </div>
         </section>
