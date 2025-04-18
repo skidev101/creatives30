@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const handleLogin = async (req, res) => {
   const { email, pwd } = req.body;
-  if (!email || !pwd) return res.status(400).send("Empty request");
+  if (!email || !pwd) return res.status(400).json({ message: 'Empty request' });
   const { uid } = req.user;
   console.log(req.user);
   
@@ -12,7 +12,7 @@ const handleLogin = async (req, res) => {
   
   try {
     const foundUser = await User.findOne({uid});
-    if (!foundUser) return res.status(404).send('user not found');
+    if (!foundUser) return res.status(404).json({ message: 'user not found' });
     
     res.status(200).json({
 			message: 'login successful',
