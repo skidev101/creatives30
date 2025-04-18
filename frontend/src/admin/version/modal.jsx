@@ -26,7 +26,7 @@ export default function VersionModal ({
                   
                 )}
             <input
-              type="number"
+              type="text"
               value={newVersionNo}
               onChange={(e) => setNewVersionNo(e.target.value)}
               placeholder="Version no"
