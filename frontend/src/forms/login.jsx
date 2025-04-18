@@ -79,6 +79,10 @@ export default function Login() {
             'Authorization': `Bearer ${idToken}`
           },
           credentials: 'include',
+          body: JSON.stringify({
+            email,
+            pwd: password,
+          }),
         });
     
         if (response.ok) {
