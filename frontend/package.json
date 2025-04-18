@@ -16,6 +16,7 @@
     "@mui/material": "^7.0.1",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.0.17",
+    "axios": "^1.8.4",
     "cal-heatmap": "^4.2.4",
     "d3-scale": "^4.0.2",
     "d3-time-format": "^4.1.0",

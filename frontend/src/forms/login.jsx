@@ -44,8 +44,9 @@ export default function Login() {
           console.log(data); // Receives username and roles
     
           dispatch(setUser({
-            uid: user.uid,
+            uid: data.uid,
             email: user.email,
+            username:data.user
           }));
     
           navigate('/submitproject');
@@ -79,6 +80,10 @@ export default function Login() {
             'Authorization': `Bearer ${idToken}`
           },
           credentials: 'include',
+          body: JSON.stringify({
+            email,
+            pwd: password,
+          }),
         });
     
         if (response.ok) {
@@ -86,8 +91,8 @@ export default function Login() {
           console.log(data); // Receives username and roles
     
           dispatch(setUser({
-            uid: user.uid,
-            email: user.email,
+            uid: data.uid,
+            email: data.email,
           }));
     
           navigate('/submitproject');
