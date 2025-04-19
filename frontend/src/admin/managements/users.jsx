@@ -14,9 +14,7 @@ const UsersList = () => {
 
   const pageCount = Math.ceil(totalUsers / rowsPerPage);
 
-  const handleDeleteUser = (userId) => {
-    console.log('Would delete user with id:', userId);
-  };
+
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -39,7 +37,7 @@ const UsersList = () => {
   return (
     <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800 bg-[#111313]' : 'border-slate-100 bg-white'} p-6 space-y-6 font-grotesk`}>
       <div className="flex w-full items-center justify-between">
-        <h2 className={`text-xl font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>Users List</h2>
+        <h2 className={` lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>Users List</h2>
         <div className="text-sm text-gray-500 dark:text-neutral-400">{totalUsers} users</div>
       </div>
 
@@ -53,7 +51,7 @@ const UsersList = () => {
               <tr className={`border-b ${darkmode ? 'border-neutral-800' : 'border-slate-100'}`}>
                 <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>User</th>
                 <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Email</th>
-                <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Actions</th>
+ 
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
@@ -71,17 +69,7 @@ const UsersList = () => {
                     </div>
                   </td>
                   <td className={`py-4 text-sm ${darkmode ? 'text-neutral-300' : 'text-gray-600'}`}>{user.email}</td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className={`p-2 rounded-lg ${darkmode ? 'hover:bg-neutral-800 text-red-400' : 'hover:bg-gray-100 text-red-500'}`}
-                        title="Delete user"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+           
                 </tr>
               ))}
             </tbody>
@@ -103,7 +91,7 @@ const UsersList = () => {
         <FiChevronLeft />
       </button>
       
-      {/* Improved pagination buttons - show limited pages */}
+      
       {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
         let pageNum;
         if (pageCount <= 5) {

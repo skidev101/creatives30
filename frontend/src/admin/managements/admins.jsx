@@ -99,7 +99,7 @@ const [admins, setAdmins] = useState([]);
   return (
     <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
       <div className="flex w-full items-center justify-between">
-        <h2 className={`text-xl font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
+        <h2 className={`lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
           Admin Management
         </h2>
         <button
@@ -115,8 +115,8 @@ const [admins, setAdmins] = useState([]);
 
       
       {!loading && admins.length > 0 && (
-      <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[400px]">
+      <div className="w-full overflow-x-auto overflow-hidden">
+        <table className="w-full  md:min-w-[400px] overflow-hidden">
           <thead>
             <tr className={`border-b ${darkmode ? 'border-neutral-800' : 'border-slate-100'}`}>
               <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Email</th>
