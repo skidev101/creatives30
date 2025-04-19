@@ -180,7 +180,7 @@ console.log("user", user)
        
     </>
     <form className="w-full space-y-6" onSubmit={handleSubmit}>
-      <div className='flex justify-end'>
+      <div className='hidden md:flex justify-end'>
         <button type="submit" 
         className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
         disabled={loading}
@@ -322,6 +322,18 @@ console.log("user", user)
           ))}
         </div>
       )}*/}
+      <div className='md:hidden flex justify-end'>
+        <button type="submit" 
+        className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
+        disabled={loading}
+        >
+          {loading ?
+          'Processing':
+
+          ' Submit Project'
+          }
+        </button>
+      </div>
     </form>
   </div>
   );
