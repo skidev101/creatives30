@@ -6,7 +6,7 @@ import Sidebar from "../dashboard/sidebar";
 import Layout from "../projects/layout";
 
 
-const Project = () => {
+const UserProjectsID = () => {
   
    const [isSidebarOpen, setSidebarOpen] = useState(false);
  
@@ -39,4 +39,4 @@ const Project = () => {
   );
 };
 
-export default Project;
+export default UserProjectsID;
