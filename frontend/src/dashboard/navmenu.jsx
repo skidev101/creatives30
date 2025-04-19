@@ -22,7 +22,7 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
 
     const darkmode = useSelector((state)=> state.darkMode)
    
-   console.log(darkmode, "is")
+  //  console.log(darkmode, "is")
    const toggledark = () => {
 
      dispatch(setMode(!darkmode)); // Toggle Redux state
@@ -37,7 +37,8 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
 
     return (
       <>
-      <section className={`flex fixed top-0 w-full font-grotesk lg:w-[80%] items-center justify-between px-4 py-2 border-b z-10  ${darkmode ? 'border-neutral-800' : 'border-slate-200'}  lg:py-4 ${darkmode ? 'bg-[#111313] dark:bg-[#111313]' : 'bg-neutral-50'}`}>
+<section className={`fixed top-0 inset-x-0 z-10 w-full border-b px-4 py-2 lg:py-4 ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
+<div className="max-w-7xl mx-auto flex items-center justify-between">
   <span className={`text-base font-semibold ${darkmode ? 'text-neutral-100' : 'text-blue-900'} md:text-xl hidden lg:block`}>
     {currentPage}
   </span>
@@ -93,6 +94,7 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
   
 
   
+  </div>
   </div>
 </section>
       

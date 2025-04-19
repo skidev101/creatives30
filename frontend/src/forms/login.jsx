@@ -46,9 +46,9 @@ export default function Login() {
           dispatch(setUser({
             uid: data.uid,
             email: user.email,
-            username:data.user
+            username:data.username
           }));
-    
+      
           navigate('/submitproject');
         }
     
@@ -88,11 +88,12 @@ export default function Login() {
     
         if (response.ok) {
           const data = await response.json();
-          console.log(data); // Receives username and roles
+          console.log(data); 
     
           dispatch(setUser({
-            uid: data.uid,
-            email: data.email,
+            uid: user.uid,
+            email: user.email,
+            username:data.username
           }));
     
           navigate('/submitproject');
