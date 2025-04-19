@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
   },
   profileImgURL: {
 		type: String
+  },
+  createdAt: {
+		type: Date,
+		default: Date.now
   }
 })
 

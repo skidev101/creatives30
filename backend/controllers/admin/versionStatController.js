@@ -1,6 +1,6 @@
-const Project = require('../models/Project');
-const VersionHistory = require('../models/VersionHistory');
-const ArchivedProject = require('../models/ArchivedProject');
+const Project = require('../../models/Project');
+const VersionHistory = require('../../models/VersionHistory');
+const ArchivedProject = require('../../models/ArchivedProject');
 const mongoose = require('mongoose');
 
 const getVersionStatistics = async (req, res) => {

@@ -19,3 +19,7 @@
 {
 	"email": "dev@gmail.com"
 }
+
+.sort((role) => role.roles.includes("User"));
+		
+		const paginated = users.slice((page - 1) * limit, page * limit);
