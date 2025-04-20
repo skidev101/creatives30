@@ -12,6 +12,7 @@ import AddAdmin from './admin/managements/page';
 
 import AdminProfile from './admin/profile/page';
 import Version from './admin/version/page';
+import UserProjectsID from './projects/project';
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
         <Route path="/submitproject" element={<SubmitProject/>} />
         <Route path="/profile" element={<Profile/>} />
         <Route path="/leaderboard" element={<Leaderboard/>} />
-        <Route path="/projects" element={<Project/>} />
+        <Route path="/user/:username" element={<UserProjectsID/>} />
         <Route path="/addadmins" element={<AddAdmin/>} />
         <Route path="/version" element={<Version/>} />
         <Route path="/adminprofile" element={<AdminProfile/>} />

@@ -6,12 +6,14 @@ import { FiGithub, FiExternalLink, FiChevronRight, FiChevronLeft,} from 'react-i
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import img from '../assets/test.jpg'
+import { getUser } from './api';
 
 
 const UserProjects = () => {
   const darkmode = useSelector((state) => state.darkMode);
+  const user = useSelector((state) => state.user);
+  // const [projects, setProjects] = useState([]);
   const [projects, setProjects] = useState([]);
- 
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 1;
 
@@ -23,44 +25,32 @@ const UserProjects = () => {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  useEffect(() => {
-  
-    setProjects([
-      {
-        id: 1,
-        title: "E-commerce Dashboard",
-        day: "Day 3 of 30",
-        description: "Built with React and Node.js",
-        githubUrl: "#",
-        liveUrl: "#",
-        image: img,
-      },
-      {
-        id: 2,
-        title: "E-commerce Dashboard",
-        day: "Day 4 of 30",
-        description: "Built with React and Node.js",
-        githubUrl: "#",
-        liveUrl: "#",
-        image: img,
-      },
-      {
-        id: 3,
-        title: "E-commerce Dashboard",
-        day: "Day 5 of 30",
-        description: "Built with React and Node.js",
-        githubUrl: "#",
-        liveUrl: "#",
-        image: img,
-      },
-    
-    ]);
 
 
-  }, []);
 
-
+ const [loading, setLoading] = useState(false);
+   const [error, setError] = useState();
+   
  
+ 
+   useEffect(() => {
+     const loadUser = async () => {
+       try {
+         setLoading(true);
+         const data = await getUser(user.username);
+         console.log("users", data)
+         console.log("project", data.projects)
+         setProjects(data.projects);
+       
+       } catch (err) {
+         setError(err.message);
+       } finally {
+         setLoading(false);
+       }
+     };
+ 
+     loadUser();
+   }, [user]);
 
   return (
     <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>  
@@ -79,22 +69,22 @@ const UserProjects = () => {
             >
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full md:w-32 h-32 bg-gray-200 rounded-lg overflow-hidden">
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                  <img src={img} alt={project.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
-                  <h3 className={`font-medium text-lg mb-1 ${darkmode ? "text-neutral-100":''}`}>{project.title}</h3>
+                  <h3 className={`font-medium text-lg mb-1 ${darkmode ? "text-neutral-100":''}`}>{project.languages}</h3>
                   <p className={`text-sm mb-3 ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                    {project.day}
+                   Day {project.day} of 30
                   </p>
                   <p className={`b-4 ${darkmode ?"text-white":''}`}>{project.description}</p>
                   <div className="flex space-x-3">
-                    {project.githubUrl && (
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className={`flex items-center text-sm ${darkmode ? "text-white":''}`} >
+                    {project.repolink && (
+                      <a href={project.repolink} target="_blank" rel="noopener noreferrer" className={`flex items-center text-sm ${darkmode ? "text-white":''}`} >
                         <FiGithub className={`mr-1 ${darkmode ?"text-white":''}`}  /> Code
                       </a>
                     )}
-                    {project.liveUrl && (
-                      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className={`flex items-center text-sm ${darkmode ? "text-white":''}`}>
+                    {project.livelink && (
+                      <a href={project.livelink} target="_blank" rel="noopener noreferrer" className={`flex items-center text-sm ${darkmode ? "text-white":''}`}>
                         <FiExternalLink className={`mr-1 ${darkmode ?"text-white":''}`}  /> Live Demo
                       </a>
                     )}

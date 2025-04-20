@@ -4,11 +4,12 @@ import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
 import { getAuth } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 //import { storage } from '../firebase';
 //import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function SubmitPage() {
-
+  const navigate = useNavigate()
   const user = useSelector((state)=> state.user)
   const Useremail = user?.email
   const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
@@ -35,7 +36,7 @@ export default function SubmitPage() {
     const { name, value } = event.target;
     setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
   };
-
+console.log("user", user)
   // const handleScreenshotChange = async (event) => {
   //   try {
 		//	const files = Array.from(event.target.files);
@@ -112,7 +113,8 @@ export default function SubmitPage() {
       const data = await response.json();
       console.log(data);
   
-      setSuccessMessage(`Project added`);
+      // setSuccessMessage(`Project added`);
+      navigate('/leaderboard')
       setForm({
         livelink: '',
         day: '',
@@ -178,7 +180,7 @@ export default function SubmitPage() {
        
     </>
     <form className="w-full space-y-6" onSubmit={handleSubmit}>
-      <div className='flex justify-end'>
+      <div className='hidden md:flex justify-end'>
         <button type="submit" 
         className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
         disabled={loading}
@@ -320,6 +322,18 @@ export default function SubmitPage() {
           ))}
         </div>
       )}*/}
+      <div className='md:hidden flex justify-end'>
+        <button type="submit" 
+        className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
+        disabled={loading}
+        >
+          {loading ?
+          'Processing':
+
+          ' Submit Project'
+          }
+        </button>
+      </div>
     </form>
   </div>
   );
