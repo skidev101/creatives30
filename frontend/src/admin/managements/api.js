@@ -71,17 +71,17 @@ export const fetchAdmins = async (page = 1, limit = 15) => {
 
 
 
-  export const fetchUsers = async (page = 1, limit = 15) => {
+  export const fetchUsers = async (user,token, page = 1, limit = 15) => {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-  
+    //   const auth = getAuth();
+    //   const user = auth.currentUser;
+      // const user = useSelector((state) => state.user);
       if (!user) {
         throw new Error("You must be logged in to fetch admins");
       }
   
-      const idToken = await user.getIdToken();
-      
+      // const idToken = await user.getIdToken();
+      const idToken = token; 
       const response = await fetch(
         `https://xen4-backend.vercel.app/admin/allUsers?page=${page}&limit=${limit}`,
         {

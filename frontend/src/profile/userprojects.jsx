@@ -59,7 +59,8 @@ const UserProjects = () => {
           <h2 className={`text-lg font-semibold ${darkmode ? "text-white":''}`}>Recent Projects</h2>
       
         </div>
-        
+         {paginatedprojects.length > 0 ? (
+
         <div className="space-y-4">
           {paginatedprojects.map((project) => (
             <motion.div
@@ -94,6 +95,9 @@ const UserProjects = () => {
             </motion.div>
           ))}
         </div>
+         ) : (
+          `No projects added yet`
+)}
          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
                <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                  Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, projects.length)} of {projects.length} entries

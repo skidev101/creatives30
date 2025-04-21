@@ -3,6 +3,8 @@ import LeaderBoardPage from "./page";
 import { FadeDown } from "../components/framer";
 
 
+
+
    
 const Layout = () => {
     const darkmode = useSelector((state)=> state.darkMode)
@@ -14,9 +16,7 @@ const Layout = () => {
      </FadeDown>
     </div>
 
- 
-    
-  
+
   </section>
   );
 };
