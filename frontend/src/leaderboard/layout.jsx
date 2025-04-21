@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
 import LeaderBoardPage from "./page";
 import { FadeDown } from "../components/framer";
-import LeaderBoardPage2 from "./test";
+
+
 
 
    
@@ -15,13 +16,7 @@ const Layout = () => {
      </FadeDown>
     </div>
 
-    <div className="h-min w-full lg:w-[calc(100%_-_10px)] animate-fadeDown pt-20 pb-10">
-     <FadeDown>
-     <LeaderBoardPage2 />
-     </FadeDown>
-    </div>
-    
-  
+
   </section>
   );
 };

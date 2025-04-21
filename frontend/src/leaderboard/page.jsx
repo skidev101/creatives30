@@ -23,7 +23,8 @@ export default function LeaderboardPage() {
     totalProjects: 0,
     versions: []
   });
-
+  const currentVersion = leaderboard.currentVersion;
+console.log ("c", currentVersion)
   const fetchLeaderboard = async () => {
     try {
       setLoading(true);
@@ -138,6 +139,7 @@ export default function LeaderboardPage() {
     ...new Set([
       ...displayData.versions,
       ...leaderboard.allVersions,
+      ...leaderboard.currentVersion,
       selectedVersion 
     ])
   ].sort((a, b) => parseInt(b.substring(1)) - parseInt(a.substring(1)));
