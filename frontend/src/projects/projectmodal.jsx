@@ -53,11 +53,11 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className={`text-2xl md:text-3xl font-bold ${darkmode ? 'text-gray-200':''} `}>{project.name}</h2>
-                      {project.version && (
+                      {/* {project.version && ( */}
                         <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${darkmode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'}`}>
-                          {project.version}
+                          {"V6"}
                         </span>
-                      )}
+                      {/* )} */}
                     </div>
                     
                     {project.day && (
@@ -73,9 +73,9 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                   </div>
                   
                   <div className="flex gap-3">
-                    {project.liveUrl && (
+                    {project.livelink && (
                       <a 
-                        href={project.liveUrl} 
+                        href={project.livelink} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkmode ? 'bg-blue-800 hover:bg-blue-700 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-800'}`}
@@ -84,9 +84,9 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                         Live Demo
                       </a>
                     )}
-                    {project.url && (
+                    {project.repolink && (
                       <a 
-                        href={project.url} 
+                        href={project.repolink} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkmode ? 'bg-gray-800 hover:bg-gray-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
@@ -107,16 +107,31 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                 </div>
   
               
-                {project.tags && (
+                {project.languages && (
                   <div className="mb-6">
                     <h3 className={`text-lg font-semibold mb-2 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>Languages & Technologies</h3>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tech, index) => (
+                      {project.languages.split(',').map((language, index) => (
                         <span 
                           key={index}
                           className={`px-3 py-1 rounded-full text-sm ${darkmode ? 'bg-gray-700 text-blue-400' : 'bg-blue-100 text-blue-800'}`}
                         >
-                          {tech}
+                          {language.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                   {project.framework && (
+                  <div className="mb-6">
+                    <h3 className={`text-lg font-semibold mb-2 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>Frameworks</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {project.framework.split(',').map((frame, index) => (
+                        <span 
+                          key={index}
+                          className={`px-3 py-1 rounded-full text-sm ${darkmode ? 'bg-gray-700 text-blue-400' : 'bg-blue-100 text-blue-800'}`}
+                        >
+                          {frame.trim()}
                         </span>
                       ))}
                     </div>
