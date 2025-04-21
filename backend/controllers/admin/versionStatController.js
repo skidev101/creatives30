@@ -19,16 +19,16 @@ const getVersionStatistics = async (req, res) => {
 		const versionStat = await Promise.all(versions.map(async (version) => {
 			const allArchivedProjects = await ArchivedProject.find({ version: version.version });
 			if (allArchivedProjects.length === 0) {
-				return res.status(200).json({
-					version: foundVersion.version,
-					title: foundVersion.title,
-					createdBy: foundVersion.createdBy,
-					createdAt: foundVersion.createdAt,
+				return {
+					version: version.version,
+					title: version.title,
+					createdBy: version.createdBy,
+					createdAt: version.createdAt,
 					endedAt: null,
-					topPerformers: 0,
+					topPerformers: [],
 					totalProjects: 0,
 					totalUsers: 0
-		    });
+		    };
 			}
 		
 			const totalProjects = allArchivedProjects.reduce(
@@ -41,7 +41,7 @@ const getVersionStatistics = async (req, res) => {
 			
 			const topPerformersData = await ArchivedProject.aggregate([
 				{ 
-					$match: { version }
+					$match: { version: version.version }
 				},
 				{
 					$addFields: {
@@ -74,7 +74,6 @@ const getVersionStatistics = async (req, res) => {
 			}
 		}));
 	  
-	  console.log(topPerformersData);
 		res.status(200).json(versionStat);
 	} catch (err) {
 		console.log(err);

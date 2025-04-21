@@ -1,36 +1,25 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
-const updateProfile = async (req, res) => {
-	const { email, pwd, username, profileImgURL } = req.body;
-	const { uid } = req.user;
-	
-	const updates = {};
-	if (email) updates.email = email;
-	if (username) updates.username = username;
-	if (profileImgURL) updates.profileImgURL = profileImgURL;
-	if (pwd) {
-		const hashedPwd = await bcrypt.hash(pwd, 10);
-		updates.password = hashedPwd;
-	}
-	
-	if (Object.keys(updates).length === 0) {
-		return res.status(401).send('invalid request');
-	}
+const deleteUser = async (req, res) => {
+	const { email, username } = req.body;
+	const param = email || username;
 	
 	try {
-		const updatedUser = await User.findOneAndUpdate({uid}, updates, {new: true});
-		const updatedProject = await Project.findOneAndUpdate({uid}, {username: updates.username}, {new: true});
-		res.status(201).json({updatedUser: updatedUser});
-		console.log(updatedUser);
-		console.log(updateProfile);
+		const foundUser = await User.findOne({ param });
+		const foundUserUid = foundUser.uid;
+		const deleted = await admin.auth().deleteUser(foundUserUid);
+		const dbDelete = await User.findOneAndDelete({ foundUserUid });
 		
+		res.status(200).json({
+			message: `user ${param} deleted successfully`
+		})
 	} catch (err) {
-		console.error(err);
-		res.status(500).send('internal server error');
+		console.log(err);
+		res.status(500).send('Internal server error');
 	}
+	
 }
 
-module.exports = { updateProfile }
+module.exports = { deleteUser }

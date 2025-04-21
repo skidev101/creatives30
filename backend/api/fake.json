@@ -23,3 +23,1055 @@
 .sort((role) => role.roles.includes("User"));
 		
 		const paginated = users.slice((page - 1) * limit, page * limit);
+
+
+
+Why are all the versions in the response 1?
+
+
+const Project = require('../../models/Project');
+const VersionHistory = require('../../models/VersionHistory');
+const ArchivedProject = require('../../models/ArchivedProject');
+const mongoose = require('mongoose');
+
+const getVersionStatistics = async (req, res) => {
+	//const { ver } = req.params;
+	// if (!ver) return res.status(400).json({ message: 'version number is required' });
+	// const version = parseInt(ver);
+	// if (isNaN(version)) return res.status(400).json({ message: 'invalid version number' });
+	
+	// const foundVersion = await VersionHistory.findOne({ version });
+	// if (!foundVersion) return res.status(404).json({
+	//	message: `version ${ver} does not exist`
+	// });
+	
+	try {
+		const versions = await VersionHistory.find().sort({ version: 1 });
+		const versionStat = await Promise.all(versions.map(async (version) => {
+			const allArchivedProjects = await ArchivedProject.find({ version: version.version });
+			if (allArchivedProjects.length === 0) {
+				return {
+					version: version.version,
+					title: version.title,
+					createdBy: version.createdBy,
+					createdAt: version.createdAt,
+					endedAt: null,
+					topPerformers: [],
+					totalProjects: 0,
+					totalUsers: 0
+		    };
+			}
+		
+			const totalProjects = allArchivedProjects.reduce(
+				(acc, project) => acc + project.projects.length, 0
+			)
+			
+			const versionArchivedAt = allArchivedProjects.reduce((latest, project) => {
+				return project.archivedAt > latest ? project.archivedAt : latest;
+			}, allArchivedProjects[0].archivedAt);
+			
+			const topPerformersData = await ArchivedProject.aggregate([
+				{ 
+					$match: { version: version.version }
+				},
+				{
+					$addFields: {
+						projectCount: { $size: "$projects" }
+					}
+				},
+				{
+					$sort: { projectCount: - 1 }
+				},
+				{
+					$limit: 3
+				}
+			]);
+			
+			const topPerformers = topPerformersData.map((user) => ({
+				username: user.username,
+				projectCount: user.projectCount,
+				percentage: ((user.projectCount / totalProjects) * 100).toFixed(2) + '%'
+			}));
+			
+			return{
+				version: version.version,
+				title: version.title,
+				createdBy: version.createdBy,
+				createdAt: version.createdAt,
+				endedAt: versionArchivedAt,
+				topPerformers: topPerformers,
+				totalProjects: totalProjects,
+				totalUsers: allArchivedProjects.length
+			}
+		}));
+	  
+		res.status(200).json(versionStat);
+	} catch (err) {
+		console.log(err);
+		res.status(500).send('Internal server error');
+	}
+}
+
+module.exports = { getVersionStatistics }
+
+
+Response:
+[
+  {
+    "version": 1,
+    "title": "9686",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:20:43.141Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "kkk",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T12:22:30.802Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "monaski's edition",
+    "createdBy": "Admin skidev101",
+    "createdAt": "2025-04-16T09:14:07.626Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "lllli",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:55:34.548Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "k",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T14:39:21.548Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "kkkx",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T14:53:23.662Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "j",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:53:45.903Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "fppf",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:19:58.159Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "ppppt",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:20:22.567Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "opppp",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T12:37:49.045Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "jj",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:21:44.246Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "ppiiuu",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:28:39.521Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "c",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:35:23.232Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "pfofif",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:35:46.153Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "m",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:42:07.944Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "fiifif",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:47:46.829Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "ddddddddd",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:48:52.026Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "d",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T11:07:15.547Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "eiie",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T11:06:49.185Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "l",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T11:06:36.295Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "o",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T10:48:32.833Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "nn",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T12:22:11.482Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "p",
+    "createdBy": "Admin @user_pcKEj",
+    "createdAt": "2025-04-20T01:45:39.702Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 1,
+    "title": "mmm",
+    "createdBy": "Admin @user_pcKEj",
+    "createdAt": "2025-04-20T01:45:08.062Z",
+    "endedAt": "2025-04-17T23:33:52.035Z",
+    "topPerformers": [
+      {
+        "username": "skidev101",
+        "projectCount": 3,
+        "percentage": "42.86%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      },
+      {
+        "username": "@user_3XciK",
+        "projectCount": 1,
+        "percentage": "14.29%"
+      }
+    ],
+    "totalProjects": 7,
+    "totalUsers": 5
+  },
+  {
+    "version": 2,
+    "title": "ver10",
+    "createdBy": "Admin @user_3XciK",
+    "createdAt": "2025-04-17T23:33:52.049Z",
+    "endedAt": "2025-04-19T09:03:09.346Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 3,
+        "percentage": "33.33%"
+      },
+      {
+        "username": "@user_12qtx",
+        "projectCount": 2,
+        "percentage": "22.22%"
+      },
+      {
+        "username": "@user_yowor",
+        "projectCount": 2,
+        "percentage": "22.22%"
+      }
+    ],
+    "totalProjects": 9,
+    "totalUsers": 4
+  },
+  {
+    "version": 3,
+    "title": "verison10",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-19T09:03:09.361Z",
+    "endedAt": "2025-04-19T09:36:09.730Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 2,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 2,
+    "totalUsers": 1
+  },
+  {
+    "version": 4,
+    "title": "test",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-19T09:36:09.762Z",
+    "endedAt": "2025-04-19T23:42:09.958Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 4,
+        "percentage": "50.00%"
+      },
+      {
+        "username": "@user_mworl",
+        "projectCount": 3,
+        "percentage": "37.50%"
+      },
+      {
+        "username": "@user_jBfUe",
+        "projectCount": 1,
+        "percentage": "12.50%"
+      }
+    ],
+    "totalProjects": 8,
+    "totalUsers": 3
+  },
+  {
+    "version": 5,
+    "title": "billie edition",
+    "createdBy": "Admin @user_pcKEj",
+    "createdAt": "2025-04-19T23:42:09.984Z",
+    "endedAt": "2025-04-19T23:53:41.486Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 6,
+    "title": "tester",
+    "createdBy": "Admin @user_pcKEj",
+    "createdAt": "2025-04-19T23:53:41.534Z",
+    "endedAt": "2025-04-20T01:10:00.349Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 7,
+    "title": "te",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T01:10:00.377Z",
+    "endedAt": "2025-04-20T08:49:10.540Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 8,
+    "title": "today",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T08:49:10.579Z",
+    "endedAt": "2025-04-20T10:38:38.652Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "50.00%"
+      },
+      {
+        "username": "@user_BSZow",
+        "projectCount": 1,
+        "percentage": "50.00%"
+      }
+    ],
+    "totalProjects": 2,
+    "totalUsers": 2
+  },
+  {
+    "version": 9,
+    "title": "w",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T10:38:38.671Z",
+    "endedAt": "2025-04-20T12:10:04.174Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 10,
+    "title": "ss",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-20T12:10:04.189Z",
+    "endedAt": "2025-04-21T11:47:25.448Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "50.00%"
+      },
+      {
+        "username": "@user_XZMyA",
+        "projectCount": 1,
+        "percentage": "50.00%"
+      }
+    ],
+    "totalProjects": 2,
+    "totalUsers": 2
+  },
+  {
+    "version": 11,
+    "title": "mona edition",
+    "createdBy": "Admin skidev101",
+    "createdAt": "2025-04-21T11:47:25.959Z",
+    "endedAt": "2025-04-21T12:01:58.021Z",
+    "topPerformers": [
+      {
+        "username": "@user_mworl",
+        "projectCount": 2,
+        "percentage": "66.67%"
+      },
+      {
+        "username": "skidev101",
+        "projectCount": 1,
+        "percentage": "33.33%"
+      }
+    ],
+    "totalProjects": 3,
+    "totalUsers": 2
+  },
+  {
+    "version": 12,
+    "title": "test edition",
+    "createdBy": "Admin skidev101",
+    "createdAt": "2025-04-21T12:01:58.581Z",
+    "endedAt": "2025-04-21T13:53:57.333Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 13,
+    "title": "sd",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T13:53:57.369Z",
+    "endedAt": "2025-04-21T14:34:16.810Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 14,
+    "title": "baceknde devs",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T14:34:16.838Z",
+    "endedAt": "2025-04-21T15:01:26.773Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 15,
+    "title": "ppdoodi",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:01:26.801Z",
+    "endedAt": "2025-04-21T15:50:14.426Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 16,
+    "title": "lppp",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:50:14.450Z",
+    "endedAt": "2025-04-21T15:52:41.275Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 17,
+    "title": "mmmm",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:52:41.292Z",
+    "endedAt": "2025-04-21T15:54:42.925Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 18,
+    "title": "nkkk",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:54:42.948Z",
+    "endedAt": "2025-04-21T15:56:11.909Z",
+    "topPerformers": [
+      {
+        "username": "billie",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 19,
+    "title": "uuuu",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T15:56:11.919Z",
+    "endedAt": "2025-04-21T16:21:46.694Z",
+    "topPerformers": [
+      {
+        "username": "@user_12qtx",
+        "projectCount": 1,
+        "percentage": "100.00%"
+      }
+    ],
+    "totalProjects": 1,
+    "totalUsers": 1
+  },
+  {
+    "version": 20,
+    "title": "0",
+    "createdBy": "Admin billie",
+    "createdAt": "2025-04-21T16:21:46.709Z",
+    "endedAt": null,
+    "topPerformers": [],
+    "totalProjects": 0,
+    "totalUsers": 0
+  }
+]
