@@ -17,13 +17,18 @@ const getLeaderboard = async (req, res) => {
 		let projects;
 		
 		if (ver) {
-			projects = await ArchivedProject.find({ver});
+			projects = await ArchivedProject.find({version: ver});
 		} else {
 			projects = await Project.find();
 		}
-		
+		console.log(projects)
 		if (!projects.length) {
-			return res.status(404).json({ message: 'no projects found for this version' });
+			const latestVer = await VersionHistory.findOne().sort({ version: - 1 });
+			return res.status(404).json({ 
+				version: latestVer.version,
+				data: [],
+				message: 'no projects found for this version' 
+			});
 		}
 		
 		const sorted = projects

@@ -28,6 +28,7 @@ app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));
 app.use('/googleLogin', require('../routes/googleLogin'));
+app.use('/githubLogin', require('../routes/githubLogin'));
 app.use('/update', require('../routes/update'));
 app.use('/submit', require('../routes/submit'));
 
