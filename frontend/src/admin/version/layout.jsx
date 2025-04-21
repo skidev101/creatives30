@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { FadeDown } from "../../components/framer";
 import VersionPage from "./version";
 
+
    
 const Layout = () => {
     const darkmode = useSelector((state)=> state.darkMode)
@@ -15,8 +16,6 @@ const Layout = () => {
     </div>
 
  
-    
-  
   </section>
   );
 };

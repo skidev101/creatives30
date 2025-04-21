@@ -22,7 +22,7 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
 
     const darkmode = useSelector((state)=> state.darkMode)
    
-  //  console.log(darkmode, "is")
+   console.log(darkmode, "is")
    const toggledark = () => {
 
      dispatch(setMode(!darkmode)); // Toggle Redux state

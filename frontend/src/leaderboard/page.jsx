@@ -1,10 +1,11 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { saveLeaderboardData, setCurrentVersion } from '../action'; // Import your actions
 
-export default function LeaderBoardPage() {
+import { saveLeaderboardData, setCurrentVersion } from '../action';
+
+export default function LeaderboardPage() {
   const dispatch = useDispatch();
   const { darkMode, leaderboard } = useSelector(state => state);
   
@@ -22,7 +23,8 @@ export default function LeaderBoardPage() {
     totalProjects: 0,
     versions: []
   });
-
+  const currentVersion = leaderboard.currentVersion;
+console.log ("c", currentVersion)
   const fetchLeaderboard = async () => {
     try {
       setLoading(true);
@@ -34,55 +36,76 @@ export default function LeaderBoardPage() {
       const response = await fetch(url);
       
       if (!response.ok) {
+        if (response.status === 404) {
+          const emptyData = {
+            data: [],
+            page: currentPage,
+            limit: rowsPerPage,
+            totalProjects: 0,
+            versions: [...new Set([selectedVersion, ...displayData.versions])]
+          };
+          
+          dispatch(saveLeaderboardData(selectedVersion, emptyData));
+          setDisplayData(emptyData);
+          return;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-       console.log("leaddata",data)
-      // Handle empty data without error
-      if (data.data.length === 0) {
-        setDisplayData(prev => ({
-          ...prev,
+      
+      if (!data.data || data.data.length === 0) {
+        const emptyData = {
+          ...data,
           data: [],
-          totalProjects: 0
-        }));
+          versions: [...new Set([selectedVersion, ...displayData.versions])]
+        };
+        
+        dispatch(saveLeaderboardData(selectedVersion, emptyData));
+        setDisplayData(emptyData);
         return;
       }
 
       const versions = [...new Set(data.data.map(user => `v${user.version}`))];
       const versionKey = selectedVersion || versions[versions.length - 1];
 
-      // Save to Redux
       dispatch(saveLeaderboardData(versionKey, {
         ...data,
         versions,
         timestamp: Date.now()
       }));
 
-      // Update local state
       setDisplayData({
         ...data,
         versions
       });
       
-      // Update selected version if not set
       if (!selectedVersion) {
         setSelectedVersion(versionKey);
         dispatch(setCurrentVersion(versionKey));
       }
     } catch (err) {
-      // Don't show error for empty versions
-      if (!err.message.includes('404') && !err.message.includes('No projects')) {
+      if (err.message.includes('404') || err.message.includes('No projects')) {
+        const emptyData = {
+          data: [],
+          page: currentPage,
+          limit: rowsPerPage,
+          totalProjects: 0,
+          versions: [...new Set([selectedVersion, ...displayData.versions])]
+        };
+        
+        dispatch(saveLeaderboardData(selectedVersion, emptyData));
+        setDisplayData(emptyData);
+      } else {
         setError(err.message);
+        console.error('Fetch error:', err);
       }
-      console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // On mount, try to load from Redux first
     if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
       setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
       setSelectedVersion(leaderboard.currentVersion);
@@ -91,7 +114,6 @@ export default function LeaderBoardPage() {
   }, []);
 
   useEffect(() => {
-    // When version or page changes
     if (selectedVersion) {
       if (leaderboard.versions[selectedVersion]) {
         setDisplayData(leaderboard.versions[selectedVersion]);
@@ -113,11 +135,12 @@ export default function LeaderBoardPage() {
     setCurrentPage(1);
   };
 
-  // Combine versions from API and Redux, sorted newest first
   const availableVersions = [
     ...new Set([
       ...displayData.versions,
-      ...leaderboard.allVersions
+      ...leaderboard.allVersions,
+      ...leaderboard.currentVersion,
+      selectedVersion 
     ])
   ].sort((a, b) => parseInt(b.substring(1)) - parseInt(a.substring(1)));
 
@@ -136,7 +159,7 @@ export default function LeaderBoardPage() {
   const pageCount = Math.ceil(displayData.totalProjects / rowsPerPage);
 
   const handlePageChange = (page) => setCurrentPage(page);
-
+console.log("v",availableVersions)
   if (loading) {
     return (
       <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk flex justify-center items-center h-64`}>
@@ -171,11 +194,16 @@ export default function LeaderBoardPage() {
           <select
             value={selectedVersion}
             onChange={handleVersionChange}
-            className={`px-3 py-2 rounded-md border ${darkMode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
+            disabled={loading}
+            className={`px-3 py-2 rounded-md border ${darkMode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {availableVersions.map(version => (
-              <option key={version} value={version}>{version}</option>
-            ))}
+            {availableVersions.length > 0 ? (
+              availableVersions.map(version => (
+                <option key={version} value={version}>{version}</option>
+              ))
+            ) : (
+              <option value="">No versions available</option>
+            )}
           </select>
 
           <div className={`flex rounded-md border ${darkMode ? 'border-gray-700' : 'border-gray-300'}`}>
@@ -196,30 +224,36 @@ export default function LeaderBoardPage() {
       </div>
     
       <div className={`rounded-[14px] border ${darkMode ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'} mb-6 overflow-x-auto w-full`}>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className={darkMode ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
-            <tr>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Rank</th>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Name</th>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Projects</th>
-            </tr>
-          </thead>
-          <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
-            {sortedUsers.map((user, index) => (
-              <tr key={user.uid} className={darkMode ? (index % 2 === 0 ? 'bg-[#222]' : 'bg-[#1a1a1a]') : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}>
-                <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
-                <td className={`px-4 py-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
-                  <Link to={`/user/${user.username}`} className="hover:underline">
-                    {user.username}
-                  </Link>
-                </td>
-                <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
-                  {user.displayProjects}
-                </td>
+        {sortedUsers.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className={darkMode ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
+              <tr>
+                <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Rank</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Name</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Projects</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
+              {sortedUsers.map((user, index) => (
+                <tr key={user.uid} className={darkMode ? (index % 2 === 0 ? 'bg-[#222]' : 'bg-[#1a1a1a]') : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}>
+                  <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
+                  <td className={`px-4 py-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <Link to={`/user/${user.username}`} className="hover:underline">
+                      {user.username}
+                    </Link>
+                  </td>
+                  <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                    {user.displayProjects}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            No projects found in this version yet.
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">

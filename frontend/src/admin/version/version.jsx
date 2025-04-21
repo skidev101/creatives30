@@ -1,44 +1,46 @@
 
-import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { FiSearch, FiChevronLeft, FiChevronRight, FiPlus } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import img from '../../assets/image.png';
 import VersionModal from './modal';
 import { getAuth } from 'firebase/auth';
+import { saveLeaderboardData, setCurrentVersion } from '../../action';
 export default function VersionPage() {
-  const darkmode = useSelector((state) => state.darkMode);
+ 
    const user = useSelector((state)=> state.user)
+   const dispatch = useDispatch();
+   const { darkMode, leaderboard } = useSelector(state => state);
+ 
+ 
+   // create v
   const [versions, setVersions] = useState([
-    { id: 'v1', name: ' 1', createdAt: new Date('2023-01-01') },
-    { id: 'v7', name: ' 7', createdAt: new Date('2023-07-01') }
   ]);
-  const [activeVersion, setActiveVersion] = useState('v1');
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [newVersionNo, setNewVersionNo] = useState('');
+  const [loadingC, setLoadingC] = useState(false)
+
+  //leaderboard
+    
   const [timeRange, setTimeRange] = useState('all');
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-
-  // Generate different data based on version
-  const generateUsers = (versionId) => {
-    const multiplier = versionId === 'v1' ? 1 : 2; 
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i + 1,
-      name: `User ${i + 1}`,
-      projects: Math.floor(Math.random() * 10 * multiplier) + 1,
-      weeklyProjects: Math.floor(Math.random() * 5 * multiplier) + 1,
-    }));
-  };
-
-  const [users, setUsers] = useState(generateUsers(activeVersion));
-
-  const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [displayData, setDisplayData] = useState({
+    data: [],
+    page: 1,
+    limit: 10,
+    totalProjects: 0,
+    versions: []
+  });
+  const currentVersion = leaderboard.currentVersion;
 
   const handleCreateVersion = async () => {
-    setLoading(true);
+    setLoadingC(true);
     setError(null);
   
     try {
@@ -46,18 +48,15 @@ export default function VersionPage() {
       const user = auth.currentUser;
   
       if (!user) {
-        setError({ general: "You must be logged in." });
-        setLoading(false);
+        setError("You must be logged in.");
+        setLoadingC(false);
         return;
       }
   
-      
       const idToken = await user.getIdToken();
-  
       const VData = {
         title: newVersionNo,
-
-        user: { uid: "world123" } 
+        user: { uid: user.uid } 
       };
   
       const response = await fetch('https://xen4-backend.vercel.app/admin/newVersion', {
@@ -69,88 +68,258 @@ export default function VersionPage() {
         body: JSON.stringify(VData),
       });
   
-      if (!response.ok) throw new Error(await response.text());
-      
-      const data = await response.json();
-      console.log('Version created:', data);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to create version");
+      }
   
+      const data = await response.json();
       
-      setVersions([...versions, {
-        id: `v${data.version}`,
-        name: data.title,
+      // The backend returns the created version info
+      const versionNumber = data.version; // This comes from backend
+      const versionKey = `v${versionNumber}`;
+      const versionTitle = data.title || newVersionNo;
+  
+      const newVersion = {
+        id: versionKey,
+        name: versionTitle,
         createdAt: new Date(),
-      }]);
+      };
+  
+      const emptyVersionData = {
+        data: [],
+        page: 1,
+        limit: rowsPerPage,
+        totalProjects: 0,
+        version: versionNumber, // Match backend structure
+        versions: [versionKey] // Initialize with current version
+      };
+  
+      // Update Redux store
+      dispatch(saveLeaderboardData(versionKey, emptyVersionData));
+      dispatch(setCurrentVersion(versionKey));
+      
+      // Update local state
+      setVersions(prev => [...prev, newVersion]);
+      setDisplayData(emptyVersionData);
       setNewVersionNo('');
       setShowVersionModal(false);
   
     } catch (error) {
-      setError(error.message || "Something went wrong!");
+      console.error('Error creating version:', error);
+      setError(error.message || "Failed to create version");
+    } finally {
+      setLoadingC(false);
+    }
+  };
+
+ 
+ const fetchLeaderboard = async (version = currentVersion) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const versionParam = version ? `&ver=${version.replace('v', '')}` : '';
+      const url = `https://xen4-backend.vercel.app/leaderboard?page=${currentPage}&limit=${rowsPerPage}${versionParam}`;
+
+      console.log('Fetching leaderboard for version:', version);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('No data found for version', version);
+          const emptyData = {
+            data: [],
+            page: currentPage,
+            limit: rowsPerPage,
+            totalProjects: 0,
+            versions: [...new Set([version, ...displayData.versions])]
+          };
+          
+          dispatch(saveLeaderboardData(version, emptyData));
+          setDisplayData(emptyData);
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Received leaderboard data:', data);
+      
+      if (!data.data || data.data.length === 0) {
+        console.log('Empty data array received');
+        const emptyData = {
+          ...data,
+          data: [],
+          versions: [...new Set([version, ...displayData.versions])]
+        };
+        
+        dispatch(saveLeaderboardData(version, emptyData));
+        setDisplayData(emptyData);
+        return;
+      }
+
+      const versions = [...new Set(data.data.map(user => `v${user.version}`))];
+      const versionKey = version || versions[versions.length - 1];
+
+      console.log('Saving data to Redux for version:', versionKey);
+      
+      // Save to Redux store
+      dispatch(saveLeaderboardData(versionKey, {
+        ...data,
+        versions,
+        timestamp: Date.now()
+      }));
+
+      // Update local UI state
+      setDisplayData({
+        ...data,
+        versions
+      });
+      
+      // If no version was selected, set the newest one
+      if (!currentVersion) {
+        console.log('Setting initial version to:', versionKey);
+        dispatch(setCurrentVersion(versionKey));
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      if (err.message.includes('404') || err.message.includes('No projects')) {
+        const emptyData = {
+          data: [],
+          page: currentPage,
+          limit: rowsPerPage,
+          totalProjects: 0,
+          versions: [...new Set([currentVersion, ...displayData.versions])]
+        };
+        
+        dispatch(saveLeaderboardData(currentVersion, emptyData));
+        setDisplayData(emptyData);
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVersionChange = (event) => {
-    const newVersion = event.target.value;
-    setActiveVersion(newVersion);
-    setUsers(generateUsers(newVersion));
+  // Initial load - try to get data from Redux first
+  useEffect(() => {
+    console.log('Component mounted - initial load');
+    
+    // If we have a current version in Redux and its data is cached
+    if (currentVersion && leaderboard.versions[currentVersion]) {
+      console.log('Loading cached data for version:', currentVersion);
+      setDisplayData(leaderboard.versions[currentVersion]);
+    } else {
+      // Otherwise fetch fresh data
+      console.log('No cached data - fetching from API');
+      fetchLeaderboard();
+    }
+  }, []);
+
+  // When version changes, update the data
+  useEffect(() => {
+    console.log('Version changed to:', currentVersion);
+    if (currentVersion) {
+      if (leaderboard.versions[currentVersion]) {
+        console.log('Using cached data for version:', currentVersion);
+        setDisplayData(leaderboard.versions[currentVersion]);
+      } else {
+        console.log('Fetching data for version:', currentVersion);
+        fetchLeaderboard(currentVersion);
+      }
+    }
+  }, [currentVersion, currentPage]);
+
+ const handleVersionChange = (event) => {
+    const version = event.target.value;
+    console.log('User selected version:', version);
+    
+    // Update current version in Redux store
+    dispatch(setCurrentVersion(version));
     setCurrentPage(1);
   };
+
   const handleTimeRangeChange = (range) => {
     setTimeRange(range);
     setCurrentPage(1);
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Combine versions from API and Redux, sorted newest first
+  const availableVersions = [
+    ...new Set([
+      ...displayData.versions,
+      ...leaderboard.allVersions,
+      ...versions.map(v => v.id)
+    ])
+  ].sort((a, b) => parseInt(b.substring(1)) - parseInt(a.substring(1)));
+
+  const filteredUsers = displayData.data.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const displayUsers = filteredUsers.map(user => ({
     ...user,
-    displayProjects: timeRange === 'weekly' ? user.weeklyProjects : user.projects,
+    displayProjects: timeRange === 'weekly' 
+      ? Math.floor(user.projectCount * 0.3) 
+      : user.projectCount
   }));
 
   const sortedUsers = [...displayUsers].sort((a, b) => b.displayProjects - a.displayProjects);
+  const pageCount = Math.ceil(displayData.totalProjects / rowsPerPage);
 
-  const pageCount = Math.ceil(sortedUsers.length / rowsPerPage);
-  const paginatedUsers = sortedUsers.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
 
   const handlePageChange = (page) => setCurrentPage(page);
 
   
+  if (loading) {
+    return (
+      <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk flex justify-center items-center h-64`}>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk text-center text-red-500`}>
+        {error}
+      </div>
+    );
+  }
+
 
   return (
-    <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
-     <div className={`flex items-center justify-between mb-4 border-b w-full ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+    <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+     <div className={`flex items-center justify-between mb-4 border-b w-full ${darkMode ? 'border-neutral-800' : 'border-slate-200'}`}>
   <img
     src={img}
     alt="Profile"
     className="lg:h-15 lg:w-15 h-10 w-10 rounded-full object-cover mb-4"
   />
   <div className="flex flex-col pl-3 flex-grow">
-    <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
+    <p className={`text-sm ${darkMode ? 'text-neutral-100' : 'text-gray-500'}`}>
       Welcome Admin!
     </p>
-    <p className={`text-sm ${darkmode ? 'text-neutral-100' : 'text-gray-500'}`}>
+    <p className={`text-sm ${darkMode ? 'text-neutral-100' : 'text-gray-500'}`}>
       {user?.username || "guest"}
     </p>
   </div>
   <button
   onClick={() => setShowVersionModal(true)}
-    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${darkmode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
   >
     
     <FiPlus size={16} />
-     {loading ? "Creating":"New Version"}
+     {loadingC ? "Creating":"New Version"}
   </button>
 </div>
    
       {showVersionModal && (
         <VersionModal 
-         darkmode={darkmode}
+         darkmode={darkMode}
          showVersionModal={showVersionModal}
          newVersionNo={newVersionNo}
          setNewVersionNo={setNewVersionNo}
@@ -160,108 +329,129 @@ export default function VersionPage() {
         />
       )}
 
-   
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <div className="w-full md:w-64 relative">
           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search by name"
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className={`w-full pl-10 pr-4 py-2 rounded-md border ${darkmode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full pl-10 pr-4 py-2 rounded-md border ${darkMode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
           />
         </div>
 
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2">
-            <select
-              value={activeVersion}
-              onChange={handleVersionChange}
-              className={`px-3 py-2 rounded-md border ${darkmode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
-            >
-              {versions.map(version => (
-                <option key={version.id} value={version.id}>Version {version.name}</option>
-              ))}
-            </select>
-          </div>
+        <select
+          value={currentVersion || ''} // Use currentVersion from Redux
+          onChange={handleVersionChange}
+            disabled={loading}
+            className={`px-3 py-2 rounded-md border ${darkMode ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+           {availableVersions.length > 0 ? (
+    availableVersions.map(version => (
+      <option key={version} value={version}>{version}</option>
+    ))
+  ) : (
+    <option value="">No versions available</option>
+  )}
+          </select>
 
-          <div className={`flex rounded-md border ${darkmode ? 'border-gray-700' : 'border-gray-300'}`}>
+          <div className={`flex rounded-md border ${darkMode ? 'border-gray-700' : 'border-gray-300'}`}>
             <button
               onClick={() => handleTimeRangeChange('all')}
-              className={`px-3 py-1 ${timeRange === 'all' ? (darkmode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkmode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700')} rounded-l-md`}
+              className={`px-3 py-1 ${timeRange === 'all' ? (darkMode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700')} rounded-l-md`}
             >
               All Time
             </button>
             <button
               onClick={() => handleTimeRangeChange('weekly')}
-              className={`px-3 py-1 ${timeRange === 'weekly' ? (darkmode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkmode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700')} rounded-r-md`}
+              className={`px-3 py-1 ${timeRange === 'weekly' ? (darkMode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700')} rounded-r-md`}
             >
               Week
             </button>
           </div>
         </div>
-
       </div>
-   <div className={`rounded-[14px] border ${darkmode ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'} mb-6 overflow-x-auto w-full`}>
+    
+      <div className={`rounded-[14px] border ${darkMode ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'} mb-6 overflow-x-auto w-full`}>
+      {sortedUsers.length > 0 ? (
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className={darkmode ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
+          <thead className={darkMode ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
             <tr>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Rank</th>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Name</th>
-              <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Projects</th>
+              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Rank</th>
+              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Name</th>
+              <th className={`px-4 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} uppercase`}>Projects</th>
             </tr>
           </thead>
-          <tbody className={`divide-y ${darkmode ? 'divide-gray-700' : 'divide-gray-200'}`}>
-            {paginatedUsers.map((user, index) => (
-              <tr key={user.id} className={darkmode ? (index % 2 === 0 ? 'bg-[#222]' : 'bg-[#1a1a1a]') : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}>
-                <td className={`px-4 py-4 ${darkmode ? 'text-gray-300' : 'text-gray-900'}`}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
-                <td className={`px-4 py-4 font-medium ${darkmode ? 'text-gray-300' : 'text-gray-900'}`}>
-                   <Link to={'/projects'}>
-                {user.name} 
-                </Link></td>
-                <td className={`px-4 py-4 ${darkmode ? 'text-gray-300' : 'text-gray-900'}`}>
-                <Link to={'/projects'}>
-                {user.displayProjects}
-                </Link>
-                  </td>
+       
+          <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
+            {sortedUsers.map((user, index) => (
+              <tr key={user.uid} className={darkMode ? (index % 2 === 0 ? 'bg-[#222]' : 'bg-[#1a1a1a]') : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}>
+                <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
+                <td className={`px-4 py-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                  <Link to={`/user/${user.username}`} className="hover:underline">
+                    {user.username}
+                  </Link>
+                </td>
+                <td className={`px-4 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                  {user.displayProjects}
+                </td>
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
     
+        </table>
+    ) : (
+        <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+        {currentVersion
+? `No projects found in version ${currentVersion} yet`
+: 'No version selected'}
+    </div>
+       )}
+      </div>
+
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
-        <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, sortedUsers.length)} of {sortedUsers.length} entries
+        <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, displayData.totalProjects)} of {displayData.totalProjects} entries
         </div>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className={`p-2 rounded-md ${darkmode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
+            className={`p-2 rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
           >
             <FiChevronLeft />
           </button>
 
-          {Array.from({ length: pageCount }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`w-8 h-8 rounded-md ${currentPage === i + 1 ? (darkmode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkmode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100')}`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
+            let pageNum;
+            if (pageCount <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= pageCount - 2) {
+              pageNum = pageCount - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            
+            return (
+              <button
+                key={pageNum}
+                onClick={() => handlePageChange(pageNum)}
+                className={`w-8 h-8 rounded-md ${currentPage === pageNum ? (darkMode ? 'bg-red-800 text-white' : 'bg-blue-600 text-white') : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100')}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
 
           <button
             onClick={() => handlePageChange(Math.min(pageCount, currentPage + 1))}
-            disabled={currentPage === pageCount}
-            className={`p-2 rounded-md ${darkmode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
+            disabled={currentPage === pageCount || pageCount === 0}
+            className={`p-2 rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-800 disabled:text-gray-600' : 'text-gray-700 hover:bg-gray-100 disabled:text-gray-400'}`}
           >
             <FiChevronRight />
           </button>
@@ -271,3 +461,4 @@ export default function VersionPage() {
     </div>
   );
 }
+
