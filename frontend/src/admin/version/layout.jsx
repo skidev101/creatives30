@@ -15,8 +15,7 @@ const Layout = () => {
     </div>
 
  
-    
-  
+ 
   </section>
   );
 };

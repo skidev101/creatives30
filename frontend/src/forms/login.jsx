@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../action';
+import { setToken, setUser } from '../action';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -72,7 +72,7 @@ export default function Login() {
         const credential = await signInWithEmailAndPassword(auth, email, password);
         const user = credential.user;
         const idToken = await user.getIdToken();
-    
+        dispatch(setToken(idToken));
         const response = await fetch('https://xen4-backend.vercel.app/login', {
           method: 'POST',
           headers: {
@@ -88,14 +88,14 @@ export default function Login() {
     
         if (response.ok) {
           const data = await response.json();
-          console.log(data); 
-    
+          console.log("user",data); 
+         console.log ("auth", user)
           dispatch(setUser({
             uid: user.uid,
             email: user.email,
             username:data.username
           }));
-    
+         
           navigate('/submitproject');
         } else {
           if (!response.ok) {
