@@ -1,3 +1,4 @@
+const admin = require('firebase-admin');
 const User = require('../../models/User');
 const Project = require('../../models/Project');
 const mongoose = require('mongoose');
@@ -11,10 +12,10 @@ const deleteUser = async (req, res) => {
 		const foundUser = await User.findOne(query);
 		if (!foundUser) return res.status(404).json({ message: "user not found"});
 		const foundUserUid = foundUser.uid;
-		//const deleted = await admin.auth().deleteUser(foundUserUid);
+		const fbDelete = await admin.auth().deleteUser(foundUserUid);
 		const dbDelete = await User.findOneAndDelete({ uid: foundUserUid });
 		
-		if (deleted && dbDelete){
+		if (fbDelete && dbDelete){
 				res.status(200).json({
 				message: `user ${value} deleted successfully`
 			});
