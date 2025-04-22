@@ -39,6 +39,7 @@ app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 app.use('/admin/versionStat', require('../routes/admin/versionStat'));
 app.use('/admin/allUsers', require('../routes/admin/getUsers'));
 app.use('/admin/allAdmins', require('../routes/admin/getAdmins'));
+app.use('/admin/deleteUser', require('../routes/admin/deleteUser'));
 
 
 dbConn()

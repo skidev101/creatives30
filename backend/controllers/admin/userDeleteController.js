@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Project = require('../models/Project');
+const User = require('../../models/User');
+const Project = require('../../models/Project');
 const mongoose = require('mongoose');
 
 const deleteUser = async (req, res) => {
@@ -9,8 +9,9 @@ const deleteUser = async (req, res) => {
 	
 	try {
 		const foundUser = await User.findOne(query);
+		if (!foundUser) return res.status(404).json({ message: "user not found"});
 		const foundUserUid = foundUser.uid;
-		const deleted = await admin.auth().deleteUser(foundUserUid);
+		//const deleted = await admin.auth().deleteUser(foundUserUid);
 		const dbDelete = await User.findOneAndDelete({ uid: foundUserUid });
 		
 		if (deleted && dbDelete){
