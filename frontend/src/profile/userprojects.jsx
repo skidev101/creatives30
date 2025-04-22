@@ -96,7 +96,9 @@ const UserProjects = () => {
           ))}
         </div>
          ) : (
-          `No projects added yet`
+          <p className={` text-center space-y-4 ${darkmode ? 'text-white':''}`}>
+            No projects added yet
+          </p>
 )}
          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
                <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
