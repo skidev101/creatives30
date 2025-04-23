@@ -176,15 +176,24 @@ export default function Login() {
     
         if (response.ok) {
           const data = await response.json();
-          console.log("user",data); 
+          console.log("user from backend",data); 
          console.log ("auth", user)
           dispatch(setUser({
             uid: user.uid,
             email: user.email,
-            username:data.username
+            username:data.username,
+            roles:data.roles,
+            profileImgURL:data.profileImgURL
           }));
+          const roles = data.roles.map(role => role);
+          console.log("roles", roles)
+          if (roles.includes('User') && !roles.includes('Admin')) {
+            navigate('/submitproject');
+          } else if (roles.includes('User') && roles.includes('Admin')) {
+            navigate('/addadmins');
+          }
          
-          navigate('/submitproject');
+        
         } else {
           if (!response.ok) {
             const errorData = await response.json();

@@ -14,7 +14,7 @@ const UsersList = () => {
   const [totalUsers, setTotalUsers] = useState(0);
 
   const pageCount = Math.ceil(totalUsers / rowsPerPage);
-  const token = useSelector((state) => state.token);
+
   useEffect(() => {
     // Reset error state whenever user changes
     if (user) setError(null);
@@ -28,7 +28,7 @@ const UsersList = () => {
       }
       try {
         setLoading(true); // Ensure loading is true when fetching
-        const data = await fetchUsers(user,token,currentPage, rowsPerPage);
+        const data = await fetchUsers(currentPage, rowsPerPage);
         setUsers(data.data);
         setTotalUsers(data.totalUsers);
         setError(null); // Clear any existing error on successful fetch
