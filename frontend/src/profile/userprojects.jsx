@@ -12,7 +12,6 @@ import { getUser } from './api';
 const UserProjects = () => {
   const darkmode = useSelector((state) => state.darkMode);
   const user = useSelector((state) => state.user);
-  // const [projects, setProjects] = useState([]);
   const [projects, setProjects] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 1;

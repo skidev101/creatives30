@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 
 import { FadeDown } from "../../components/framer";
 import VersionPage from "./version";
+import LeaderboardPage from "../../leaderboard/page";
 
 
    
@@ -14,7 +15,7 @@ const Layout = () => {
      <VersionPage />
      </FadeDown>
     </div>
-
+  
  
   </section>
   );
