@@ -7,8 +7,8 @@ import { saveLeaderboardData, setCurrentVersion } from '../action';
 
 export default function LeaderboardPage() {
   const dispatch = useDispatch();
-  const { darkMode, leaderboard } = useSelector(state => state);
-  
+  const darkMode = useSelector((state) => state.darkMode);
+  const leaderboard = useSelector((state) => state.leaderboard);
   const [timeRange, setTimeRange] = useState('all');
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

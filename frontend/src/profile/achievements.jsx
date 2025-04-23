@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { FiAward, FiLock } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 
 const Achievements = () => {
   const darkmode = useSelector((state) => state.darkMode);
-  const [streak, setStreak] = useState(1); // You can set this based on actual logic
+  const [streak, setStreak] = useState(1); 
   const [badges, setBadges] = useState([]);
 
   useEffect(() => {

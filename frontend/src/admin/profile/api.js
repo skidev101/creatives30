@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 
-export const fetchVersion = async (versionNumber = 1, page = 1, limit = 15) => {
+export const fetchVersion = async () => {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -12,7 +12,7 @@ export const fetchVersion = async (versionNumber = 1, page = 1, limit = 15) => {
       const idToken = await user.getIdToken();
       
       const response = await fetch(
-        `https://xen4-backend.vercel.app/admin/versionStat/${versionNumber}?page=${page}&limit=${limit}`,
+        `https://xen4-backend.vercel.app/admin/versionStat`,
         {
           method: 'GET',
           headers: {

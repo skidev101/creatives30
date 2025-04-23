@@ -29,6 +29,7 @@ export const Welcome = () => {
             <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
                 <div className="flex items-center space-x-4">
                     <div className="relative">
+                        
                         {Userimg ?
                             <>
                                 <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
@@ -68,7 +69,7 @@ export const Welcome = () => {
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
                     user={user}
-                    darkmode={darkmode}
+                   
                 />
             )}
         </div>

@@ -1,10 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { FiAward, FiFolder } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 
 export const Stats = () => {
-    const { darkMode, leaderboard, user } = useSelector((state) => state);
-    
+    const darkMode = useSelector((state) => state.darkMode);
+const user = useSelector((state) => state.user);
+const leaderboard = useSelector((state) => state.leaderboard);
+
     const StatCard = ({ icon: Icon, title, value, color }) => (
         <motion.div 
             whileHover={{ y: -2 }}

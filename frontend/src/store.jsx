@@ -6,7 +6,7 @@ import storage from "redux-persist/lib/storage";
 const initialState = {
   darkMode: true,
   user: null,
-  token: null, 
+
   leaderboard: {
     currentVersion: null,
     versions: {}, 
@@ -20,8 +20,6 @@ const reducer = (state = initialState, action) => {
       return { ...state, darkMode: action.payload };
     case "SET_USER":
       return { ...state, user: action.payload };
-      case "SET_TOKEN":  // Handle the token action
-      return { ...state, token: action.payload };
     case "SAVE_LEADERBOARD_DATA":
       return {
         ...state,
@@ -51,13 +49,20 @@ const reducer = (state = initialState, action) => {
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ['darkMode', 'user','token', 'leaderboard']
+  whitelist: ['darkMode', 'user', 'leaderboard']
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 
 export const store = configureStore({
-  reducer: persistedReducer
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }),
+
 });
 
 export const persistor = persistStore(store);
