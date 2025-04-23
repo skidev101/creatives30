@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
 import { FiUsers, FiFolderPlus, FiTrendingUp, FiBarChart2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
