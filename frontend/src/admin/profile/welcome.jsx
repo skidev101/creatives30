@@ -5,6 +5,7 @@ import { FiDatabase,  FiActivity } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 export const WelcomeAdmin = () => {
+    const leaderboard = useSelector((state) => state.leaderboard);
     const darkmode = useSelector((state) => state.darkMode);
     const user = useSelector((state) => state.user);
     const currentHour = new Date().getHours();
@@ -17,12 +18,31 @@ export const WelcomeAdmin = () => {
     } else {
         greeting = "Good Evening!";
     }
+    
+      // Get current version
+      const getCurrentVersion = () => {
+        if (!leaderboard.currentVersion) {
+            return 'N/A';
+        }
+        return leaderboard.currentVersion;
+    };
 
-    const versionStats = {
-        totalSubmissions: 50,
-        activeUsers: 24,
-        completionRate: '82%',
-        version: 'v7'
+    // Get project count from current version data
+    const getProjectCount = () => {
+        if (!leaderboard.currentVersion || !leaderboard.versions || !leaderboard.versions[leaderboard.currentVersion]) {
+            return 0;
+        }
+        
+        const versionData = leaderboard.versions[leaderboard.currentVersion];
+        // Check different possible structures
+        if (versionData.projectCount !== undefined) {
+            return versionData.projectCount;
+        } else if (versionData.data?.projectCount !== undefined) {
+            return versionData.data.projectCount;
+        } else if (Array.isArray(versionData.data)) {
+            return versionData.data.length;
+        }
+        return 0;
     };
 
     const StatCard = ({ icon: Icon, title, value, color }) => (
@@ -87,7 +107,7 @@ export const WelcomeAdmin = () => {
                     <StatCard 
                         icon={FiDatabase} 
                         title="Total Submissions" 
-                        value={versionStats.totalSubmissions} 
+                        value={getProjectCount()} 
                         color="blue" 
                     />
                    
@@ -95,7 +115,7 @@ export const WelcomeAdmin = () => {
                     <StatCard 
                         icon={FiActivity} 
                         title="Version" 
-                        value={versionStats.version} 
+                        value={getCurrentVersion()} 
                         color="yellow" 
                     />
                 </div>

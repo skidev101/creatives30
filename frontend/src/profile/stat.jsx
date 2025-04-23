@@ -47,7 +47,7 @@ const leaderboard = useSelector((state) => state.leaderboard);
         const currentData = leaderboard.versions[leaderboard.currentVersion].data;
         const userData = currentData.find(u => u.username === user?.username);
         
-        return userData?.projectCount || 0;
+        return userData?.totalProjects || 0;
     };
 
     return (

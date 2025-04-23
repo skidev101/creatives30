@@ -76,7 +76,7 @@ export const fetchAdmins = async (page = 1, limit = 15) => {
       const auth = getAuth();
       const user = auth.currentUser;
       if (!user) {
-        throw new Error("You must be logged in to fetch admins");
+        throw new Error("You must be logged in to fetch users");
       }
   
       const idToken = await user.getIdToken();
@@ -100,6 +100,40 @@ export const fetchAdmins = async (page = 1, limit = 15) => {
       return await response.json();
     } catch (error) {
       console.error('Error fetching Users:', error);
+      throw error;
+    }
+  };
+  export const deleteUser = async (email) => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        throw new Error("You must be logged in to delete users");
+      }
+  
+      const idToken = await user.getIdToken();
+      
+      const response = await fetch(
+        'https://xen4-backend.vercel.app/admin/deleteUser',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({ email }) 
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete user");
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting user:', error);
       throw error;
     }
   };
