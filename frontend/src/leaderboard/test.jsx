@@ -47,7 +47,7 @@ export default function LeaderboardPage() {
                 totalProjects: 0,
                 versions: displayData.versions
               };
-              
+              console.log(emptyData.versions, "vvj")
               // Save empty data to Redux
               dispatch(saveLeaderboardData(selectedVersion || 'v0', emptyData));
               
@@ -77,7 +77,7 @@ export default function LeaderboardPage() {
             // Save empty data to Redux
             dispatch(saveLeaderboardData(version, emptyData));
             
-            setEmptyMessage(data.message || `No projects found for version ${version}`);
+            setEmptyMessage(data.message || `No projects found for versin ${version} ${data.version}`);
             setDisplayData(emptyData);
             
             if (!selectedVersion && version) {
