@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { GithubAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { getAuth, GithubAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { setToken, setUser } from '../action';
+import { authFetch } from '../utils/auth';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -145,11 +146,16 @@ export default function Login() {
       }
     };
 
+   
+
+
+
     const handleLogin = async (e) => {
       e.preventDefault();
       setLoading(true);
       setError({ email: '', password: '', general: '' });
     
+      // Validation
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setError(prev => ({ ...prev, email: "Please enter a valid email" }));
         setLoading(false);
@@ -157,86 +163,77 @@ export default function Login() {
       }
     
       try {
+        // 1. First authenticate with Firebase
+        const auth = getAuth();
         const credential = await signInWithEmailAndPassword(auth, email, password);
         const user = credential.user;
+        
+        // 2. Get the ID token
         const idToken = await user.getIdToken();
-        dispatch(setToken(idToken));
+        
+        // 3. Now call your backend with the token
         const response = await fetch('https://xen4-backend.vercel.app/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${idToken}`
           },
-          credentials: 'include',
           body: JSON.stringify({
             email,
-            pwd: password,
+            pwd: password
           }),
         });
     
-        if (response.ok) {
-          const data = await response.json();
-          console.log("user from backend",data); 
-         console.log ("auth", user)
-          dispatch(setUser({
-            uid: user.uid,
-            email: user.email,
-            username:data.username,
-            roles:data.roles,
-            profileImgURL:data.profileImgURL
-          }));
-          const roles = data.roles.map(role => role);
-          console.log("roles", roles)
-          if (roles.includes('User') && !roles.includes('Admin')) {
-            navigate('/submitproject');
-          } else if (roles.includes('User') && roles.includes('Admin')) {
-            navigate('/addadmins');
-          }
-         
-        
-        } else {
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Backend login error:", errorData);
-            throw new Error(errorData.message || 'Login failed');
-          }
-          
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Login failed');
         }
     
-      } 
-      
-      catch (error) {
-        console.error("Login error:", error);
-      
-        let errorMessage = 'An error occurred. Please try again.';
-      
+        const data = await response.json();
+        
+        // 4. Update Redux store with user data
+        dispatch(setUser({
+          uid: user.uid,
+          email: user.email,
+          username: data.username,
+          roles: data.roles,
+          profileImgURL: data.profileImgURL,
+          lastVerified: Date.now()
+        }));
+    
+        // 5. Navigate based on role
+        const isAdmin = data.roles?.includes('Admin');
+        navigate(isAdmin ? '/addadmins' : '/submitproject');
+    
+      } catch (error) {
+        // Enhanced error handling
+        let errorMessage = 'Login failed. Please try again.';
+        
         if (error.code) {
-          switch (error.code) {
-            case 'auth/user-not-found':
-            case 'auth/wrong-password':
-            case 'auth/invalid-credential':
-              errorMessage = 'Invalid email or password';
-              break;
-            case 'auth/invalid-email':
-              errorMessage = 'Invalid email address';
-              break;
-            case 'auth/too-many-requests':
-              errorMessage = 'Too many attempts. Please try again later.';
-              break;
-            default:
-              errorMessage = error.message; // fallback to Firebase's error message
-          }
+          const errorMap = {
+            'auth/user-not-found': 'Invalid email or password',
+            'auth/wrong-password': 'Invalid email or password',
+            'auth/invalid-credential': 'Invalid credentials',
+            'auth/invalid-email': 'Invalid email address',
+            'auth/too-many-requests': 'Too many attempts. Account temporarily locked',
+            'auth/user-disabled': 'Account disabled'
+          };
+          errorMessage = errorMap[error.code] || error.message;
         } else if (error.message) {
           errorMessage = error.message;
         }
-      
-        setError(prev => ({ ...prev, general: errorMessage }));
-      }
-       finally {
+    
+        setError(prev => ({
+          ...prev,
+          general: errorMessage
+        }));
+    
+        // Optional: Clear password field on error
+        setPassword('');
+      } finally {
         setLoading(false);
       }
     };
-    
     
     return (
         <section className="bg-black min-h-screen flex justify-center items-center pt-10 pb-10 font-grotesk p-4">

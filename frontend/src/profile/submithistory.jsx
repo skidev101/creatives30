@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { getAuth } from 'firebase/auth';
+import { authFetch } from '../utils/auth';
 
 const SubmitHistory = () => {
   const darkmode = useSelector((state) => state.darkMode);
@@ -21,37 +22,21 @@ const SubmitHistory = () => {
   useEffect(() => {
     const fetchCommitData = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
+        const response = await authFetch('https://xen4-backend.vercel.app/user/commitHistory');
         
-        if (!user) {
-          throw new Error('User not authenticated');
-        }
-
-        const idToken = await user.getIdToken();
-        
-        const response = await fetch('https://xen4-backend.vercel.app/user/commitHistory', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
-        });
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         
-        // Ensure data is an array before setting state
         if (!Array.isArray(data?.commitHistory)) {
           throw new Error('Invalid data format: expected an array');
         }
 
         setCommitData([...data.commitHistory].reverse() || []);
-    
       } catch (error) {
-        console.error('Error fetching commit history:', error);
+        console.error('Fetch error:', error);
         setError(error.message);
       } finally {
         setLoading(false);

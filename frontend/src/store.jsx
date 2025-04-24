@@ -21,7 +21,16 @@ const reducer = (state = initialState, action) => {
       return { ...state, darkMode: action.payload };
     
     case "SET_USER":
-      return { ...state, user: action.payload };
+      return {
+        ...state,
+        user: {
+          uid: action.payload.uid,
+          email: action.payload.email,
+          username: action.payload.username, // From backend
+          roles: action.payload.roles,      // From backend
+          lastVerified: Date.now()          // Track freshness
+        }
+      };
     
     case "SAVE_LEADERBOARD_DATA":
       { const { version, data } = action.payload;
