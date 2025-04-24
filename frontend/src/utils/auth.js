@@ -23,34 +23,41 @@ export const getToken = async (forceRefresh = false) => {
     }
   };
 
+
 export const authFetch = async (url, options = {}) => {
-  try {
-    const token = await getToken();
-    const response = await fetch(url, {
-      ...options,
+    const defaultOptions = {
+      method: 'GET', // default method
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        ...options.headers
-      }
-    });
-
-    // Auto-retry once if token expired
-    if (response.status === 401) {
-      const newToken = await getToken(true); // Force refresh
-      const retryResponse = await fetch(url, {
-        ...options,
+      },
+      ...options
+    };
+  
+    try {
+      const token = await getToken();
+      const response = await fetch(url, {
+        ...defaultOptions,
         headers: {
-          ...options.headers,
-          'Authorization': `Bearer ${newToken}`
+          ...defaultOptions.headers,
+          'Authorization': `Bearer ${token}`
         }
       });
-      return retryResponse;
+  
+      if (response.status === 401) {
+        const newToken = await getToken(true); // Force refresh
+        const retryResponse = await fetch(url, {
+          ...defaultOptions,
+          headers: {
+            ...defaultOptions.headers,
+            'Authorization': `Bearer ${newToken}`
+          }
+        });
+        return retryResponse;
+      }
+  
+      return response;
+    } catch (error) {
+      console.error('API call failed:', error);
+      throw error;
     }
-
-    return response;
-  } catch (error) {
-    console.error('API call failed:', error);
-    throw error;
-  }
-};
+  };
