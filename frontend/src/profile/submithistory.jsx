@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { getAuth } from 'firebase/auth';
 
-const Heatmap = () => {
+const SubmitHistory = () => {
   const darkmode = useSelector((state) => state.darkMode);
   const [commitData, setCommitData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,4 +108,4 @@ const Heatmap = () => {
   );
 };
 
-export default Heatmap;
+export default SubmitHistory;
