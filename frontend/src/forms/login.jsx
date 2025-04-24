@@ -4,8 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, GithubAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { setToken, setUser } from '../action';
-import { authFetch } from '../utils/auth';
+import {  setUser } from '../action';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -61,8 +60,7 @@ export default function Login() {
           photoURL: user.photoURL || ''
         }));
     
-        // Store the token in Redux if needed
-        dispatch(setToken(idToken));
+  
     
         // Redirect to the submit project page
         navigate('/submitproject');
@@ -122,7 +120,7 @@ export default function Login() {
         }));
     
         // Store the token in Redux
-        dispatch(setToken(idToken));
+        
     
         // Redirect to the submit project page
         navigate('/submitproject');

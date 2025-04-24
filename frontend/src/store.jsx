@@ -31,6 +31,11 @@ const reducer = (state = initialState, action) => {
           lastVerified: Date.now()          // Track freshness
         }
       };
+      case "CLEAR_USER":
+  return {
+    ...state,
+    user: null
+  };
     
     case "SAVE_LEADERBOARD_DATA":
       { const { version, data } = action.payload;

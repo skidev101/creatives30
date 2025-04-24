@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { FiAward, FiLock } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import { getAuth } from 'firebase/auth';
+
+import { authFetch } from '../utils/auth';
 
 const Achievements = () => {
   const darkmode = useSelector((state) => state.darkMode);
@@ -12,21 +13,8 @@ const Achievements = () => {
   useEffect(() => {
     const fetchStreakData = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        
-        if (!user) {
-          throw new Error('User not authenticated');
-        }
-
-        const idToken = await user.getIdToken();
-        
-        const response = await fetch('https://xen4-backend.vercel.app/user/streak', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
-        });
+   
+        const response = await authFetch('https://xen4-backend.vercel.app/user/streak')
 
         if (!response.ok) {
           throw new Error(`Failed to fetch streak data: ${response.status}`);

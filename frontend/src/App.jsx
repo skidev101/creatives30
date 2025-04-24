@@ -15,68 +15,66 @@ import Version from './admin/version/page';
 import UserProjectsID from './projects/project';
 import { useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { setUser } from './action';
+import { clearUser, setUser } from './action';
 import { useDispatch, useSelector } from 'react-redux';
 
 function App() {
-  const dispatch = useDispatch();
-  // Add selector to check if user exists in Redux store
-  const currentUser = useSelector((state) => state.user);
-
-  useEffect(() => {
-    const auth = getAuth();
-    let refreshInterval;
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Set up token refresh every 55 minutes (before 1hr expiration)
-        refreshInterval = setInterval(async () => {
-          try {
-            await user.getIdToken(true);
-            console.log('Token refreshed silently');
-          } catch (error) {
-            console.error('Token refresh failed:', error);
-            clearInterval(refreshInterval);
-          }
-        }, 55 * 60 * 1000);
-
-        // Only fetch user data if not already in Redux or if user changed
-        if (!currentUser || currentUser.uid !== user.uid) {
-          try {
-            const token = await user.getIdToken();
-            const response = await fetch('https://xen4-backend.vercel.app/user', {
-              headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+  
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user);
+  
+    useEffect(() => {
+      const auth = getAuth();
+      let refreshInterval;
+  
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          // Set up token refresh
+          refreshInterval = setInterval(async () => {
+            try {
+              await firebaseUser.getIdToken(true);
+            } catch (error) {
+              console.error('Token refresh failed:', error);
+              clearInterval(refreshInterval);
             }
-
-            const userData = await response.json();
-            
-            dispatch(setUser({
-              uid: user.uid,
-              email: user.email,
-              ...userData
-            }));
-          } catch (error) {
-            console.error('User data load failed:', error);
+          }, 55 * 60 * 1000);
+  
+          // Only fetch user data if Firebase user matches Redux user
+          if (!user || user.uid !== firebaseUser.uid) {
+            try {
+              const token = await firebaseUser.getIdToken();
+              const response = await fetch('https://xen4-backend.vercel.app/user', {
+                headers: { 
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+  
+              if (!response.ok) throw new Error('Failed to fetch user data');
+              
+              const userData = await response.json();
+              dispatch(setUser({
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                ...userData
+              }));
+            } catch (error) {
+              console.error('User data load failed:', error);
+              dispatch(clearUser());
+            }
           }
+        } else {
+          // No Firebase user - clear Redux state
+          if (user) dispatch(clearUser());
+          if (refreshInterval) clearInterval(refreshInterval);
         }
-      } else {
-        // User signed out
+      });
+  
+      return () => {
+        unsubscribe();
         if (refreshInterval) clearInterval(refreshInterval);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-      if (refreshInterval) clearInterval(refreshInterval);
-    };
-  }, [dispatch, currentUser]);
+      };
+    }, [dispatch, user]);
 
   return (
    

@@ -1,26 +1,13 @@
-import { getAuth } from "firebase/auth";
+
+import { authFetch } from "../utils/auth";
 
 export const getUser = async (username) => {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-  
-      if (!user) {
-        throw new Error("You must be logged in to fetch");
-      }
-  
-      const idToken = await user.getIdToken();
-  
-      const response = await fetch(
+   
+    
+      const response = await authFetch(
         `https://xen4-backend.vercel.app/users/${username}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
-          }
-        }
-      );
+  );
   
       if (!response.ok) {
         const errorData = await response.json();
