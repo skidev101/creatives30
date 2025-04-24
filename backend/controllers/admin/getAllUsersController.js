@@ -17,7 +17,7 @@ const getAllUsers = async (req, res) => {
 		const users = await User.find({ roles: { $in: ['User'] } })
 			.skip((page - 1) * limit)
 			.limit(limit)
-			.select('username email roles version createdAt')
+			.select('username email roles version createdAt streak')
 			.lean();
 		console.log(users);
 		
@@ -25,7 +25,9 @@ const getAllUsers = async (req, res) => {
 				username: user.username,
 				email: user.email,
 				roles: user.roles,
-				version: user.version
+				version: user.version,
+				createdAt: user.createdAt,
+				streak: user.streak
 			}));
 			
 		

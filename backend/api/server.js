@@ -31,6 +31,10 @@ app.use('/googleLogin', require('../routes/googleLogin'));
 app.use('/githubLogin', require('../routes/githubLogin'));
 app.use('/update', require('../routes/update'));
 app.use('/submit', require('../routes/submit'));
+app.use('/user/streak', require('../routes/streak'));
+app.use('/user/commit', require('../routes/newCommit'));
+app.use('/user/commitHistory', require('../routes/commitHistory'));
+
 
 // Admin routes
 app.use(verifyAdmin);
@@ -39,7 +43,9 @@ app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 app.use('/admin/versionStat', require('../routes/admin/versionStat'));
 app.use('/admin/allUsers', require('../routes/admin/getUsers'));
 app.use('/admin/allAdmins', require('../routes/admin/getAdmins'));
-app.use('/admin/deleteUser', require('../routes/admin/deleteUser'));
+app.use('/admin/user/delete', require('../routes/admin/deleteUser'));
+app.use('/admin/user/enable', require('../routes/admin/enable'));
+app.use('/admin/user/disable', require('../routes/admin/disable'));
 
 
 dbConn()

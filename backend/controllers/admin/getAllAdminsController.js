@@ -24,6 +24,7 @@ const getAllAdmins = async (req, res) => {
 				email: user.email,
 				roles: user.roles,
 				version: user.version,
+				createdAt: user.createdAt
 			}));
 			
 		
