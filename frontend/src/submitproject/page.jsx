@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from '../utils/auth';
 //import { storage } from '../firebase';
 //import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -80,23 +81,11 @@ console.log("user", user)
     }
   
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-  
-      if (!user) {
-        throw new Error("You must be logged in");
-      }
-  
-      // Get fresh token
-      const idToken = await user.getIdToken(true);
+     
   
       // 1. Submit project
-      const submitResponse = await fetch('https://xen4-backend.vercel.app/submit', {
+      const submitResponse = await authFetch('https://xen4-backend.vercel.app/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
         body: JSON.stringify({
           uid: user.uid,
           ...form
@@ -110,13 +99,8 @@ console.log("user", user)
   
       // 2. Mark commit
       try {
-        const commitResponse = await fetch('https://xen4-backend.vercel.app/user/commit', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const commitResponse = await authFetch('https://xen4-backend.vercel.app/user/commit', 
+      );
   
         if (!commitResponse.ok) {
           console.warn('Commit marking failed:', await commitResponse.text());

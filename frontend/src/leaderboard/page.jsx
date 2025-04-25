@@ -33,14 +33,19 @@ export default function LeaderboardPage() {
           setLoading(true);
           setError(null);
           setEmptyMessage('');
-          
+          const cachedData = leaderboard.versions[selectedVersion];
+          if (cachedData) {
+            setDisplayData(cachedData);
+            setLoading(false);
+          }
           const versionParam = selectedVersion ? `&ver=${selectedVersion.replace('v', '')}` : '';
           const url = `https://xen4-backend.vercel.app/leaderboard?page=${currentPage}&limit=${rowsPerPage}${versionParam}`;
       
           const response = await fetch(url);
           
           if (!response.ok) {
-            if (response.status === 404) {
+               // Only show error if we don't have cached data
+               if (!cachedData && response.status === 404) {
               const emptyData = {
                 data: [],
                 page: currentPage,
@@ -116,6 +121,8 @@ export default function LeaderboardPage() {
           }
         } catch (err) {
           console.error('Fetch error:', err);
+              // Only show error if we don't have cached data
+    if (!leaderboard.versions[selectedVersion]) {
           setError(err.message);
           setEmptyMessage('Failed to load leaderboard data');
           setDisplayData(prev => ({
@@ -123,6 +130,7 @@ export default function LeaderboardPage() {
             data: [],
             totalProjects: 0
           }));
+        }
         } finally {
           setLoading(false);
         }
