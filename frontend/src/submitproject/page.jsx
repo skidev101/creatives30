@@ -3,8 +3,9 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
-import { getAuth } from 'firebase/auth';
+
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from '../utils/auth';
 //import { storage } from '../firebase';
 //import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -65,6 +66,7 @@ console.log("user", user)
     setLoading(true);
     setError({ livelink: '', day: '', repolink: '', languages: '', description: '', general: '' });
   
+    // Validate form
     const errors = {};
     if (!form.livelink) errors.livelink = "Provide your hosted URL";
     if (!form.day) errors.day = "Provide your day of submission";
@@ -79,42 +81,38 @@ console.log("user", user)
     }
   
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
+     
   
-      if (!user) {
-        console.log('User is not authenticated');
-        setError(prev => ({ ...prev, general: "You must be logged in." }));
-        setLoading(false);
-        return;
-      }
-  
-      const idToken = await user.getIdToken(); 
-  
-      const formData = {
-        uid: user.uid,
-        ...form
-      };
-  
-      const response = await fetch('https://xen4-backend.vercel.app/submit', {
+      // 1. Submit project
+      const submitResponse = await authFetch('https://xen4-backend.vercel.app/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}` 
-        },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          uid: user.uid,
+          ...form
+        })
       });
   
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to submit");
+      if (!submitResponse.ok) {
+        const error = await submitResponse.json();
+        throw new Error(error.message || "Project submission failed");
       }
   
-      const data = await response.json();
-      console.log(data);
+      // 2. Mark commit
+      try {
+        const commitResponse = await authFetch('https://xen4-backend.vercel.app/user/commit', 
+      );
   
-      // setSuccessMessage(`Project added`);
-      navigate('/leaderboard')
+        if (!commitResponse.ok) {
+          console.warn('Commit marking failed:', await commitResponse.text());
+        } else {
+          console.log('Commit marked successfully');
+        }
+      } catch (commitError) {
+        console.error('Commit marking error:', commitError);
+      }
+  
+      // Success
+      navigate('/leaderboard');
       setForm({
         livelink: '',
         day: '',
@@ -125,13 +123,12 @@ console.log("user", user)
       });
   
     } catch (error) {
-      console.error(error);
-      setError(prev => ({ ...prev, general: error.message || "Something went wrong!" }));
+      setError(prev => ({ ...prev, general: error.message }));
+      console.error("Submission error:", error);
     } finally {
       setLoading(false);
     }
   };
-  
   
   
   const darkmode = useSelector((state)=> state.darkMode)
@@ -141,7 +138,7 @@ console.log("user", user)
     <div className={`flex flex-start items-center flex-row mb-4 border-b w-full ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
       {Userimg ? 
          <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-         <span className='text-4xl'> {Userimg} </span>
+         <span className='lg:text-4xl text-2xl'> {Userimg} </span>
         </div>
         :
         <img

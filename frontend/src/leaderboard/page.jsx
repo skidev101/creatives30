@@ -4,166 +4,241 @@ import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 import { saveLeaderboardData, setCurrentVersion } from '../action';
+import SkeletonLoader from '../components/skeleton';
 
 export default function LeaderboardPage() {
-  const dispatch = useDispatch();
-  const darkMode = useSelector((state) => state.darkMode);
-  const leaderboard = useSelector((state) => state.leaderboard);
-  const [timeRange, setTimeRange] = useState('all');
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedVersion, setSelectedVersion] = useState('');
-  const [displayData, setDisplayData] = useState({
-    data: [],
-    page: 1,
-    limit: 10,
-    totalProjects: 0,
-    versions: []
-  });
-  const currentVersion = leaderboard.currentVersion;
-console.log ("c", currentVersion)
-  const fetchLeaderboard = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const dispatch = useDispatch();
+    const darkMode = useSelector((state) => state.darkMode);
+    const leaderboard = useSelector((state) => state.leaderboard);
+    const [timeRange, setTimeRange] = useState('all');
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 15;
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [selectedVersion, setSelectedVersion] = useState('');
+    const [emptyMessage, setEmptyMessage] = useState('');
+    const currentVersion = leaderboard.currentVersion
+    const [displayData, setDisplayData] = useState({
+      data: [],
+      page: 1,
+      limit: rowsPerPage,
+      totalProjects: 0,
+      versions: [],
+      currentVersion: null
+    });
+  
+    const fetchLeaderboard = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          setEmptyMessage('');
+          const cachedData = leaderboard.versions[selectedVersion];
+          if (cachedData) {
+            setDisplayData(cachedData);
+            setLoading(false);
+          }
+          const versionParam = selectedVersion ? `&ver=${selectedVersion.replace('v', '')}` : '';
+          const url = `https://xen4-backend.vercel.app/leaderboard?page=${currentPage}&limit=${rowsPerPage}${versionParam}`;
       
-      const versionParam = selectedVersion ? `&ver=${selectedVersion.replace('v', '')}` : '';
-      const url = `https://xen4-backend.vercel.app/leaderboard?page=${currentPage}&limit=${rowsPerPage}${versionParam}`;
-
-      const response = await fetch(url);
+          const response = await fetch(url);
+          
+          if (!response.ok) {
+               // Only show error if we don't have cached data
+               if (!cachedData && response.status === 404) {
+              const emptyData = {
+                data: [],
+                page: currentPage,
+                limit: rowsPerPage,
+                totalProjects: 0,
+                versions: displayData.versions
+              };
+              console.log(emptyData.versions, "vvj")
+              // Save empty data to Redux
+              dispatch(saveLeaderboardData(selectedVersion || 'v0', emptyData));
+              
+              setEmptyMessage('No projects found for this version');
+              setDisplayData(emptyData);
+              return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
       
-      if (!response.ok) {
-        if (response.status === 404) {
-          const emptyData = {
-            data: [],
+          const data = await response.json();
+          
+          // Handle empty data case
+          if (!data.data || data.data.length === 0) {
+            const version = data.version ? `v${data.version}` : selectedVersion;
+            const emptyData = {
+              data: [],
+              page: currentPage,
+              limit: rowsPerPage,
+              totalProjects: 0,
+              versions: [...new Set([
+                ...(data.version ? [`v${data.version}`] : []),
+                ...displayData.versions
+              ])]
+            };
+            
+            // Save empty data to Redux
+            dispatch(saveLeaderboardData(version, emptyData));
+            
+            setEmptyMessage(data.message || `No projects found for versin ${version} ${data.version}`);
+            setDisplayData(emptyData);
+            
+            if (!selectedVersion && version) {
+              setSelectedVersion(version);
+              dispatch(setCurrentVersion(version));
+            }
+            return;
+          }
+      
+          // Transform version numbers to v-prefixed strings
+          const versions = [...new Set([
+            ...data.data.map(user => `v${user.version}`),
+            ...displayData.versions
+          ])];
+          
+          const versionKey = selectedVersion || 
+                           (data.version ? `v${data.version}` : versions[0]);
+      
+          const leaderboardData = {
+            data: data.data,
             page: currentPage,
             limit: rowsPerPage,
-            totalProjects: 0,
-            versions: [...new Set([selectedVersion, ...displayData.versions])]
+            totalProjects: data.totalProjects || data.data.length,
+            versions
           };
+      
+          // Save data to Redux
+          dispatch(saveLeaderboardData(versionKey, leaderboardData));
           
-          dispatch(saveLeaderboardData(selectedVersion, emptyData));
-          setDisplayData(emptyData);
-          return;
+          setDisplayData(leaderboardData);
+          
+          if (!selectedVersion && versionKey) {
+            setSelectedVersion(versionKey);
+            dispatch(setCurrentVersion(versionKey));
+          }
+        } catch (err) {
+          console.error('Fetch error:', err);
+              // Only show error if we don't have cached data
+    if (!leaderboard.versions[selectedVersion]) {
+          setError(err.message);
+          setEmptyMessage('Failed to load leaderboard data');
+          setDisplayData(prev => ({
+            ...prev,
+            data: [],
+            totalProjects: 0
+          }));
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+        } finally {
+          setLoading(false);
+        }
+      };
       
-      if (!data.data || data.data.length === 0) {
-        const emptyData = {
-          ...data,
-          data: [],
-          versions: [...new Set([selectedVersion, ...displayData.versions])]
-        };
-        
-        dispatch(saveLeaderboardData(selectedVersion, emptyData));
-        setDisplayData(emptyData);
-        return;
-      }
-
-      const versions = [...new Set(data.data.map(user => `v${user.version}`))];
-      const versionKey = selectedVersion || versions[versions.length - 1];
-
-      dispatch(saveLeaderboardData(versionKey, {
-        ...data,
-        versions,
-        timestamp: Date.now()
-      }));
-
-      setDisplayData({
-        ...data,
-        versions
-      });
-      
-      if (!selectedVersion) {
-        setSelectedVersion(versionKey);
-        dispatch(setCurrentVersion(versionKey));
-      }
-    } catch (err) {
-      if (err.message.includes('404') || err.message.includes('No projects')) {
-        const emptyData = {
-          data: [],
-          page: currentPage,
-          limit: rowsPerPage,
-          totalProjects: 0,
-          versions: [...new Set([selectedVersion, ...displayData.versions])]
-        };
-        
-        dispatch(saveLeaderboardData(selectedVersion, emptyData));
-        setDisplayData(emptyData);
-      } else {
-        setError(err.message);
-        console.error('Fetch error:', err);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
-      setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
-      setSelectedVersion(leaderboard.currentVersion);
-    }
-    fetchLeaderboard();
-  }, []);
-
-  useEffect(() => {
-    if (selectedVersion) {
-      if (leaderboard.versions[selectedVersion]) {
-        setDisplayData(leaderboard.versions[selectedVersion]);
-      } else {
+      useEffect(() => {
+        if (leaderboard.versions[currentVersion]) {
+          setDisplayData(leaderboard.versions[currentVersion]);
+          setSelectedVersion(leaderboard.currentVersion);
+        }
         fetchLeaderboard();
+      }, []);
+    useEffect(() => {
+      if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
+        setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
+        setSelectedVersion(leaderboard.currentVersion);
       }
-    }
-  }, [selectedVersion, currentPage]);
+      fetchLeaderboard();
+    }, []);
 
-  const handleVersionChange = (event) => {
-    const version = event.target.value;
-    setSelectedVersion(version);
-    setCurrentPage(1);
-    dispatch(setCurrentVersion(version));
-  };
-
-  const handleTimeRangeChange = (range) => {
-    setTimeRange(range);
-    setCurrentPage(1);
-  };
-
-  const availableVersions = [
-    ...new Set([
-      ...displayData.versions,
-      ...leaderboard.allVersions,
-      ...leaderboard.currentVersion,
-      selectedVersion 
-    ])
-  ].sort((a, b) => parseInt(b.substring(1)) - parseInt(a.substring(1)));
-
-  const filteredUsers = displayData.data.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const displayUsers = filteredUsers.map(user => ({
-    ...user,
-    displayProjects: timeRange === 'weekly' 
-      ? Math.floor(user.projectCount * 0.3) 
-      : user.projectCount
-  }));
-
-  const sortedUsers = [...displayUsers].sort((a, b) => b.displayProjects - a.displayProjects);
-  const pageCount = Math.ceil(displayData.totalProjects / rowsPerPage);
-
+    useEffect(() => {
+      fetchLeaderboard();
+    }, [selectedVersion, currentPage]);
+  
+    const handleVersionChange = (event) => {
+      const version = event.target.value;
+      setSelectedVersion(version);
+      setCurrentPage(1);
+      dispatch(setCurrentVersion(version));
+    };
+  
+    const handleTimeRangeChange = (range) => {
+      setTimeRange(range);
+      setCurrentPage(1);
+    };
+  
+    const availableVersions = [
+      ...new Set([
+        ...displayData.versions,
+        ...(leaderboard.allVersions || []),
+        ...(leaderboard.currentVersion ? [leaderboard.currentVersion] : []),
+        ...(selectedVersion ? [selectedVersion] : [])
+      ].filter(Boolean))
+    ].sort((a, b) => parseInt(b.substring(1)) - parseInt(a.substring(1)));
+  
+    const filteredUsers = displayData.data.filter(user =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  
+    const displayUsers = filteredUsers.map(user => ({
+      ...user,
+      displayProjects: timeRange === 'weekly' 
+        ? Math.floor(user.projectCount * 0.3) 
+        : user.projectCount
+    }));
+  
+    const sortedUsers = [...displayUsers].sort((a, b) => b.displayProjects - a.displayProjects);
+    const pageCount = Math.ceil(displayData.totalProjects / rowsPerPage);
+  
   const handlePageChange = (page) => setCurrentPage(page);
-console.log("v",availableVersions)
   if (loading) {
     return (
-      <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk flex justify-center items-center h-64`}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+ 
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+          <div className="w-full md:w-64 relative">
+            <SkeletonLoader height={20} />
+          </div>
+          
+          <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+            <SkeletonLoader width={120} height={20} />
+            <SkeletonLoader width={180} height={20} />
+          </div>
+        </div>
+  
+       
+        <div className={`rounded-[14px] border ${darkMode ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'} mb-6 overflow-hidden`}>
+          <div className="p-4">
+         
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {['Rank', 'Name', 'Projects'].map((item) => (
+                <SkeletonLoader key={item} height={20} width={80} />
+              ))}
+            </div>
+            
+       
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="grid grid-cols-3 gap-4 mb-3">
+                <SkeletonLoader height={20} width={40} />
+                <SkeletonLoader height={20} width={120} />
+                <SkeletonLoader height={20} width={60} />
+              </div>
+            ))}
+          </div>
+        </div>
+  
+
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
+          <SkeletonLoader width={200} height={20} />
+          
+          <div className="flex items-center gap-1">
+            <SkeletonLoader width={32} height={32} circle />
+            {[1, 2, ].map(i => (
+              <SkeletonLoader key={i} width={32} height={32} circle />
+            ))}
+            <SkeletonLoader width={32} height={32} circle />
+          </div>
+        </div>
       </div>
     );
   }
@@ -224,7 +299,7 @@ console.log("v",availableVersions)
       </div>
     
       <div className={`rounded-[14px] border ${darkMode ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'} mb-6 overflow-x-auto w-full`}>
-        {sortedUsers.length > 0 ? (
+        {displayData.data.length > 0  ? (
           <table className="min-w-full divide-y divide-gray-200">
             <thead className={darkMode ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
               <tr>
@@ -251,7 +326,7 @@ console.log("v",availableVersions)
           </table>
         ) : (
           <div className={`p-8 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            No projects found in this version yet.
+               {emptyMessage || 'No projects found yet'}
           </div>
         )}
       </div>

@@ -97,7 +97,7 @@ const [admins, setAdmins] = useState([]);
     }, [currentPage]);
 
   return (
-    <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
+    <div className={`inline-flex w-full  flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
       <div className="flex w-full items-center justify-between">
         <h2 className={`lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
           Admin Management
@@ -116,7 +116,7 @@ const [admins, setAdmins] = useState([]);
       
       {!loading && admins.length > 0 && (
       <div className="w-full overflow-x-auto overflow-hidden">
-        <table className="w-full  md:min-w-[400px] overflow-hidden">
+        <table className="w-full overflow-x-auto  md:min-w-[650px] lg:min-w-[400px]  overflow-hidden">
           <thead>
             <tr className={`border-b ${darkmode ? 'border-neutral-800' : 'border-slate-100'}`}>
               <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Email</th>
@@ -127,7 +127,7 @@ const [admins, setAdmins] = useState([]);
             {admins.map((admin) => (
               <tr key={admin.id}>
                 <td className={`py-4 text-sm w-[10px]   ${darkmode ? 'text-white' : 'text-gray-900'}`}>{admin.email}</td>
-                <td className="py-4 px-5">
+                <td className="py-4 ">
                   <button
                     onClick={() => handleRemoveAdmin(admin.id)}
                     className={`flex items-center gap-1 rounded px-3 py-1 text-sm ${darkmode ? 'text-red-400 hover:bg-neutral-800' : 'text-red-500 hover:bg-red-50'}`}
