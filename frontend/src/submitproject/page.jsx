@@ -3,7 +3,7 @@ import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { MessageAlert } from './success';
-import { getAuth } from 'firebase/auth';
+
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../utils/auth';
 //import { storage } from '../firebase';
