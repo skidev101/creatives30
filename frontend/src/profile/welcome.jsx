@@ -1,15 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FiEdit2 } from 'react-icons/fi';
 
 import { EditProfile } from './modal';
 import { Stats } from './stat';
+import SkeletonLoader from '../components/skeleton';
 
 export const Welcome = () => {
     const darkmode = useSelector((state) => state.darkMode);
     const user = useSelector((state) => state.user);
     const Useremail = user?.email;
     const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
+    const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    
 
     const currentHour = new Date().getHours();
     let greeting;
@@ -22,7 +27,51 @@ export const Welcome = () => {
         greeting = "Good Evening!";
     }
 
-    const [isOpen, setIsOpen] = useState(false);
+useEffect(() => {
+
+    const timer = setTimeout(() => {
+        setLoading(false); 
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+}, []);
+if (loading) {
+  return (
+    <div className="space-y-4 font-grotesk">
+   
+      <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+        <div className="flex items-center space-x-4">
+        
+          <div className="relative">
+            <SkeletonLoader circle={true} width={56} height={56} />
+            <SkeletonLoader circle={true} width={20} height={20} className="absolute -bottom-1 -right-1" />
+          </div>
+          
+    
+          <div className="space-y-2">
+            <SkeletonLoader width={150} height={24} />
+            <SkeletonLoader width={100} height={16} />
+          </div>
+          
+       
+          <SkeletonLoader circle={true} width={36} height={36} className="ml-auto" />
+        </div>
+      </section>
+
+ 
+      <div className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="space-y-2">
+              <SkeletonLoader width={80} height={16} />
+              <SkeletonLoader width={60} height={24} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
     return (
         <div className="space-y-4 font-grotesk">

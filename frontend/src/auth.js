@@ -24,4 +24,3 @@ export const AuthHandler = ({ children }) => {
   return children;
 };
 
-// Wrap your App with this component

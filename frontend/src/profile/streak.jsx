@@ -3,6 +3,7 @@ import { FiAward, FiCalendar, FiTrendingUp } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 
 import { authFetch } from '../utils/auth';
+import SkeletonLoader from '../components/skeleton';
 
 
 const ProgressBar = ({ current, total }) => {
@@ -62,8 +63,26 @@ const Streak = () => {
 
   if (loading) {
     return (
-      <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px]`}>
-        Loading streak data...
+      <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <SkeletonLoader width={100} height={24} />
+            <SkeletonLoader width={80} height={20} />
+          </div>
+          <SkeletonLoader height={10} />
+        </div>
+  
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 rounded-lg ${darkmode ? 'bg-neutral-900' : 'bg-gray-50'}`}>
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="flex items-center space-x-1">
+              <SkeletonLoader circle={true} width={32} height={32} />
+              <div className="flex-1 ">
+                <SkeletonLoader width={80} height={16} className="mb-1" />
+                <SkeletonLoader width={80} height={20} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

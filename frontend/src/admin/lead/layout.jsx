@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
 import { FadeDown } from "../../components/framer";
-import LeaderboardPage from "../../leaderboard/test";
+import LeaderboardPage from "../../leaderboard/page";
 
 
    

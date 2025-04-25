@@ -35,10 +35,10 @@ export const WelcomeAdmin = () => {
         
         const versionData = leaderboard.versions[leaderboard.currentVersion];
         // Check different possible structures
-        if (versionData.projectCount !== undefined) {
-            return versionData.projectCount;
-        } else if (versionData.data?.projectCount !== undefined) {
-            return versionData.data.projectCount;
+        if (versionData.totalProjects !== undefined) {
+            return versionData.totalProjects;
+        } else if (versionData.data?.totalProjects !== undefined) {
+            return versionData.data.totalProjects;
         } else if (Array.isArray(versionData.data)) {
             return versionData.data.length;
         }

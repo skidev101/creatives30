@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import img from '../assets/test.jpg'
 import { getUser } from './api';
+import SkeletonLoader from '../components/skeleton';
 
 
 const UserProjects = () => {
@@ -50,6 +51,44 @@ const UserProjects = () => {
  
      loadUser();
    }, [user]);
+
+   if (loading) {
+    return (
+      <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <SkeletonLoader width={150} height={24} />
+          </div>
+         
+          <div className="space-y-4">
+            <motion.div className={`p-4 rounded-lg border ${darkmode ? 'border-neutral-800 bg-neutral-900' : 'border-gray-200 bg-white'}`}>
+              <div className="flex flex-col md:flex-row gap-4">
+            
+                <div className="w-full md:w-32 h-32 bg-gray-200 rounded-lg overflow-hidden">
+                  <SkeletonLoader height={128} className="h-full" />
+                </div>
+                
+               
+                <div className="flex-1 space-y-3">
+                  <SkeletonLoader width={120} height={24} />
+                  <SkeletonLoader width={80} height={16} />
+                  <SkeletonLoader count={3} height={12} />
+                  
+                  
+                  <div className="flex space-x-3">
+                    <SkeletonLoader width={60} height={20} />
+                    <SkeletonLoader width={80} height={20} />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+          
+        
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>  

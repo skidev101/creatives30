@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { getAuth } from 'firebase/auth';
 import { authFetch } from '../utils/auth';
+import SkeletonLoader from '../components/skeleton';
 
 const SubmitHistory = () => {
   const darkmode = useSelector((state) => state.darkMode);
@@ -49,7 +50,24 @@ const SubmitHistory = () => {
   if (loading) {
     return (
       <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
-        <div>Loading commit data...</div>
+        <h3 className={`text-[12px] font-semibold mb-4 uppercase tracking-wider ${
+          darkmode ? 'text-gray-500' : 'text-gray-500'
+        }`}>
+          <SkeletonLoader width={100} height={14} />
+        </h3>
+        
+        <div className="mb-8 flex justify-center flex-col items-center">
+          <div className="grid grid-cols-5 gap-[8px] w-fit"> {/* Changed to 7 columns for days of week */}
+            {Array.from({ length: 30 }).map((_, index) => ( // 5 weeks x 7 days
+              <motion.div
+                key={`skeleton-${index}`}
+                className={`${darkmode ? 'bg-neutral-800' : 'bg-gray-200'} w-5 h-5 rounded-sm ${
+                  darkmode ? 'border-neutral-700' : 'border-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </section>
     );
   }

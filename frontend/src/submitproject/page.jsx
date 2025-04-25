@@ -154,7 +154,7 @@ console.log("user", user)
     <div className={`flex flex-start items-center flex-row mb-4 border-b w-full ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
       {Userimg ? 
          <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-         <span className='text-4xl'> {Userimg} </span>
+         <span className='lg:text-4xl text-2xl'> {Userimg} </span>
         </div>
         :
         <img
