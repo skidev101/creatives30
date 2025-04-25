@@ -4,6 +4,7 @@ import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 import { saveLeaderboardData, setCurrentVersion } from '../action';
+import { authFetch } from '../utils/auth';
 
 export default function LeaderboardPage() {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ export default function LeaderboardPage() {
   const currentVersion = leaderboard.currentVersion;
 console.log ("c", currentVersion)
   const fetchLeaderboard = async () => {
+    
     try {
       setLoading(true);
       setError(null);
@@ -33,7 +35,7 @@ console.log ("c", currentVersion)
       const versionParam = selectedVersion ? `&ver=${selectedVersion.replace('v', '')}` : '';
       const url = `https://xen4-backend.vercel.app/leaderboard?page=${currentPage}&limit=${rowsPerPage}${versionParam}`;
 
-      const response = await fetch(url);
+      const response = await authFetch(url);
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -106,10 +108,14 @@ console.log ("c", currentVersion)
   };
 
   useEffect(() => {
-    if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
-      setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
+    if (leaderboard.versions[currentVersion]) {
+      setDisplayData(leaderboard.versions[currentVersion]);
       setSelectedVersion(leaderboard.currentVersion);
     }
+    // if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
+    //   setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
+    //   setSelectedVersion(leaderboard.currentVersion);
+    // }
     fetchLeaderboard();
   }, []);
 

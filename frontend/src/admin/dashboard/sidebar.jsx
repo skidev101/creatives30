@@ -48,7 +48,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
       isSidebarOpen ? "translate-x-0 block" : "-translate-x-full"
     } md:${isSidebarOpen ? "block" : "hidden"} lg:translate-x-0 lg:block`}
   >
-    <div className={`h-full py-6 overflow-y-auto ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
+    <div className={`h-full py-6 overflow-y-auto scrollbar-hide ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
       <ul className={`p-0 pb-10 m-0 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`} >
         <li className="p-1 ">
           <NavLink
@@ -85,6 +85,15 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
           >
             <CiViewBoard className={`w-5 h-5  group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
             <span className="flex-1 ms-3 whitespace-nowrap">Version</span>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/lead"
+            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+          >
+            <CiViewBoard className={`w-5 h-5  group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
+            <span className="flex-1 ms-3 whitespace-nowrap">Ranks</span>
           </NavLink>
         </li>
       </ul>

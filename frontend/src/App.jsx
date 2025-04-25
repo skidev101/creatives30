@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { clearUser, setUser } from './action';
 import { useDispatch, useSelector } from 'react-redux';
+import Lead from './admin/lead/page';
 
 function App() {
   
@@ -80,17 +81,25 @@ function App() {
    
     <Router>
       <Routes>
+        {/* landing */}
       <Route path="/" element={<Landing />} />
+         {/* auth */}
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Signup/>} />
         <Route path="/forgetpassword" element={<ForgetPassword/>} />
+        {/* // user */}
         <Route path="/submitproject" element={<SubmitProject/>} />
         <Route path="/profile" element={<Profile/>} />
         <Route path="/leaderboard" element={<Leaderboard/>} />
-        <Route path="/user/:username" element={<UserProjectsID/>} />
+       
+        {/* admin only */}
         <Route path="/addadmins" element={<AddAdmin/>} />
         <Route path="/version" element={<Version/>} />
+        <Route path="/lead" element={<Lead/>} />
         <Route path="/adminprofile" element={<AdminProfile/>} />
+
+         {/* for all */}
+        <Route path="/user/:username" element={<UserProjectsID/>} />
       </Routes>
      
     </Router>

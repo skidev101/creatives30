@@ -17,7 +17,7 @@ export default function LeaderboardPage() {
     const [error, setError] = useState(null);
     const [selectedVersion, setSelectedVersion] = useState('');
     const [emptyMessage, setEmptyMessage] = useState('');
-  
+    const currentVersion = leaderboard.currentVersion
     const [displayData, setDisplayData] = useState({
       data: [],
       page: 1,
@@ -126,7 +126,14 @@ export default function LeaderboardPage() {
           setLoading(false);
         }
       };
-  
+      
+      useEffect(() => {
+        if (leaderboard.versions[currentVersion]) {
+          setDisplayData(leaderboard.versions[currentVersion]);
+          setSelectedVersion(leaderboard.currentVersion);
+        }
+        fetchLeaderboard();
+      }, []);
     useEffect(() => {
       if (leaderboard.currentVersion && leaderboard.versions[leaderboard.currentVersion]) {
         setDisplayData(leaderboard.versions[leaderboard.currentVersion]);
@@ -134,7 +141,7 @@ export default function LeaderboardPage() {
       }
       fetchLeaderboard();
     }, []);
-  
+
     useEffect(() => {
       fetchLeaderboard();
     }, [selectedVersion, currentPage]);
