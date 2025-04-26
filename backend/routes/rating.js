@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { handleRating, getAverageRating } = require('../controllers/ratingController');
 
-router.post('/');
+router.route('/')
 	.get(getAverageRating)
 	.post(handleRating);
 

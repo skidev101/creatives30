@@ -1,6 +1,7 @@
 const User = require('../../models/User');
 const mongoose = require('mongoose');
 
+
 const getAllAdmins = async (req, res) => {
 	let { page = 1, limit = 15 } = req.query;
 	page = parseInt(page);
