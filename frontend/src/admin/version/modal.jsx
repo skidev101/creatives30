@@ -2,11 +2,12 @@
 export default function VersionModal ({
     showVersionModal,
     darkmode,
-    newVersionNo,
-    setNewVersionNo,
+    newVersionName,
+    setNewVersionName,
     setShowVersionModal,
     handleCreateVersion,
-    error
+    error,
+    loadingC
 }){
     return(
         <>
@@ -27,8 +28,8 @@ export default function VersionModal ({
                 )}
             <input
               type="text"
-              value={newVersionNo}
-              onChange={(e) => setNewVersionNo(e.target.value)}
+              value={newVersionName}
+              onChange={(e) => setNewVersionName(e.target.value)}
               placeholder="Version no"
               className={`w-full p-2 rounded-md border mb-4 ${darkmode ? 'bg-[#111313] border-gray-700 text-white' : 'bg-white border-gray-300 text-black'}`}
             />
@@ -43,7 +44,7 @@ export default function VersionModal ({
                 onClick={handleCreateVersion}
                 className={`px-4 py-2 rounded-md ${darkmode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
               >
-                Create
+                {loadingC ? "Creating..." : "Create"}
               </button>
             </div>
           </div>

@@ -3,10 +3,11 @@ import { useSelector } from "react-redux";
 
 import { FadeDown, FadeLeft, FadeRight, FadeUp } from "../components/framer";
 import { Welcome } from "./welcome";
-import Heatmap from "./heatmap";
+
 import Streak from "./streak";
 import Achievements from "./achievements";
 import UserProjects from "./userprojects";
+import SubmitHistory from "./submithistory";
 
 
 
@@ -25,7 +26,7 @@ const Layout = () => {
 
       <div className="h-min w-full flex-grow lg:w-[calc(20%_-_10px)] ">
        <FadeUp>
-       <Heatmap  />
+       <SubmitHistory  />
        </FadeUp>
       </div>
       

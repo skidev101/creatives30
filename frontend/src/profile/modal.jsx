@@ -3,7 +3,8 @@ import { useRef, useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../action';
-import { FaTimes } from 'react-icons/fa'; // Importing the close icon
+import { FaTimes } from 'react-icons/fa'; 
+import { authFetch } from '../utils/auth';
 
 export const EditProfile = ({ isOpen, setIsOpen }) => {
     const darkmode = useSelector((state) => state.darkMode);
@@ -23,14 +24,7 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
         setError('');
         setSuccess(false);
         
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-        
-        if (!currentUser) {
-          setError("You must be logged in to update your profile.");
-          setLoading(false);
-          return;
-        }
+     
       
         try {
           // Convert image to base64 if new file was selected
@@ -45,19 +39,16 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
           }
       
           const updatedProfile = {
-            uid: currentUser.uid,
+            uid: user.uid,
             email: email || undefined,
             username: username || undefined,
             profileImgURL: imageBase64 || profileImgURL || undefined, // Use new base64 or existing URL
           };
       
-          const idToken = await currentUser.getIdToken();
-          const response = await fetch('https://xen4-backend.vercel.app/update', {
+        
+          const response = await authFetch('https://xen4-backend.vercel.app/update', {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`
-            },
+         
             body: JSON.stringify(updatedProfile),
           });
       
@@ -77,68 +68,7 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
           setLoading(false);
         }
       };
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError('');
-    //     setSuccess(false);
-        
-    //     const auth = getAuth();
-    //     const currentUser = auth.currentUser;
-        
-    //     if (!currentUser) {
-    //         setError("You must be logged in to update your profile.");
-    //         setLoading(false);
-    //         return;
-    //     }
-        
-    //     const updatedProfile = {
-    //         uid: currentUser.uid,
-    //         email: email || undefined,
-    //         username: username || undefined,
-    //         profileImgURL: profileImgURL || undefined,
-    //     };
-
-    //     try {
-    //         const idToken = await currentUser.getIdToken();
-    //         const response = await fetch('https://xen4-backend.vercel.app/update', {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': `Bearer ${idToken}`
-    //             },
-    //             body: JSON.stringify(updatedProfile),
-    //         });
-
-    //         const contentType = response.headers.get('content-type');
-    //         if (!contentType || !contentType.includes('application/json')) {
-    //             const text = await response.text();
-    //             throw new Error(text || 'Invalid server response');
-    //         }
-
-    //         const data = await response.json();
-            
-    //         if (!response.ok) {
-    //             throw new Error(data.error || `Server error: ${response.status}`);
-    //         }
-    //         dispatch(setUser({
-    //             ...user,
-    //             username: username,
-    //             email: email,
-    //             profileImgURL: profileImgURL
-    //         }));
-    //         setSuccess(true);
-    //         setTimeout(() => setIsOpen(false), 1500);
-    //     } catch (err) {
-    //         setError(err.message.includes('<!DOCTYPE html>') 
-    //             ? 'Server endpoint not found (404)' 
-    //             : err.message);
-    //         console.error('Update error:', err);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
+   
     
     const handleFileChange = (e) => {
         const file = e.target.files[0];

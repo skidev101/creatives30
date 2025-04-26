@@ -51,19 +51,13 @@ const VersionDetails = () => {
     if (!endDate) {
       return (
         <span className={`${baseClasses} ${darkmode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800'}`}>
-          <FiClock className="mr-1" /> Upcoming
+          <FiCheckCircle className="mr-1" /> Active
         </span>
       );
     } else if (now > endDate) {
       return (
         <span className={`${baseClasses} ${darkmode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'}`}>
           <FiXCircle className="mr-1" /> Closed
-        </span>
-      );
-    } else if (now >= startDate && now <= endDate) {
-      return (
-        <span className={`${baseClasses} ${darkmode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'}`}>
-          <FiCheckCircle className="mr-1" /> Active
         </span>
       );
     } else {
