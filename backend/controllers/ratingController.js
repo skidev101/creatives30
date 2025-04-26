@@ -2,9 +2,10 @@ const Rating = require('../models/Rating');
 const mongoose = require('mongoose');
 
 const handleRating = async (req, res) => {
-  const { uid, projectId, rating } = req.body;
+	const { projectId } = req.params;
+  const { rating } = req.body;
   if (!projectId || !rating) return res.status(400).json({ message: 'Empty request' });
-  //const { uid } = req.user;
+  const { uid } = req.user;
   
   console.log(`uid: ${uid}, rating: ${rating}, projectId: ${projectId}`);
   
@@ -30,7 +31,7 @@ const handleRating = async (req, res) => {
 
 
 const getAverageRating = async (req, res) => {
-  const { projectId } = req.query;
+  const { projectId } = req.params;
   if (!projectId) return res.status(400).json({ message: 'Empty request' });
   
   

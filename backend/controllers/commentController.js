@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 
 const createNewComment = async (req, res) => {
 	const { projectId } = req.params;
-  const { uid, comment } = req.body;
+  const { comment } = req.body;
   console.log(req.params);
   if (!projectId || !comment) return res.status(400).json({ message: 'Empty request' });
-  //const { uid } = req.user;
+  const { uid } = req.user;
   
   console.log(`uid: ${uid}, comment: ${comment}, projectId: ${projectId}`);
   

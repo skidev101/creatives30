@@ -6,8 +6,8 @@ const moment = require('moment');
 
 
 const handleCommit = async (req, res) => {
-	const { uid } = req.body //...for testing purposes
-  //const { uid } = req.user;
+	//const { uid } = req.body //...for testing purposes
+  const { uid } = req.user;
   console.log(`uid: ${uid}`);
   const today = moment().format('DD-MM-YYYY');
   const yesterday = moment().subtract(1, 'days').format('DD-MM-YYYY');

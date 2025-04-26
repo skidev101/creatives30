@@ -24,13 +24,13 @@ app.use('/leaderboard', require('../routes/leaderboard'));
 app.use('/users', require('../routes/userProfile'));
 
 
-//app.use(verifyIdToken);
+app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));
 app.use('/googleLogin', require('../routes/googleLogin'));
 app.use('/githubLogin', require('../routes/githubLogin'));
 app.use('/update', require('../routes/update'));
-app.use('/submit', require('../routes/submit'));
+app.use('/project/submit', require('../routes/submit'));
 app.use('/user/streak', require('../routes/streak'));
 app.use('/user/commit', require('../routes/newCommit'));
 app.use('/user/commitHistory', require('../routes/commitHistory'));
@@ -39,7 +39,7 @@ app.use('/project/rate', require('../routes/rating'));
 
 
 // Admin routes
-//app.use(verifyAdmin);
+app.use(verifyAdmin);
 app.use('/admin/newVersion', require('../routes/admin/newVersion'));
 app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 app.use('/admin/versionStat', require('../routes/admin/versionStat'));

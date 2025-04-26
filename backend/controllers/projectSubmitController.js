@@ -4,9 +4,9 @@ const VersionHistory = require('../models/VersionHistory');
 const mongoose = require('mongoose');
 
 const handleProjectSubmit = async (req, res) => {
-  const { uid, title, livelink, day, repolink, languages, framework, description } = req.body;
+  const { title, livelink, day, repolink, languages, framework, description } = req.body;
   if (!livelink || !day || !languages || !description) return res.status(400).send("Empty request");
-  //const { uid } = req.user;
+  const { uid } = req.user;
   console.log(`uid: ${uid}, title: ${title}, livelink: ${livelink}, languages: ${languages}, description: ${description}`);
   
   const projectInfo = {
