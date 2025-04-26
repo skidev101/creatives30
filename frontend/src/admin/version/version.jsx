@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { FiPlus, FiCheck } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import img from '../../assets/image.png';
@@ -11,7 +11,8 @@ import VersionDetails from '../profile/details';
 export default function VersionPage() {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const { darkMode, leaderboard } = useSelector(state => state);
+     const darkMode = useSelector((state) => state.darkMode);
+
   const navigate = useNavigate();
 
   const [showVersionModal, setShowVersionModal] = useState(false);

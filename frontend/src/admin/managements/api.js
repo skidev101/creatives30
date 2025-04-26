@@ -75,7 +75,14 @@ export const deleteUser = async (email) => {
       throw new Error(errorData.message || "Failed to delete user");
     }
 
-    return await response.json();
+    // Handle the backend's response format
+    const result = await response.json();
+    return {
+      success: true,
+      email: email,
+      message: result.message || "User deleted successfully"
+    };
+    
   } catch (error) {
     console.error('Error deleting user:', error);
     throw error;

@@ -97,7 +97,10 @@ const [admins, setAdmins] = useState([]);
     }, [currentPage]);
 
   return (
-    <div className={`inline-flex w-full  flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
+    <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+  
+   
+         <div className="overflow-x-auto">
       <div className="flex w-full items-center justify-between">
         <h2 className={`lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
           Admin Management
@@ -115,37 +118,48 @@ const [admins, setAdmins] = useState([]);
 
       
       {!loading && admins.length > 0 && (
-      <div className="w-full overflow-x-auto overflow-hidden">
-        <table className="w-full overflow-x-auto  md:min-w-[650px] lg:min-w-[400px]  overflow-hidden">
-          <thead>
-            <tr className={`border-b ${darkmode ? 'border-neutral-800' : 'border-slate-100'}`}>
-              <th className={`pb-3 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Email</th>
-              <th className={`pb-3 px-7 text-left text-sm font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
-            {admins.map((admin) => (
-              <tr key={admin.id}>
-                <td className={`py-4 text-sm w-[10px]   ${darkmode ? 'text-white' : 'text-gray-900'}`}>{admin.email}</td>
-                <td className="py-4 ">
-                  <button
+        <div className="min-w-full inline-block align-middle mt-2">
+                 <div className={`rounded-lg border ${darkmode ? 'border-neutral-800' : 'border-gray-200'} overflow-hidden`}>
+                   <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-800">
+                     <thead className={darkmode ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                       <tr>
+                         <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Email</th>
+                         <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Actions</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {admins.map((admin) => (
+                         <tr 
+                           key={admin.id} 
+                           className={`${darkmode ? 'hover:bg-[#222]' : 'hover:bg-gray-50'}`}
+                         >
+                           <td className={`px-4 py-4 text-sm font-medium ${darkmode ? 'text-white' : 'text-gray-900'}`}>
+                            {admin.email}
+                           </td>
+                    
+                         
+                           <td className="px-4 py-4 text-sm font-medium">
+                           <button
                     onClick={() => handleRemoveAdmin(admin.id)}
                     className={`flex items-center gap-1 rounded px-3 py-1 text-sm ${darkmode ? 'text-red-400 hover:bg-neutral-800' : 'text-red-500 hover:bg-red-50'}`}
                   >
                     <FiTrash2 size={14} />
                     Remove
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                           </td>
+                         </tr>
+                       ))}
+                     </tbody>
+                   </table>
+                 </div>
+               </div>
        )}
+
+
 {!loading && totalAdmin > rowsPerPage && (
   <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4 w-full">
     <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-      Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, totalAdmin)} of {totalAdmin} entries
+       {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, totalAdmin)} of {totalAdmin} admins
     </div>
     <div className="flex items-center gap-1">
       <button
@@ -206,6 +220,7 @@ const [admins, setAdmins] = useState([]);
         error={error}
        />
       )}
+      </div>
     </div>
   );
 };

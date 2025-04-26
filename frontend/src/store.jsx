@@ -10,11 +10,11 @@ const initialState = {
   leaderboard: {
     currentVersion: null,
     versions: {}, // Structure: { 'v1': { data: [], page: 1, ... }, 'v2': {...} }
-    allVersions: [] // List of all available version strings ['v1', 'v2']
+    allVersions: [] 
   }
 };
 
-// Reducer with improved leaderboard handling
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "SET_MODE":
@@ -100,4 +100,3 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-
