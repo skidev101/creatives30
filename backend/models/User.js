@@ -33,16 +33,16 @@ const userSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
   },
-  streak: {
-		count: {
-			type: Number,
-			default: 0
-		},
-		lastCommitDate: {
-			type: String,
-			default: ''
+  versions: [
+		{
+			version: Number,
+			streak: {
+				count: Number,
+				lastCommitDate: String
+			},
+			commits: [String]
 		}
-  },
+	],
   disabled: {
 		type: String,
 		default: false

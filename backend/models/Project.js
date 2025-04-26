@@ -15,6 +15,7 @@ const projectSchema = new mongoose.Schema({
 		default: 0
 	},
 	projects: [{
+		title: String,
 		livelink: String,
 		day: String,
 		repolink: String,

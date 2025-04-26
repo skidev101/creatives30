@@ -9,9 +9,13 @@ const commitSchema = new mongoose.Schema({
 	date: {
 		type: String,
 		required: true
+	},
+	version: {
+		type: Number,
+		required: true
 	}
 })
 
-commitSchema.index({ userId: 1, date: 1 }, { unique: true })
+commitSchema.index({ userId: 1, date: 1, version: 1 }, { unique: true })
 
 module.exports = mongoose.model('Commit', commitSchema)

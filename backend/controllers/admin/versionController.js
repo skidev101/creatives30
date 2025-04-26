@@ -5,8 +5,8 @@ const ArchivedProject = require('../../models/ArchivedProject');
 const mongoose = require('mongoose');
 
 const createNewVersion = async (req, res) => {
-  const { uid } = req.user;
-	const { title } = req.body;
+  //const { uid } = req.user;
+	const { uid, title } = req.body;
 	if (!title) return res.status(400).json({ message: 'empty request' });
 	const foundVersionTitle = await VersionHistory.findOne({ title });
 	if (foundVersionTitle) return res.status(400).json({
@@ -16,7 +16,7 @@ const createNewVersion = async (req, res) => {
 	try {
 		const foundAdmin = await User.findOne({uid});
 		const username = foundAdmin.username;
-		const latestVersion = await Project.findOne().sort({ version: - 1 });
+		const latestVersion = await VersionHistory.findOne().sort({ version: - 1 });
 		const newVersion = (latestVersion && latestVersion.version) ? latestVersion.version + 1 : 1;
 		const projectsToArchive = await Project.find({ version: latestVersion ? latestVersion.version : 0});
 	  
