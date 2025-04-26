@@ -35,9 +35,7 @@ app.use('/user/streak', require('../routes/streak'));
 app.use('/user/commit', require('../routes/newCommit'));
 app.use('/user/commitHistory', require('../routes/commitHistory'));
 app.use('/project/comment', require('../routes/comments'));
-//app.use('/project/getComments', require('../routes/getComments'));
-app.use('/project/rate', require('../routes/newRating'));
-app.use('/project/averageRating', require('../routes/getAverageRating'));
+app.use('/project/rate', require('../routes/rating'));
 
 
 // Admin routes

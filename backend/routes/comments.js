@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createNewComment } = require('../controllers/commentController');
-const { getProjectComments } = require('../controllers/commentController');
+const { createNewComment, getProjectComments } = require('../controllers/commentController');
 
 router.route('/:projectId')
 	.get(getProjectComments)
