@@ -24,4 +24,7 @@ export const saveLeaderboardData = (version, data) => ({
     payload: version
   });
 
-  
+  export const addNewVersion = (version) => ({
+    type: "ADD_NEW_VERSION",
+    payload: version
+  });

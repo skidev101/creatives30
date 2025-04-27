@@ -17,6 +17,7 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false)
   //const [screenshots, setScreenshots] = useState([]);
   const [form , setForm] = useState({
+    title:'',
     livelink :'',
     day:'',
     repolink:'',
@@ -25,6 +26,7 @@ export default function SubmitPage() {
     description:''
   })
   const [error, setError] = useState({ 
+    title:'',
     livelink:'',
     day:'',
     repolink:'',
@@ -64,10 +66,11 @@ console.log("user", user)
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError({ livelink: '', day: '', repolink: '', languages: '', description: '', general: '' });
+    setError({ livelink: '', day: '', repolink: '', languages: '',title:'', description: '', general: '' });
   
     // Validate form
     const errors = {};
+    if (!form.title) errors.title = "Provide your project title";
     if (!form.livelink) errors.livelink = "Provide your hosted URL";
     if (!form.day) errors.day = "Provide your day of submission";
     if (!form.repolink) errors.repolink = "Provide your repo URL";
@@ -83,9 +86,10 @@ console.log("user", user)
     try {
      
   
-      // 1. Submit project
+      //  Submit project
       const submitResponse = await authFetch('https://xen4-backend.vercel.app/submit', {
         method: 'POST',
+        
         body: JSON.stringify({
           uid: user.uid,
           ...form
@@ -97,7 +101,7 @@ console.log("user", user)
         throw new Error(error.message || "Project submission failed");
       }
   
-      // 2. Mark commit
+      // Mark commit
       try {
         const commitResponse = await authFetch('https://xen4-backend.vercel.app/user/commit', 
       );
@@ -114,6 +118,7 @@ console.log("user", user)
       // Success
       navigate('/leaderboard');
       setForm({
+        title:'',
         livelink: '',
         day: '',
         repolink: '',
@@ -207,17 +212,17 @@ console.log("user", user)
         </div>
         <div>
           <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
-            Uploading For Day *
+            Title *
           </label>
           <input
-            type="number"
-            name='day'
+            type="text"
+            name='title'
             className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
-            placeholder="10"
-            value={form.day}
+            placeholder="Landing page"
             onChange={handleInputChange}
+            value={form.title}
           />
-           {error.day && <span className="text-sm text-red-400">{error.day}</span>}
+          {error.title && <span className="text-sm text-red-400">{error.title}</span>}
         </div>
       </div>
   
@@ -269,6 +274,22 @@ console.log("user", user)
         </div>
         <div>
           <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
+            Uploading For Day *
+          </label>
+          <input
+            type="number"
+            name='day'
+            className={`mt-1 block w-full rounded-lg border ${darkmode ? 'border-neutral-700 bg-gray-800 text-neutral-100' : 'border-gray-300 bg-gray-100'} shadow-sm py-3 px-4 focus:border-indigo-500 focus:ring-indigo-500`}
+            placeholder="10"
+            value={form.day}
+            onChange={handleInputChange}
+          />
+           {error.day && <span className="text-sm text-red-400">{error.day}</span>}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+      <div>
+          <label className={`block text-sm font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
             Description *
           </label>
           <input
@@ -281,6 +302,7 @@ console.log("user", user)
           />
            {error.description && <span className="text-sm text-red-400">{error.description}</span>}
         </div>
+      
       </div>
   
       {/*<div className="flex justify-between items-center">

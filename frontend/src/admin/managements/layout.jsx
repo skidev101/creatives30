@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 
-import AdminManagementUI from "./tes";
+import AdminManagementUI from "./admins";
 import { FadeUp } from "../../components/framer";
-import UsersList from "./test";
+import UsersList from "./users";
 
 
    
@@ -15,7 +15,7 @@ const Layout = () => {
       <AdminManagementUI />
       </FadeUp>
     </div>
-    <div className="h-min w-full lg:w-[calc(50%_-_30px)] animate-fadeDown pt-20 pb-10">
+    <div className="h-min w-full lg:w-[calc(50%_-_10px)] animate-fadeDown pt-20 pb-10">
       <FadeUp>
       <UsersList />
       </FadeUp>
