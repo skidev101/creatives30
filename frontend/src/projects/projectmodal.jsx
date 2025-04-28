@@ -29,9 +29,6 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
   const userRating = useSelector(state => 
     state.ratings.userRatings[project?._id] || 0
   );
-  const averageRating = useSelector(state =>
-    state.ratings.averages[project?._id] || 0
-  );
 
   useEffect(() => {
     if (project) {
@@ -49,8 +46,8 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
       // Get comments
       const commentsResponse = await getProjectComments(project._id);
       console.log('Comments response:', commentsResponse); // Add this for debugging
-      setReviews(commentsResponse|| []); // Adjust based on your API response structure
-      
+      setReviews(Array.isArray(commentsResponse) ? commentsResponse : []);
+       
     } catch (err) {
       setError(err.message || 'Failed to load data');
       console.error('Error loading data:', err);
