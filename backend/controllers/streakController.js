@@ -6,7 +6,7 @@ const moment = require('moment');
 
 const getUserStreak = async (req, res) => {
 	//const { uid } = req.body //...for testing purpose
-  const { uid } = req.user;
+  const { uid } = req.body;
   console.log(`uid: ${uid}`);
   
   try {
@@ -15,6 +15,10 @@ const getUserStreak = async (req, res) => {
     const latestVersionDoc = await VersionHistory.findOne().sort({ version: - 1 });
     const latestVersion = latestVersionDoc.version;
     const foundUserVersion = foundUser.versions.find((v) => v.version === latestVersion);
+    console.log(latestVersionDoc);
+    console.log(latestVersion);
+    console.log(foundUser);
+    console.log(foundUserVersion);
     if (!foundUserVersion) return res.status(404).json({ message: 'version not found' });
     
     
