@@ -17,7 +17,8 @@ const initialState = {
     userRatings: {},
     // Global averages by project
     averages: {} 
-  }
+  },
+  review:0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -96,13 +97,14 @@ const reducer = (state = initialState, action) => {
           }
         }
       };
-
+     
+      case "SET_REVIEW":
+        return { ...state, review: action.payload };
     default:
       return state;
   }
 };
 
-// Persist config remains the same
 const persistConfig = {
   key: "root",
   storage,

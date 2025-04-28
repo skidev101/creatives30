@@ -34,6 +34,11 @@ export const setRating = (userId, projectId, rating) => ({
     payload: { projectId, average }
   });
   
+  export const setReview = (count) => ({
+    type: "SET_REVIEW",
+    payload:count
+    })
+
   // export const addNewVersion = (version) => ({
   //   type: "ADD_NEW_VERSION",
   //   payload: version
