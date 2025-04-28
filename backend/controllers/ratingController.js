@@ -31,25 +31,31 @@ const handleRating = async (req, res) => {
 
 
 const getAverageRating = async (req, res) => {
-  const { projectId } = req.params;
-  if (!projectId) return res.status(400).json({ message: 'Empty request' });
-  
-  
-  console.log(`projectId: ${projectId}`);
-  
-  
-  try {
-		const ratings = await Rating.find({ projectId });
-		if (!ratings || ratings.length === 0) return res.status(400).json({ averageRating: 0 });
-		const totalStars = ratings.reduce((sum, rating) => sum + rating.stars, 0);
-		const average = totalStars / ratings.length;
+	const { projectId } = req.params;
+	if (!projectId) return res.status(400).json({ message: 'Empty request' });
 	
-		res.json({ averageRating: average.toFixed(2) });
-  } catch(err) {
-    console.log(err);
-    res.status(500).send('Internal server error');
-  }
-}
+	try {
+	  const ratings = await Rating.find({ projectId });
+	  if (!ratings || ratings.length === 0) return res.status(200).json({ averageRating: 0 });
+  
+	  const starsArray = ratings.map(r => r.stars);
+	  console.log('All stars for project:', starsArray);
+  
+	  // Filter out invalid stars manually if needed
+	  const validStars = starsArray.filter(star => star >= 1 && star <= 5);
+  
+	  if (validStars.length === 0) return res.status(200).json({ averageRating: 0 });
+  
+	  const total = validStars.reduce((acc, star) => acc + star, 0);
+	  const average = total / validStars.length;
+  
+	  res.json({ averageRating: Number(average.toFixed(2)) });
+	} catch (err) {
+	  console.log(err);
+	  res.status(500).send('Internal server error');
+	}
+  };
+  
 
 module.exports = {
 	handleRating,
