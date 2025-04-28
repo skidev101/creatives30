@@ -24,10 +24,11 @@ export const saveLeaderboardData = (version, data) => ({
     payload: version
   });
 
-  export const setRating = (projectId, rating) => ({
-    type: "SET_RATING",
-    payload: { projectId, rating }
-  });
+
+export const setRating = (userId, projectId, rating) => ({
+  type: "SET_RATING",
+  payload: { userId, projectId, rating }
+});
   export const setAverageRating = (projectId, average) => ({
     type: "SET_AVERAGE_RATING",
     payload: { projectId, average }

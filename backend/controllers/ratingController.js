@@ -41,8 +41,10 @@ const getAverageRating = async (req, res) => {
   try {
 		const ratings = await Rating.find({ projectId });
 		if (!ratings || ratings.length === 0) return res.status(400).json({ averageRating: 0 });
-		const average = ratings.reduce((acc, curr) => acc + curr.stars, 0) / ratings.length;
-		res.json({ averageRating: Math.min(5, average).toFixed(2) });
+		const totalStars = ratings.reduce((sum, rating) => sum + rating.stars, 0);
+		const average = totalStars / ratings.length;
+	
+		res.json({ averageRating: average.toFixed(2) });
   } catch(err) {
     console.log(err);
     res.status(500).send('Internal server error');

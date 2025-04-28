@@ -26,10 +26,16 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const userRating = useSelector(state => 
-    state.ratings.userRatings[project?._id] || 0
-  );
-
+  const user = useSelector((state) => state.user);
+   console.log("uid", user.uid)
+   
+   const userRating = useSelector(state => {
+    const userId = state.user?.uid;  // Get from Redux state directly
+    return userId && project?._id 
+      ? state.ratings.userRatings[userId]?.[project._id] || 0
+      : 0;
+  });
+  console.log("rn", userRating)
   useEffect(() => {
     if (project) {
       loadComments();
@@ -57,14 +63,14 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
   };
       const handleRate = async (newRating) => {
         try {
-          dispatch(setRating(project?._id, newRating));
-          await rateProject({ projectId: project._id, rating: newRating });
+          dispatch(setRating(user.uid, project._id, newRating));
+          await rateProject({ projectId: project._id, rating: newRating, userId: user.uid });
        
         
           setShowReviewForm(true);
         } catch (err) {
           setError(err.message || 'Rating failed');
-          dispatch(setRating(project._id, userRating));
+          dispatch(setRating(user.uid, project._id, userRating));
           console.error('Error rating project:', err);
         }
       };
