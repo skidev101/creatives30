@@ -33,14 +33,12 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
        // Get average rating
        const ratingResponse = await getProjectRating(project._id);
        console.log('rate response:', ratingResponse); 
-       const normalizedRating = parseFloat(ratingResponse.averageRating) / 20;
-       setAverageRatings(normalizedRating || 0);
        dispatch(setAverageRating(project._id, ratingResponse.averageRating || 0));
        console.log('av', averageRating)
        // Get comments
        const commentsResponse = await getProjectComments(project._id);
        console.log('Comments response:', commentsResponse); 
-       setReviews(commentsResponse|| []); 
+       setReviews(Array.isArray(commentsResponse) ? commentsResponse : []);
        
      } catch (err) {
        setError(err.message || 'Failed to load data');
@@ -70,7 +68,7 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
     size="sm"
   />
   <span className={`ml-1 text-xs ${darkmode ? 'text-gray-300' : 'text-gray-700'}`}>
-    ({reviews.length || 0} reviews)
+  ({Array.isArray(reviews) ? reviews.length : 0} reviews)
   </span>
 </div>
       </div> 
