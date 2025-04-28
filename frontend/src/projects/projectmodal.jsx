@@ -14,7 +14,7 @@ import {
   getProjectComments 
 } from './api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAverageRating, setRating } from '../action';
+import { setAverageRating, setRating, setReview } from '../action';
 
 
 
@@ -27,6 +27,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const reviewLength = useSelector((state) => state.review);
    console.log("uid", user.uid)
    
    const userRating = useSelector(state => {
@@ -53,7 +54,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
       const commentsResponse = await getProjectComments(project._id);
       console.log('Comments response:', commentsResponse); // Add this for debugging
       setReviews(Array.isArray(commentsResponse) ? commentsResponse : []);
-       
+     
     } catch (err) {
       setError(err.message || 'Failed to load data');
       console.error('Error loading data:', err);

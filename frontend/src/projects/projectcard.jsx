@@ -6,7 +6,7 @@ import { StarRating } from "./starrating";
 import {  FiExternalLink,  } from 'react-icons/fi';
 import { getProjectComments, getProjectRating } from "./api";
 import { useDispatch, useSelector } from "react-redux";
-import { setAverageRating } from "../action";
+import { setAverageRating, setReview } from "../action";
 export const ProjectCard = ({ project, darkmode, onView }) => {
   // console.log('Project ID:', project._id); 
   // console.log('Project:', project);
@@ -18,6 +18,7 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
    const averageRating = useSelector(state =>
     state.ratings.averages[project._id] || 0
   );
+  const reviewLength = useSelector((state) => state.review);
 
   useEffect(() => {
     if (project) {
@@ -38,8 +39,9 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
        // Get comments
        const commentsResponse = await getProjectComments(project._id);
        console.log('Comments response:', commentsResponse); 
-       setReviews(Array.isArray(commentsResponse) ? commentsResponse : []);
-       
+       const validReviews = Array.isArray(commentsResponse) ? commentsResponse : [];
+       setReviews(validReviews);
+       dispatch(setReview(validReviews.length));
      } catch (err) {
        setError(err.message || 'Failed to load data');
        console.error('Error loading data:', err);
@@ -68,7 +70,7 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
     size="sm"
   />
   <span className={`ml-1 text-xs ${darkmode ? 'text-gray-300' : 'text-gray-700'}`}>
-  ({Array.isArray(reviews) ? reviews.length : 0} reviews)
+  ({reviewLength} reviews )
   </span>
 </div>
       </div> 
