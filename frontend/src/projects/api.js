@@ -25,8 +25,8 @@ export const getProject = async (username) => {
     }
   };
 
-  export const rateProject = async ({ projectId, rating }) => {
-    console.log("[rateProject] Starting with:", { projectId, rating });
+  export const rateProject = async ({ projectId, rating,userId  }) => {
+    console.log("[rateProject] Starting with:", { projectId, rating, userId  });
   
     try {
   
@@ -35,7 +35,7 @@ export const getProject = async (username) => {
       const response = await authFetch(`https://xen4-backend.vercel.app/project/rate/${projectId}`, {
         method: "POST",
      
-        body: JSON.stringify({ rating }),
+        body: JSON.stringify({ rating,userId  }),
       });
     
       console.log("[rateProject] Response received:", response);
