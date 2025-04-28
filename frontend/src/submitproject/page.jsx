@@ -87,7 +87,7 @@ console.log("user", user)
      
   
       //  Submit project
-      const submitResponse = await authFetch('https://xen4-backend.vercel.app/submit', {
+      const submitResponse = await authFetch('https://xen4-backend.vercel.app/project/submit', {
         method: 'POST',
         
         body: JSON.stringify({

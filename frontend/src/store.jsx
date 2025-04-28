@@ -3,7 +3,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-// Initial state with proper structure for leaderboard
 const initialState = {
   darkMode: true,
   user: null,
@@ -11,6 +10,11 @@ const initialState = {
     currentVersion: null,
     versions: {}, // Structure: { 'v1': { data: [], page: 1, ... }, 'v2': {...} }
     allVersions: [] 
+  },
+  ratings: {
+    // Structure: { projectId1: ratingValue, projectId2: ratingValue }
+    userRatings: {},
+    averages: {} 
   }
 };
 
@@ -26,8 +30,8 @@ const reducer = (state = initialState, action) => {
         user: {
           uid: action.payload.uid,
           email: action.payload.email,
-          username: action.payload.username, // From backend
-          roles: action.payload.roles,      // From backend
+          username: action.payload.username, 
+          roles: action.payload.roles,      
           lastVerified: Date.now()          // Track freshness
         }
       };
@@ -64,7 +68,28 @@ const reducer = (state = initialState, action) => {
           currentVersion: action.payload
         }
       };
- 
+      case "SET_RATING":
+        return {
+          ...state,
+          ratings: {
+            ...state.ratings,
+            userRatings: {
+              ...state.ratings.userRatings,
+              [action.payload.projectId]: action.payload.rating
+            }
+          }
+        };
+        case "SET_AVERAGE_RATING":
+          return {
+            ...state,
+            ratings: {
+              ...state.ratings,
+              averages: {
+                ...state.ratings.averages,
+                [action.payload.projectId]: action.payload.average
+              }
+            }
+          };
     
     default:
       return state;
@@ -75,10 +100,10 @@ const reducer = (state = initialState, action) => {
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ['darkMode', 'user', 'leaderboard'],
-  // Optional: You can add state reconciliation for versions
+  whitelist: ['darkMode', 'user', 'leaderboard', 'ratings'],
+ 
   migrate: (state) => {
-    // Migration logic if needed when store structure changes
+
     if (!state.leaderboard) {
       state.leaderboard = initialState.leaderboard;
     }
