@@ -1,14 +1,18 @@
-
-
 import { NavLink, useNavigate, } from "react-router-dom";
-import {  FaPodcast,  FaUserAstronaut } from "react-icons/fa";
-import { CiLogout, CiViewBoard } from "react-icons/ci";
-import { LiaDropbox } from "react-icons/lia";
+
 import { useSelector } from "react-redux";
 
 import { useState } from "react";
 import LogoutModal from "../../components/logoutmodal";
 
+
+import { 
+  MdAdminPanelSettings, MdTimeline, MdAccountCircle, MdLogout, MdClose 
+} from "react-icons/md";
+import { TbAward } from "react-icons/tb";
+import { 
+  HiOutlineCube 
+} from "react-icons/hi";
 const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,25 +24,18 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
    
   const handleLogout = async () => {
     try {
-      
       setLoading(true);
       setTimeout(() => {
-        setOpen(false); 
-        navigate('/login'); 
-        setLoading(false); 
-      }, 5000);
+        setOpen(false);
+        navigate('/login');
+        setLoading(false);
+      }, 2000); // Reduced from 5s to 2s for better UX
     } catch (error) {
       console.error("Error logging out: ", error);
-     
-  }
-}
+    }
+  };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleOpen = () => {
-    setOpen(true);
-  };
+
  
   return (
 <div className="">
@@ -48,91 +45,153 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
       isSidebarOpen ? "translate-x-0 block" : "-translate-x-full"
     } md:${isSidebarOpen ? "block" : "hidden"} lg:translate-x-0 lg:block`}
   >
-    <div className={`h-full py-6 overflow-y-auto scrollbar-hide ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
-      <ul className={`p-0 pb-10 m-0 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`} >
-        <li className="p-1 ">
-          <NavLink
-            to="#"
-            className={`flex items-center justify-center text-gray-900 rounded-lg ${darkmode ? 'text-white' : ''}`}
-          >
-            <div className="flex items-center justify-center text-center absolute top-6 ">
-              <span className="mr-2">
-                <LiaDropbox className={`text-xl ${darkmode ? 'text-blue-400':'text-blue-600'}`} />
-              </span>
-              <span className={`md:text-xl  ${darkmode ? 'text-blue-400' : 'text-blue-600'}  text-center font-bold`}>
-                Code &lt;30&gt;
-              </span>
-            </div>
-          </NavLink>
-        </li>
-      </ul>
 
-      <ul className="space-y-3 font-medium px-4 py-4">
-        <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Menu</span>
-        <li onClick={closeSidebar}>
-          <NavLink
-            to="/addadmins"
-            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <FaPodcast size="25" className={` group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
-            <span className="ms-3">Admins</span>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/version"
-            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <CiViewBoard className={`w-5 h-5  group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
-            <span className="flex-1 ms-3 whitespace-nowrap">Version</span>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/lead"
-            className={`flex items-center p-3 text-gray-900 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <CiViewBoard className={`w-5 h-5  group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400' : 'text-blue-900'}`} />
-            <span className="flex-1 ms-3 whitespace-nowrap">Ranks</span>
-          </NavLink>
-        </li>
-      </ul>
-
-      <ul className="space-y-3 font-medium px-4">
-        <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Profile</span>
-        <li onClick={closeSidebar}>
-          <NavLink
-            to="/adminprofile"
-            className={`flex items-center p-3  rounded-lg ${darkmode ? 'text-white hover:bg-gray-700 ' : 'hover:bg-gray-100 text-gray-900'}`}
-          >
-            <FaUserAstronaut size="25" className={` group-hover:text-gray-900 ${darkmode ? 'group-hover:text-white text-blue-400 ' : 'text-blue-900'}`} />
-            <span className="ms-3">Profile</span>
-          </NavLink>
-        </li>
-      </ul>
+       <div className={`h-full flex flex-col ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
+    
+              <div className={`p-4  lg:p pt-7 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+              <div className="flex items-center justify-between relative top-[-5px] px-2">
+      <NavLink to="#" className="flex items-center">
+        <HiOutlineCube  className={`text-2xl mr-2 ${darkmode ? 'text-blue-400' : 'text-blue-600'}`} />
+        <span className={`lg:text-xl text-md font-bold text-grotesk ${darkmode ? 'text-blue-400' : 'text-blue-600'}`}>
+          Code &lt;30&gt;
+        </span>
+      </NavLink>
       
-      <ul className="space-y-3 font-medium px-4 relative top-40">
-      <span className={`${darkmode? "text-blue-200":'text-blue-900'} text-sm`}>Logout</span>
-      <li className=" " onClick={() => {closeSidebar(); handleOpen();}}>
-          <NavLink
-            to="#"
-            className={`flex items-center p-3 text-red-700 rounded-lg ${darkmode ? 'text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <CiLogout size="25" className={`text-red-700 group-hover:text-gray-900 ${darkmode ? 'dark:group-hover:text-white' : ''}`} />
-            <span className="ms-3">Logout</span>
-          </NavLink>
-        </li>
-        <LogoutModal
-           
-           
-           open={open}
-           onClose={handleClose}
-           onLogout={handleLogout}
-           loading={loading}
-           />
-      </ul>
+      <button
+        onClick={closeSidebar}
+        className={`lg:hidden ml-2 text-2xl ${
+          darkmode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-blue-600'
+        }`}
+        aria-label="Close sidebar"
+      >
+        <MdClose  />
+      </button>
     </div>
+    
+              </div>
+    
+    
+              <div className="flex-1 overflow-y-auto py-4">
+                <ul className="space-y-2 font-medium px-4">
+                  <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
+                    Menu
+                  </li>
+                  
+                  <li onClick={closeSidebar}>
+                    <NavLink
+                      to="/addadmins"
+                      className={({ isActive }) => 
+                        `flex items-center p-3 rounded-lg transition-colors ${
+                          isActive 
+                            ? darkmode 
+                              ? 'bg-blue-900/30 text-blue-400' 
+                              : 'bg-blue-100 text-blue-800'
+                            : darkmode 
+                              ? 'text-white hover:bg-gray-700' 
+                              : 'hover:bg-gray-100'
+                        }`
+                      }
+                    >
+                      <MdAdminPanelSettings className="mr-3" />
+                      <span>Admins</span>
+                    </NavLink>
+                  </li>
+    
+                  <li onClick={closeSidebar}>
+                    <NavLink
+                      to="/version"
+                      className={({ isActive }) => 
+                        `flex items-center p-3 rounded-lg transition-colors ${
+                          isActive 
+                            ? darkmode 
+                              ? 'bg-blue-900/30 text-blue-400' 
+                              : 'bg-blue-100 text-blue-800'
+                            : darkmode 
+                              ? 'text-white hover:bg-gray-700' 
+                              : 'hover:bg-gray-100'
+                        }`
+                      }
+                    >
+                      <MdTimeline className="mr-3" />
+                      <span>Version</span>
+                    </NavLink>
+                  </li>
+                  <li onClick={closeSidebar}>
+                    <NavLink
+                      to="/lead"
+                      className={({ isActive }) => 
+                        `flex items-center p-3 rounded-lg transition-colors ${
+                          isActive 
+                            ? darkmode 
+                              ? 'bg-blue-900/30 text-blue-400' 
+                              : 'bg-blue-100 text-blue-800'
+                            : darkmode 
+                              ? 'text-white hover:bg-gray-700' 
+                              : 'hover:bg-gray-100'
+                        }`
+                      }
+                    >
+                      <TbAward className="mr-3" />
+                      <span>Ranks</span>
+                    </NavLink>
+                  </li>
+                </ul>
+    
+                <ul className="space-y-2 font-medium px-4 mt-6">
+                  <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
+                    Profile
+                  </li>
+                  <li onClick={closeSidebar}>
+                    <NavLink
+                      to="/adminprofile"
+                      className={({ isActive }) => 
+                        `flex items-center p-3 rounded-lg transition-colors ${
+                          isActive 
+                            ? darkmode 
+                              ? 'bg-blue-900/30 text-blue-400' 
+                              : 'bg-blue-100 text-blue-800'
+                            : darkmode 
+                              ? 'text-white hover:bg-gray-700' 
+                              : 'hover:bg-gray-100'
+                        }`
+                      }
+                    >
+                      <MdAccountCircle  className="mr-3 " />
+                      <span>Profile</span>
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+    
+        
+              <div className={`mt-auto p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+                <ul className="space-y-2 font-medium">
+                  <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
+                    Account
+                  </li>
+                  <li onClick={() => { closeSidebar(); setOpen(true); }}>
+                    <button
+                      className={`flex items-center w-full p-3 rounded-lg transition-colors ${
+                        darkmode 
+                          ? 'text-red-400 hover:bg-gray-700' 
+                          : 'text-red-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      <MdLogout className="mr-3" />
+                      <span>Logout</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+   
   </aside>
+      <LogoutModal
+          open={open}
+          onClose={() => setOpen(false)}
+          onLogout={handleLogout}
+          loading={loading}
+        />
 </div>
 
   );
