@@ -2,6 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { deleteUser } = require('../../controllers/admin/userDeleteController');
 
-router.post('/', deleteUser);
+router.delete('/', deleteUser);
 
 module.exports = router

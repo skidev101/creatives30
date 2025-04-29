@@ -32,7 +32,6 @@ app.use('/githubLogin', require('../routes/githubLogin'));
 app.use('/update', require('../routes/update'));
 app.use('/project/submit', require('../routes/submit'));
 app.use('/user/streak', require('../routes/streak'));
-app.use('/user/commit', require('../routes/newCommit'));
 app.use('/user/commitHistory', require('../routes/commitHistory'));
 app.use('/project/comment', require('../routes/comments'));
 app.use('/project/rate', require('../routes/rating'));

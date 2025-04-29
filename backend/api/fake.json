@@ -29,3 +29,29 @@
 	"projectId": "680ce95c9626d7306e889ebd",
 	"rating": 4
 }
+
+
+		// if (result.upsertedCount > 0 || result.matchedCount > 0) {
+		//	if (!Array.isArray(foundUser.versions) || foundUser.versions.length === 0) {
+		//		foundUser.versions = [{
+		//			version: latestVersion,
+		//			streak: {
+		//				count: 0,
+		//				lastCommitDate: null
+		//			}
+		//		}]
+		//	} else if (!foundUser.versions[0].streak) {
+		//		foundUser.versions[0].streak = {
+		//			lastCommitDate: null
+		//		}
+		//	}
+		  	
+		//	const version = foundUser.versions[0];
+		//	const lastCommit = version.streak.lastCommitDate;
+		//	const newStreak = lastCommit === yesterday ? (foundUser.streak?.count || 0) + 1 : 1;
+		  	
+		//	version.streak.count = newStreak;
+		//	version.streak.lastCommitDate = today;
+		  	
+		//	await foundUser.save();
+		// }
