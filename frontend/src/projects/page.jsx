@@ -24,6 +24,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [commitData, setCommitData] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [authRequired, setAuthRequired] = useState(false);
 
@@ -44,7 +45,8 @@ export default function ProjectsPage() {
   );
 
   const handlePageChange = (page) => setCurrentPage(page);
-
+ 
+  
   useEffect(() => {
     const loadUserProjects = async () => {
       try {
@@ -58,10 +60,12 @@ export default function ProjectsPage() {
         }
 
         const data = await getProject(targetUsername);
+        console.log("projects",data)
         if (!data?.projects) {
           setError('No projects found for this user');
         }
         setProjects(data.projects);
+        setCommitData(data.commitHistory )
       } catch (err) {
         if (err.message === 'You must be logged in to fetch') {
           setAuthRequired(true);
@@ -133,13 +137,13 @@ export default function ProjectsPage() {
                   {targetUsername}
                 </h1>
                 <p className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  @{targetUsername}
+                  {targetUsername}
                 </p>
               </div>
             </div>
             
             <div className="sm:ml-auto">
-              {renderStreakGraph(darkmode, projects)}
+              {renderStreakGraph(darkmode, commitData, projects)}
             </div>
           </div>
 

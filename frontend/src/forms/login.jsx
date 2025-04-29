@@ -274,8 +274,7 @@ export default function Login() {
           general: errorMessage
         }));
     
-        // Optional: Clear password field on error
-        setPassword('');
+       
       } finally {
         setLoading(false);
       }
