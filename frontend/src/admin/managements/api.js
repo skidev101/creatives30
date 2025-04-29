@@ -88,7 +88,7 @@ export const deleteUser = async (email) => {
     throw error;
   }
 };
-export const diableUser = async (email) => {
+export const disableUser = async (email) => {
   try {
     const response = await authFetch(
       'https://xen4-backend.vercel.app/admin/user/disable',

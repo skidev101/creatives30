@@ -56,6 +56,15 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
           <h3 className={`text-lg font-medium ${darkmode ? 'text-white' : 'text-gray-900'}`}>
             {project?.title}  (day {project?.day}) 
           </h3>
+          <div className="flex items-center">
+  <StarRating 
+     rating={averageRating || 0} 
+    darkmode={darkmode} 
+    interactive={false}
+    size="sm"
+  />
+ 
+</div>
           <p className={`mt-1 ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
             {project?.description}
           </p>
@@ -63,18 +72,14 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
         </div>
         
 <div className="flex items-center">
-  <StarRating 
-     rating={averageRating || 0} 
-    darkmode={darkmode} 
-    interactive={false}
-    size="sm"
-  />
+
   <span className={`ml-1 text-xs ${darkmode ? 'text-gray-300' : 'text-gray-700'}`}>
   ({reviewLength} reviews )
   </span>
 </div>
       </div> 
-  
+          
+
       <div className="mt-3 flex flex-wrap gap-2">
   {project.languages.split(',').map((language, index) => (
     <span
