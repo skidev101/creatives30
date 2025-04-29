@@ -1,35 +1,60 @@
 import { useSelector } from 'react-redux';
-import { FiUser, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi';
+import { FiUser, FiChevronLeft, FiChevronRight, FiTrash2, FiToggleRight, FiToggleLeft, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
-import { deleteUser, fetchUsers } from './api';
+import { deleteUser, fetchUsers, disableUser, enableUser } from './api';
 import { DeleteUserModal } from './modal';
 
 const UsersList = () => {
   const darkmode = useSelector((state) => state.darkMode);
   const user = useSelector((state) => state.user);
-
-  const [loading, setLoading] = useState(true);
+  
+  // delete
   const [deletingEmail, setDeletingEmail] = useState(null);
+  const [confirmDeleteEmail, setConfirmDeleteEmail] = useState(null);
+
+  // loading and error
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // user and pagination
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 3;
   const [totalUsers, setTotalUsers] = useState(0);
-
-  const [confirmDeleteEmail, setConfirmDeleteEmail] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
   const pageCount = Math.ceil(totalUsers / rowsPerPage);
 
-  useEffect(() => {
-    if (user) setError(null);
-  }, [user]);
+  // success
+  const [successMessage, setSuccessMessage] = useState(null);
+  
+  // toggle status
+  const [togglingEmail, setTogglingEmail] = useState(null);
+
+useEffect(() => {
+  if (error || successMessage) {
+    const timer = setTimeout(() => {
+      setError(null);
+      setSuccessMessage(null);
+    }, 3000); 
+
+    return () => clearTimeout(timer); 
+  }
+}, [error, successMessage]);
+
 
   useEffect(() => {
     const loadUsers = async () => {
       try {
         setLoading(true);
         const data = await fetchUsers(currentPage, rowsPerPage);
-        setUsers(data.data);
+        console.log("users", data);
+        
+        // Initialize all users as enabled 
+        const usersWithStatus = data.data.map(user => ({
+          ...user,
+          enabled: user.enabled !== undefined ? user.enabled : true
+        }));
+        
+        setUsers(usersWithStatus);
         setTotalUsers(data.totalUsers);
         setError(null);
       } catch (err) {
@@ -47,7 +72,14 @@ const UsersList = () => {
       setDeletingEmail(email);
       await deleteUser(email);
       const data = await fetchUsers(currentPage, rowsPerPage);
-      setUsers(data.data);
+      
+      // Initialize status for new users
+      const usersWithStatus = data.data.map(user => ({
+        ...user,
+        enabled: user.enabled !== undefined ? user.enabled : true
+      }));
+      
+      setUsers(usersWithStatus);
       setTotalUsers(data.totalUsers);
       setError(null);
       setSuccessMessage(`User with email ${email} has been successfully deleted.`);
@@ -55,7 +87,7 @@ const UsersList = () => {
       setError(err.message);
     } finally {
       setDeletingEmail(null);
-      setConfirmDeleteEmail(null);  // Close confirmation dialog
+      setConfirmDeleteEmail(null);
     }
   };
 
@@ -65,6 +97,30 @@ const UsersList = () => {
 
   const cancelDelete = () => {
     setConfirmDeleteEmail(null); 
+  };
+
+  const toggleUserStatus = async (email, currentStatus) => {
+    try {
+      setTogglingEmail(email);
+      
+      if (currentStatus) {
+        await disableUser(email);
+      } else {
+        await enableUser(email);
+      }
+      
+      setUsers(users.map(user => 
+        user.email === email 
+          ? { ...user, enabled: !currentStatus } 
+          : user
+      ));
+      
+      setSuccessMessage(`User has been ${currentStatus ? 'disabled' : 'enabled'} successfully.`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setTogglingEmail(null);
+    }
   };
 
   return (
@@ -84,7 +140,8 @@ const UsersList = () => {
         {error && !loading && (
           <div className="text-center w-full text-sm text-red-500 py-6">{error}</div>
         )}
-           {successMessage && (
+        
+        {successMessage && (
           <div className="text-center w-full text-sm text-green-500 py-6">
             {successMessage}
           </div>
@@ -98,6 +155,7 @@ const UsersList = () => {
                   <tr>
                     <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>User</th>
                     <th className={`px-4 py-3 text-left text-xs font-medium hidden md:table-cell ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Email</th>
+
                     <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Actions</th>
                   </tr>
                 </thead>
@@ -106,9 +164,25 @@ const UsersList = () => {
                     <tr key={user.id} className={`${darkmode ? 'hover:bg-[#222]' : 'hover:bg-gray-50'}`}>
                       <td className={`px-4 py-4 text-sm font-medium ${darkmode ? 'text-white' : 'text-gray-900'}`}>
                         <div className="flex items-center gap-3 truncate">
-                          <div className={`p-2 rounded-full ${darkmode ? 'bg-neutral-800' : 'bg-gray-100'}`}>
-                            <FiUser className={darkmode ? 'text-neutral-400' : 'text-gray-500'} />
-                          </div>
+                        <div className={`p-2 rounded-full ${darkmode ? 'bg-neutral-800' : 'bg-gray-100'} relative`}>
+  <FiUser className={user.enabled ? 
+    (darkmode ? 'text-green-400' : 'text-green-600') : 
+    (darkmode ? 'text-red-400' : 'text-red-600')} 
+  />
+  {user.enabled ? (
+    <FiCheckCircle 
+      className={`absolute -bottom-1 -right-1 text-xs ${
+        darkmode ? 'text-green-400' : 'text-green-600'
+      } bg-white bg-neutral-800 rounded-full`} 
+    />
+  ) : (
+    <FiXCircle 
+      className={`absolute -bottom-1 -right-1 text-xs ${
+        darkmode ? 'text-red-400' : 'text-red-600'
+      } bg-white bg-neutral-800 rounded-full`} 
+    />
+  )}
+</div>
                           <div className="truncate">
                             <div className="font-medium truncate max-w-[150px]">{user.username || ''}</div>
                             <div className={`text-xs ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
@@ -125,8 +199,26 @@ const UsersList = () => {
                         </div>
                       </td>
 
+                   
+
                       <td className="px-4 py-4 text-sm font-medium">
                         <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => toggleUserStatus(user.email, user.enabled)}
+                            className={`p-2 rounded-lg ${
+                              darkmode
+                                ? 'hover:bg-neutral-800'
+                                : 'hover:bg-gray-100'
+                            }`}
+                            title={user.enabled ? 'Disable user' : 'Enable user'}
+                            disabled={togglingEmail === user.email}
+                          >
+                            {user.enabled ? (
+                              <FiToggleRight size={16} className="text-green-500" />
+                            ) : (
+                              <FiToggleLeft size={16} className="text-red-500" />
+                            )}
+                          </button>
                           <button
                             onClick={() => handleConfirmDelete(user.email)}
                             className={`p-2 rounded-lg ${
@@ -137,7 +229,7 @@ const UsersList = () => {
                             title="Delete user"
                             disabled={deletingEmail === user.email}
                           >
-                             <FiTrash2 size={16} />
+                            <FiTrash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -151,13 +243,12 @@ const UsersList = () => {
 
         {/* Confirmation Modal */}
         {confirmDeleteEmail && (
-         <DeleteUserModal 
-          confirmDeleteEmail={confirmDeleteEmail}
-          darkmode={darkmode}
-          cancelDelete={cancelDelete}
-          handleDeleteUser={handleDeleteUser}
-          
-         />
+          <DeleteUserModal 
+            confirmDeleteEmail={confirmDeleteEmail}
+            darkmode={darkmode}
+            cancelDelete={cancelDelete}
+            handleDeleteUser={handleDeleteUser}
+          />
         )}
       </div>
 
@@ -236,7 +327,6 @@ const UsersList = () => {
 };
 
 export default UsersList;
-
 
 // ✅ Safe and formatted
 function formatDate(dateString) {
