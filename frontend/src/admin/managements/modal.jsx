@@ -1,6 +1,6 @@
 import { FiCheck, FiX } from "react-icons/fi";
 
-export default function AddAdminModal ({
+function AddAdminModal ({
     newAdmin,
     setNewAdmin,
     showModal,
@@ -80,3 +80,52 @@ export default function AddAdminModal ({
         </>
     )
 }
+
+
+function DeleteUserModal({
+  confirmDeleteEmail,
+  handleDeleteUser,
+  cancelDelete,
+  darkmode,
+
+}) {
+  return (
+      <>
+          {confirmDeleteEmail && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-10">
+                  <div className={`rounded-[14px] shadow-2xl ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 w-full max-w-sm`}>
+                      <div className="flex items-center justify-between mb-4">
+                      <h3 className={`text-sm font-semibold ${darkmode ? 'text-white' : 'text-gray-900'}`}>Are you sure you want to delete {confirmDeleteEmail}?  </h3>
+                      <button
+                             onClick={cancelDelete}
+                              className={`p-1 rounded-full ${darkmode ? 'hover:bg-neutral-800' : 'hover:bg-gray-100'}`}
+                          >
+                              <FiX size={20} className={darkmode ? 'text-neutral-400' : 'text-gray-500'} />
+                          </button>
+                      </div>
+
+                
+<div className="flex gap-4 mt-4">
+                <button
+                  onClick={() => handleDeleteUser(confirmDeleteEmail)}
+                  className="px-4 py-2 bg-red-500 text-white text-sm rounded-md"
+                >
+                  Yes, Delete 
+                </button>
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 bg-gray-200 text-sm text-gray-700 rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+
+                    
+                  </div>
+              </div>
+          )}
+      </>
+  );
+}
+
+export { AddAdminModal,  DeleteUserModal};
