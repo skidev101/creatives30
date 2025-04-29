@@ -31,7 +31,9 @@ const Streak = () => {
   useEffect(() => {
     const fetchStreakData = async () => {
       try {
-        const response = await authFetch('https://xen4-backend.vercel.app/user/streak')
+        const response = await authFetch('https://xen4-backend.vercel.app/user/streak',{
+          method:'POST'
+        })
       
 
         if (!response.ok) {
@@ -46,7 +48,7 @@ const Streak = () => {
         
         setStreakData({
           currentStreak: data.streak || 0,
-          longestStreak: data.streak || 0, //  not provided
+          longestStreak: data.longestStreak || 0, //  not provided
           completedDays,
           activity: data.activity || []
         });

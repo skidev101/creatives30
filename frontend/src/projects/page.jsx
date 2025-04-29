@@ -160,6 +160,7 @@ export default function ProjectsPage() {
                 <ProjectCard
                   key={project.id}
                   project={project}
+                  
                   darkmode={darkmode}
                   onView={(proj) => setSelectedProject(proj)}
                 />

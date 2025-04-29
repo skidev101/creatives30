@@ -15,7 +15,9 @@ const Achievements = () => {
     const fetchStreakData = async () => {
       try {
    
-        const response = await authFetch('https://xen4-backend.vercel.app/user/streak')
+        const response = await authFetch('https://xen4-backend.vercel.app/user/streak', {
+          method:"POST",
+        })
 
         if (!response.ok) {
           throw new Error(`Failed to fetch streak data: ${response.status}`);

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FiTrash2, FiPlus,  FiChevronRight, FiChevronLeft } from 'react-icons/fi';
-import AddAdminModal from './modal';
+import {AddAdminModal} from './modal';
 
 import { addAdmin, fetchAdmins } from './api';
 

@@ -101,19 +101,6 @@ console.log("user", user)
         throw new Error(error.message || "Project submission failed");
       }
   
-      // Mark commit
-      try {
-        const commitResponse = await authFetch('https://xen4-backend.vercel.app/user/commit', 
-      );
-  
-        if (!commitResponse.ok) {
-          console.warn('Commit marking failed:', await commitResponse.text());
-        } else {
-          console.log('Commit marked successfully');
-        }
-      } catch (commitError) {
-        console.error('Commit marking error:', commitError);
-      }
   
       // Success
       navigate('/leaderboard');

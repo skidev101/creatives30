@@ -11,7 +11,8 @@ const SubmitHistory = () => {
   const [commitData, setCommitData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const leaderboard = useSelector((state) => state.leaderboard);
+  const currentVersion = leaderboard.currentVersion
   const getColor = (hasCommits) => {
     return hasCommits 
       ? 'bg-blue-500' 
@@ -23,7 +24,10 @@ const SubmitHistory = () => {
   useEffect(() => {
     const fetchCommitData = async () => {
       try {
-        const response = await authFetch('https://xen4-backend.vercel.app/user/commitHistory');
+        const response = await authFetch('https://xen4-backend.vercel.app/user/commitHistory',{
+          method:"POST",
+          body: JSON.stringify({currentVersion})
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

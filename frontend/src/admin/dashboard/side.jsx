@@ -13,7 +13,7 @@ import { TbAward } from "react-icons/tb";
 import { 
   HiOutlineCube 
 } from "react-icons/hi";
-const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
+const AdminSidebar = ({isSidebarOpen,setSidebarOpen}) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
@@ -197,4 +197,4 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

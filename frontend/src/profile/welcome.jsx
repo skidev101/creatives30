@@ -82,7 +82,7 @@ if (loading) {
                         {Userimg ?
                             <>
                                 <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
-                                    <span className='md:text-4xl text-2xl'> {Userimg} </span>
+                                    <span className='lg:text-4xl text-2xl'> {Userimg} </span>
                                 </div>
                                 <div className={`absolute bottom-3 -right-1 w-5 h-5 rounded-full border-2 ${darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'}`}></div>
                             </>

@@ -63,9 +63,9 @@ export const fetchUsers = async (page = 1, limit = 15) => {
 export const deleteUser = async (email) => {
   try {
     const response = await authFetch(
-      'https://xen4-backend.vercel.app/admin/deleteUser',
+      'https://xen4-backend.vercel.app/admin/user/delete',
       {
-        method: 'POST',
+        method: 'DELETE',
         body: JSON.stringify({ email })
       }
     );
@@ -85,6 +85,62 @@ export const deleteUser = async (email) => {
     
   } catch (error) {
     console.error('Error deleting user:', error);
+    throw error;
+  }
+};
+export const disableUser = async (email) => {
+  try {
+    const response = await authFetch(
+      'https://xen4-backend.vercel.app/admin/user/disable',
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ email })
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to disable user");
+    }
+
+    // Handle the backend's response format
+    const result = await response.json();
+    return {
+      success: true,
+      email: email,
+      message: result.message || "User disable successfully"
+    };
+    
+  } catch (error) {
+    console.error('Error disabling user:', error);
+    throw error;
+  }
+};
+export const enableUser = async (email) => {
+  try {
+    const response = await authFetch(
+      'https://xen4-backend.vercel.app/admin/user/enable',
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ email })
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to enable user");
+    }
+
+    // Handle the backend's response format
+    const result = await response.json();
+    return {
+      success: true,
+      email: email,
+      message: result.message || "User enabled successfully"
+    };
+    
+  } catch (error) {
+    console.error('Error enabling user:', error);
     throw error;
   }
 };

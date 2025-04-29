@@ -1,16 +1,15 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { 
-  FaProjectDiagram,
-  FaChartLine,
-  FaUserCircle,
-  FaSignOutAlt,
-  FaBox
-} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import LogoutModal from "../components/logoutmodal";
 import { useState } from "react";
-import { LiaDropbox } from "react-icons/lia";
-
+import { FiCode } from 'react-icons/fi';
+import { 
+   MdAccountCircle, MdLogout, MdClose 
+} from "react-icons/md";
+import { TbAward } from "react-icons/tb";
+import { 
+  HiOutlineCube 
+} from "react-icons/hi";
 const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,14 +25,14 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
         setOpen(false);
         navigate('/login');
         setLoading(false);
-      }, 2000); // Reduced from 5s to 2s for better UX
+      }, 2000); 
     } catch (error) {
       console.error("Error logging out: ", error);
     }
   };
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full ">
       <aside
         id="separator-sidebar"
         className={`fixed font-grotesk top-0 left-0 z-40 w-64 lg:w-[20%] h-screen transition-transform duration-300 ${
@@ -42,13 +41,26 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
       >
         <div className={`h-full flex flex-col ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
 
-          <div className={`p-4 lg:pb-7 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
-            <NavLink to="#" className="flex items-center justify-center">
-              <LiaDropbox className={`text-2xl mr-2 ${darkmode ? 'text-blue-400' : 'text-blue-600'}`} />
-              <span className={`text-xl font-bold ${darkmode ? 'text-blue-400' : 'text-blue-600'}`}>
-                Code &lt;30&gt;
-              </span>
-            </NavLink>
+          <div className={`p-4  lg:p pt-7 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+          <div className="flex items-center justify-between relative top-[-5px] px-2">
+  <NavLink to="#" className="flex items-center">
+    <HiOutlineCube  className={`text-2xl mr-2 ${darkmode ? 'text-blue-400' : 'text-blue-600'}`} />
+    <span className={`lg:text-xl text-md font-bold text-grotesk ${darkmode ? 'text-blue-400' : 'text-blue-600'}`}>
+      Code &lt;30&gt;
+    </span>
+  </NavLink>
+  
+  <button
+    onClick={closeSidebar}
+    className={`lg:hidden ml-2 text-2xl ${
+      darkmode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-blue-600'
+    }`}
+    aria-label="Close sidebar"
+  >
+    <MdClose />
+  </button>
+</div>
+
           </div>
 
 
@@ -73,7 +85,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
                     }`
                   }
                 >
-                  <FaProjectDiagram className="mr-3" />
+                  <FiCode  className="mr-3" />
                   <span>Project Submit</span>
                 </NavLink>
               </li>
@@ -93,7 +105,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
                     }`
                   }
                 >
-                  <FaChartLine className="mr-3" />
+                  <TbAward className="mr-3" />
                   <span>Leaderboard</span>
                 </NavLink>
               </li>
@@ -118,7 +130,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
                     }`
                   }
                 >
-                  <FaUserCircle className="mr-3" />
+                  <MdAccountCircle className="mr-3 " />
                   <span>Profile</span>
                 </NavLink>
               </li>
@@ -139,7 +151,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
                       : 'text-red-600 hover:bg-gray-100'
                   }`}
                 >
-                  <FaSignOutAlt className="mr-3" />
+                  <MdLogout className="mr-3" />
                   <span>Logout</span>
                 </button>
               </li>

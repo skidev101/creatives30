@@ -4,7 +4,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "../action";
 import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
-
+import { CiMenuFries } from "react-icons/ci";
   const NavMenu = ({ currentPage ,setSidebarOpen,isSidebarOpen }) => {
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -25,12 +25,8 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
    console.log(darkmode, "is")
    const toggledark = () => {
 
-     dispatch(setMode(!darkmode)); // Toggle Redux state
-     if (!darkmode) {
-       document.documentElement.classList.add('dark');
-     } else {
-       document.documentElement.classList.remove('dark');
-     }
+     dispatch(setMode(!darkmode)); 
+   
    
    }
 
@@ -39,7 +35,7 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
       <>
 <section className={`fixed top-0 inset-x-0 z-10 w-full border-b px-4 py-2 lg:py-4 ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
 <div className="max-w-7xl mx-auto flex items-center justify-between">
-  <span className={`text-base font-semibold ${darkmode ? 'text-neutral-100' : 'text-blue-900'} md:text-xl hidden lg:block`}>
+  <span className={`text-base px-60 font-semibold ${darkmode ? 'text-neutral-100' : 'text-blue-900'} md:text-xl hidden lg:block`}>
     {currentPage}
   </span>
 
@@ -47,10 +43,10 @@ import { FaCalendarCheck, FaMoon, FaSun } from "react-icons/fa";
     onClick={toggleSidebar}
     aria-controls="separator-sidebar"
     type="button"
-    className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg lg:hidden md:block hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+    className={`inline-flex items-center p-2 mt-2 ms-3 text-sm ${darkmode ? 'text-white':'text-gray-500'} rounded-lg lg:hidden md:block `}
   >
     <span className="sr-only">Open sidebar</span>
-    <FiMenu className="w-6 h-6" />
+    <CiMenuFries className="w-6 h-6" />
   </button>
 
   <div className="flex items-center gap-3 sm:gap-6">
