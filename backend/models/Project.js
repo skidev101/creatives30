@@ -22,6 +22,7 @@ const projectSchema = new mongoose.Schema({
 		languages: String,
 		framework: String,
 		description: String,
+		images: String,
 		createdAt: {
 			type: Date,
 			default: Date.now

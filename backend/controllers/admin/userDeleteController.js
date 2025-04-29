@@ -15,7 +15,7 @@ const deleteUser = async (req, res) => {
 		const [fbDelete, dbDelete] = await Promise.all([
 			admin.auth().deleteUser(foundUserUid),
 			User.findOneAndDelete({ uid: foundUserUid })
-		  ]);
+		]);
 		if (fbDelete && dbDelete){
 				res.status(200).json({
 				message: `user ${value} deleted successfully`

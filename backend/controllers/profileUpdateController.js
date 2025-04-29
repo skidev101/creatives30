@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Project = require('../models/Project');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+//const { createClient } = require('@supabase/supabase-js');
 
 const updateProfile = async (req, res) => {
 	const { email, pwd, username, profileImgURL } = req.body;
