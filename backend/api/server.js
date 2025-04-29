@@ -38,7 +38,7 @@ app.use('/project/rate', require('../routes/rating'));
 
 
 // Admin routes
-app.use(verifyAdmin);
+// app.use(verifyAdmin);
 app.use('/admin/newVersion', require('../routes/admin/newVersion'));
 app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 app.use('/admin/versionStat', require('../routes/admin/versionStat'));
