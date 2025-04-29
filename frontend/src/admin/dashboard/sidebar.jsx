@@ -3,7 +3,6 @@ import { NavLink, useNavigate, } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { useState } from "react";
-import LogoutModal from "../../components/logoutmodal";
 
 
 import { 
@@ -13,6 +12,7 @@ import { TbAward } from "react-icons/tb";
 import { 
   HiOutlineCube 
 } from "react-icons/hi";
+import { LogoutModal } from "../../components/logoutmodal";
 const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

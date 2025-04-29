@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import LogoutModal from "../components/logoutmodal";
+import { LogoutModal } from "../components/logoutmodal";
 import { useState } from "react";
 import { FiCode } from 'react-icons/fi';
 import { 

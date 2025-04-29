@@ -10,9 +10,7 @@ export const setUser = (user) => ({
     payload:user
 })
 
-export const clearUser = (CLEAR_USER) => ({
-  type: CLEAR_USER
-});
+export const clearUser = () => ({ type: 'CLEAR_USER' });
 
 export const saveLeaderboardData = (version, data) => ({
     type: "SAVE_LEADERBOARD_DATA",
