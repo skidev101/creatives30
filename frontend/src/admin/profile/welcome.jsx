@@ -1,13 +1,18 @@
 /* eslint-disable no-unused-vars */
 import { useSelector } from 'react-redux';
 import img from '../../assets/image.png';
-import { FiDatabase,  FiActivity } from 'react-icons/fi';
+import { FiDatabase,  FiActivity, FiEdit2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { EditProfile } from '../../profile/modal';
 
 export const WelcomeAdmin = () => {
+    const [isOpen, setIsOpen] = useState(false);
     const leaderboard = useSelector((state) => state.leaderboard);
     const darkmode = useSelector((state) => state.darkMode);
     const user = useSelector((state) => state.user);
+    const Useremail = user?.email;
+    const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
     const currentHour = new Date().getHours();
     let greeting;
 
@@ -34,7 +39,7 @@ export const WelcomeAdmin = () => {
         }
         
         const versionData = leaderboard.versions[leaderboard.currentVersion];
-        // Check different possible structures
+        
         if (versionData.totalProjects !== undefined) {
             return versionData.totalProjects;
         } else if (versionData.data?.totalProjects !== undefined) {
@@ -71,14 +76,27 @@ export const WelcomeAdmin = () => {
                 darkmode ? 'border-neutral-800' : 'border-gray-200'
             }`}>
                 <div className="flex items-center space-x-4">
+                    
                     <div className="relative">
-                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
-                            <img src={img} alt="Profile" className="w-full h-full object-cover" />
-                        </div>
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 ${
-                            darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'
-                        }`}></div>
+                        
+                        {Userimg ?
+                            <>
+                                <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
+                                    <span className='lg:text-4xl text-2xl'> {Userimg} </span>
+                                </div>
+                                <div className={`absolute bottom-3 -right-1 w-5 h-5 rounded-full border-2 ${darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'}`}></div>
+                            </>
+                            :
+                            <>
+                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-300 dark:border-neutral-700">
+                                    <img src={user?.profileImgURL} alt="Profile" className="w-full h-full object-cover" />
+                                </div>
+                                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 ${darkmode ? 'border-neutral-900 bg-green-500' : 'border-white bg-green-500'}`}></div>
+                            </>
+                        }
                     </div>
+                        
+                    
                     <div>
                         <h2 className={`text-lg font-semibold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
                             {greeting} 
@@ -87,6 +105,9 @@ export const WelcomeAdmin = () => {
                             {user?.email || "guest"}
                         </p>
                     </div>
+                        <button onClick={() => setIsOpen(true)} className="ml-auto p-2 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-800" title="Edit Profile">
+                                            <FiEdit2 className={`text-lg ${darkmode ? 'text-white' : 'text-gray-700'}`} />
+                                        </button>
                 </div>
             </section>
 
@@ -120,6 +141,15 @@ export const WelcomeAdmin = () => {
                     />
                 </div>
             </section>
+
+                {isOpen && (
+                            <EditProfile
+                                isOpen={isOpen}
+                                setIsOpen={setIsOpen}
+                                user={user}
+                               
+                            />
+                        )}
         </div>
     );
 };

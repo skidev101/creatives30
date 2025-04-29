@@ -134,8 +134,16 @@ useEffect(() => {
         </div>
 
         {loading && (
-          <div className="text-center w-full text-sm text-gray-400 py-6">Loading users...</div>
-        )}
+  <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+    <div className="flex flex-col justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+      <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
+        Loading users...
+      </p>
+    </div>
+  </div>
+)}
+
 
         {error && !loading && (
           <div className="text-center w-full text-sm text-red-500 py-6">{error}</div>

@@ -39,7 +39,7 @@ const SubmitHistory = () => {
           throw new Error('Invalid data format: expected an array');
         }
 
-        setCommitData([...data.commitHistory].reverse() || []);
+        setCommitData(data.commitHistory || []);
       } catch (error) {
         console.error('Fetch error:', error);
         setError(error.message);
@@ -49,7 +49,7 @@ const SubmitHistory = () => {
     };
 
     fetchCommitData();
-  }, []);
+  }, [currentVersion]);
 
   if (loading) {
     return (
@@ -61,8 +61,8 @@ const SubmitHistory = () => {
         </h3>
         
         <div className="mb-8 flex justify-center flex-col items-center">
-          <div className="grid grid-cols-5 gap-[8px] w-fit"> {/* Changed to 7 columns for days of week */}
-            {Array.from({ length: 30 }).map((_, index) => ( // 5 weeks x 7 days
+          <div className="grid grid-cols-5 gap-[8px] w-fit"> 
+            {Array.from({ length: 30 }).map((_, index) => ( 
               <motion.div
                 key={`skeleton-${index}`}
                 className={`${darkmode ? 'bg-neutral-800' : 'bg-gray-200'} w-5 h-5 rounded-sm ${
@@ -93,7 +93,7 @@ const SubmitHistory = () => {
       {commitData.length > 0 ? (
         <div className="mb-8 flex justify-center flex-col items-center">
           <div className="grid grid-cols-5 gap-[8px] w-fit">
-            {commitData.map((day, index) => (
+          {[...commitData].reverse().map((day, index) => (
               <motion.div
                 key={`day-${index}`}
                 whileHover={{ scale: 1.1 }}
