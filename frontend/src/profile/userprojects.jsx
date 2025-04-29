@@ -111,11 +111,11 @@ const UserProjects = () => {
                   <img src={img} alt={project.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
-                  <h3 className={`font-medium text-lg mb-1 ${darkmode ? "text-neutral-100":''}`}>{project.languages}</h3>
+                  <h3 className={` text-md mb-1 ${darkmode ? "text-neutral-100":''}`}> {project.title.toUpperCase()}</h3>
                   <p className={`text-sm mb-3 ${darkmode ? 'text-neutral-400' : 'text-gray-600'}`}>
                    Day {project.day} of 30
                   </p>
-                  <p className={`b-4 ${darkmode ?"text-white":''}`}>{project.description}</p>
+                  <p className={`mb-4 ${darkmode ?"text-white":''}`}>built with {project.languages}</p>
                   <div className="flex space-x-3">
                     {project.repolink && (
                       <a href={project.repolink} target="_blank" rel="noopener noreferrer" className={`flex items-center text-sm ${darkmode ? "text-white":''}`} >
@@ -140,7 +140,7 @@ const UserProjects = () => {
 )}
          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
                <div className={`text-sm ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                 Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, projects.length)} of {projects.length} entries
+                 {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, projects.length)} of {projects.length} projects
                </div>
        
                <div className="flex items-center gap-1">

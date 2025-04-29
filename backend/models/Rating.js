@@ -11,7 +11,7 @@ const ratingSchema = new mongoose.Schema({
 		ref: 'User'
 	},
 	stars: {
-		type: String,
+		type: Number,
 		required: true,
 		min: 1,
 		max: 5

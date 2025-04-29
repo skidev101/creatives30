@@ -3,17 +3,23 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-// Initial state with proper structure for leaderboard
+// Proper initial state
 const initialState = {
   darkMode: true,
   user: null,
   leaderboard: {
     currentVersion: null,
-    versions: {}, // Structure: { 'v1': { data: [], page: 1, ... }, 'v2': {...} }
+    versions: {},
     allVersions: [] 
-  }
+  },
+  ratings: {
+    // Structure: { [userId]: { [projectId]: rating } }
+    userRatings: {},
+    // Global averages by project
+    averages: {} 
+  },
+  review:0,
 };
-
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -26,17 +32,18 @@ const reducer = (state = initialState, action) => {
         user: {
           uid: action.payload.uid,
           email: action.payload.email,
-          username: action.payload.username, // From backend
-          roles: action.payload.roles,      // From backend
-          lastVerified: Date.now()          // Track freshness
+          username: action.payload.username,
+          roles: action.payload.roles,
+          lastVerified: Date.now()
         }
       };
-      case "CLEAR_USER":
-  return {
-    ...state,
-    user: null
-  };
-    
+
+    case "CLEAR_USER":
+      return {
+        ...initialState, // Reset to initial state
+        darkMode: state.darkMode // Keep dark mode preference
+      };
+
     case "SAVE_LEADERBOARD_DATA":
       { const { version, data } = action.payload;
       return {
@@ -47,15 +54,13 @@ const reducer = (state = initialState, action) => {
             ...state.leaderboard.versions,
             [version]: {
               ...data,
-              // Ensure we maintain existing versions list if not provided
               versions: data.versions || state.leaderboard.versions[version]?.versions || []
             }
           },
-          // Update allVersions with unique versions
           allVersions: [...new Set([...state.leaderboard.allVersions, version])]
         }
       }; }
-    
+
     case "SET_CURRENT_VERSION":
       return {
         ...state,
@@ -64,21 +69,47 @@ const reducer = (state = initialState, action) => {
           currentVersion: action.payload
         }
       };
- 
-    
+
+      case "SET_RATING":
+        { const { userId, projectId, rating } = action.payload; // Change project_id to projectId
+        return {
+          ...state,
+          ratings: {
+            ...state.ratings,
+            userRatings: {
+              ...state.ratings.userRatings,
+              [userId]: {
+                ...state.ratings.userRatings[userId],
+                [projectId]: rating // Match parameter name
+              }
+            }
+          }
+        }; }
+
+    case "SET_AVERAGE_RATING":
+      return {
+        ...state,
+        ratings: {
+          ...state.ratings,
+          averages: {
+            ...state.ratings.averages,
+            [action.payload.projectId]: action.payload.average
+          }
+        }
+      };
+     
+      case "SET_REVIEW":
+        return { ...state, review: action.payload };
     default:
       return state;
   }
 };
 
-// Persist configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ['darkMode', 'user', 'leaderboard'],
-  // Optional: You can add state reconciliation for versions
+  whitelist: ['darkMode', 'user', 'leaderboard', 'ratings'],
   migrate: (state) => {
-    // Migration logic if needed when store structure changes
     if (!state.leaderboard) {
       state.leaderboard = initialState.leaderboard;
     }
@@ -88,7 +119,6 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 
-// Create store with middleware configuration
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

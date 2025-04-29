@@ -46,7 +46,7 @@ const Streak = () => {
         
         setStreakData({
           currentStreak: data.streak || 0,
-          longestStreak: data.streak || 0, // Assuming same as current streak if not provided
+          longestStreak: data.streak || 0, //  not provided
           completedDays,
           activity: data.activity || []
         });

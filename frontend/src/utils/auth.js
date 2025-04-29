@@ -35,6 +35,7 @@ export const authFetch = async (url, options = {}) => {
   
     try {
       const token = await getToken();
+      // console.log("Sending token:", token)
       const response = await fetch(url, {
         ...defaultOptions,
         headers: {

@@ -5,95 +5,70 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 
 
-const handleCommit = async (req, res) => {
-	//const { uid } = req.body //...for testing purposes
-  const { uid } = req.body;
-  console.log(`uid: ${uid}`);
-  const today = moment().format('DD-MM-YYYY');
-  const yesterday = moment().subtract(1, 'days').format('DD-MM-YYYY');
+// const handleCommit = async (req, res) => {
+//	//const { uid } = req.body //...for testing purposes
+//   const { uid } = req.body;
+//   console.log(`uid: ${uid}`);
+//   const today = moment().format('DD-MM-YYYY');
+//   const yesterday = moment().subtract(1, 'days').format('DD-MM-YYYY');
   
-  try {
-		const foundUser = await User.findOne({uid});
-		if (!foundUser) return res.status(404).json({ message: 'user not found' });
-    const userId = foundUser._id;
+//   try {
+//		const foundUser = await User.findOne({uid});
+//		if (!foundUser) return res.status(404).json({ message: 'user not found' });
+//     const userId = foundUser._id;
   
-    const latestVersionDoc = await VersionHistory.findOne().sort({ version: - 1 });
-    const latestVersion = latestVersionDoc?.version;
+//     const latestVersionDoc = await VersionHistory.findOne().sort({ version: - 1 });
+//     const latestVersion = latestVersionDoc?.version;
     
-    const existingCommit = await Commit.findOne({ userId, date: today, version: latestVersion });
-    if (!existingCommit) {
-			await Commit.create({
-				userId,
-				date: today,
-				version: latestVersion
-			});
-    }
+//     const existingCommit = await Commit.findOne({ userId, date: today, version: latestVersion });
+//     if (!existingCommit) {
+//			await Commit.create({
+//				userId,
+//				date: today,
+//				version: latestVersion
+//			});
+//     }
     
-    let userVersion = foundUser.versions.find((v) => v.version === latestVersion);
-    if (!userVersion) {
-	    userVersion = {
-				version: latestVersion,
-				streak: {
-					count: 1,
-					lastCommitDate: today
-				}
-	    };
-	    foundUser.versions.push(userVersion);
-    } else {
-			const lastCommitDate = userVersion.streak?.lastCommitDate;
-			if (lastCommitDate !== today) {
-				const newStreak = lastCommitDate === yesterday ? userVersion.streak.count + 1 : 1;
-				userVersion.streak = {
-					count: newStreak,
-					lastCommitDate: today
-				};
-			}
-    }
-    await foundUser.save();
-		// if (result.upsertedCount > 0 || result.matchedCount > 0) {
-		//	if (!Array.isArray(foundUser.versions) || foundUser.versions.length === 0) {
-		//		foundUser.versions = [{
-		//			version: latestVersion,
-		//			streak: {
-		//				count: 0,
-		//				lastCommitDate: null
-		//			}
-		//		}]
-		//	} else if (!foundUser.versions[0].streak) {
-		//		foundUser.versions[0].streak = {
-		//			lastCommitDate: null
-		//		}
-		//	}
-		  	
-		//	const version = foundUser.versions[0];
-		//	const lastCommit = version.streak.lastCommitDate;
-		//	const newStreak = lastCommit === yesterday ? (foundUser.streak?.count || 0) + 1 : 1;
-		  	
-		//	version.streak.count = newStreak;
-		//	version.streak.lastCommitDate = today;
-		  	
-		//	await foundUser.save();
-		// }
-		
-		const currentVersion = foundUser.versions.find((v) => v.version === latestVersion);
-		
-    return res.status(200).json({
-			message: 'commit logged successfully',
-			date: today,
-			version: latestVersion,
-			streakCount: foundUser?.versions[0].streak.count
-    });
+//     let userVersion = foundUser.versions.find((v) => v.version === latestVersion);
+//     if (!userVersion) {
+//	    userVersion = {
+//				version: latestVersion,
+//				streak: {
+//					count: 1,
+//					lastCommitDate: today
+//				}
+//	    };
+//	    foundUser.versions.push(userVersion);
+//     } else {
+//			const lastCommitDate = userVersion.streak?.lastCommitDate;
+//			if (lastCommitDate !== today) {
+//				const newStreak = lastCommitDate === yesterday ? userVersion.streak.count + 1 : 1;
+//				userVersion.streak = {
+//					count: newStreak,
+//					lastCommitDate: today
+//				};
+//			}
+//     }
+//     await foundUser.save();
     
-  } catch(err) {
-    console.log(err);
-    res.status(500).send('Internal server error');
-  }
-}
+//		const currentVersion = foundUser.versions.find((v) => v.version === latestVersion);
+//     return res.status(200).json({
+//			message: 'commit logged successfully',
+//			date: today,
+//			version: latestVersion,
+//			streakCount: foundUser?.versions[0].streak.count
+//     });
+    
+//   } catch(err) {
+//     console.log(err);
+//     res.status(500).send('Internal server error');
+//   }
+// }
 
 
 const getCommitHistory = async (req, res) => {
-	const { uid, version: requestedVersion } = req.body  //...for testing
-  //const { uid } = req.user;
+	const { version: requestedVersion } = req.body  //...for testing
+  const { uid } = req.user;
   console.log(`uid: ${uid}`);
   const start = moment().subtract(29, 'days');
   
@@ -137,7 +112,4 @@ const getCommitHistory = async (req, res) => {
   }
 }
 
-module.exports = { 
-	handleCommit,
-	getCommitHistory
-}
+module.exports = { getCommitHistory }
