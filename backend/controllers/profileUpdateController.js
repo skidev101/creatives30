@@ -11,7 +11,7 @@ const uploadToSupabase = async (files, uid) => {
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const fileExt = path.extname(file.originalname);
-		const fileName = `project_${uid}_${Date.now()}_${i}_${fileExt}`;
+		const fileName = `profileImg/project_${uid}_${Date.now()}_${i}_${fileExt}`;
 		
 		const { error } = await supabase.storage
 			.from('creatives30')

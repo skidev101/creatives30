@@ -34,6 +34,7 @@ app.use('/user/streak', require('../routes/streak'));
 app.use('/user/commitHistory', require('../routes/commitHistory'));
 app.use('/project/comment', require('../routes/comments'));
 app.use('/project/rate', require('../routes/rating'));
+app.use('/bugs', require('../routes/bugReport'));
 
 
 // Admin routes

@@ -1,12 +1,14 @@
+const mongoose = require('mongoose');
 const User = require('../../models/User');
 const Project = require('../../models/Project');
 const VersionHistory = require('../../models/VersionHistory');
 const ArchivedProject = require('../../models/ArchivedProject');
-const mongoose = require('mongoose');
+const moment = require('moment');
+
 
 const createNewVersion = async (req, res) => {
-  const { uid } = req.user;
-	const { title } = req.body;
+  //const { uid } = req.user;
+	const { title, uid } = req.body;
 	if (!title) return res.status(400).json({ message: 'empty request' });
 	const foundVersionTitle = await VersionHistory.findOne({ title });
 	if (foundVersionTitle) return res.status(400).json({
@@ -15,10 +17,12 @@ const createNewVersion = async (req, res) => {
 	
 	try {
 		const foundAdmin = await User.findOne({uid});
+		console.log(foundAdmin);
 		const username = foundAdmin.username;
 		const latestVersion = await VersionHistory.findOne().sort({ version: - 1 });
 		const newVersion = (latestVersion && latestVersion.version) ? latestVersion.version + 1 : 1;
 		const projectsToArchive = await Project.find({ version: latestVersion ? latestVersion.version : 0});
+		const startDate = moment().toDate();
 	  
 		
 		if (projectsToArchive.length > 0) {
@@ -38,6 +42,7 @@ const createNewVersion = async (req, res) => {
 				uid,
 				title,
 				version: newVersion,
+				startDate,
 				createdBy: `Admin ${username}`
 	  });
 	  

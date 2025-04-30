@@ -14,7 +14,7 @@ const uploadToSupabase = async (files, uid) => {
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const fileExt = path.extname(file.originalname);
-		const fileName = `project_${uid}_${Date.now()}_${i}_${fileExt}`;
+		const fileName = `projects/project_${uid}_${Date.now()}_${i}_${fileExt}`;
 		
 		const { error } = await supabase.storage
 			.from('creatives30')
@@ -58,10 +58,11 @@ const handleProjectSubmit = async (req, res) => {
 			livelink,
 			day,
 			repolink,
-			languages: JSON.parse(languages),
+			languages,
 			framework,
 			description,
-			images: imageUrls
+			images: imageUrls,
+			createdAt: new Date()
 	}
 	  
 	  const latestVersion = await VersionHistory.findOne().sort({  version: - 1 });
