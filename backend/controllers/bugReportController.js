@@ -40,4 +40,25 @@ const reportBug = async (req, res) => {
   }
 }
 
-module.exports = { reportBug }
+const getAllBugs = async (req, res) => {
+  try {
+    const bugs = await Bug.find().sort({ createdAt: - 1 });
+    
+    res.status(200).json({
+			message: 'success',
+			bugs
+    });
+		console.log(bugs);
+		
+  } catch(err) {
+    console.log(err);
+    res.status(500).send('Internal server error');
+  }
+}
+
+
+
+module.exports = { 
+	reportBug,
+	getAllBugs
+}
