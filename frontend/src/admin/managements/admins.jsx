@@ -27,10 +27,21 @@ const [totalAdmin, setTotalAdmin] = useState(0);
 const pageCount = Math.ceil(totalAdmin / rowsPerPage);
 const [admins, setAdmins] = useState([]);
 
+
+  //success
+  const [successMessage, setSuccessMessage] = useState('');
+  useEffect(() => {
+    if (  successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000); 
   
+      return () => clearTimeout(timer); 
+    }
+  }, [error, successMessage]);
   const handleAddAdmin = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    
     setError({ email: '', general: '' });
   
     const errors = {};
@@ -53,10 +64,11 @@ const [admins, setAdmins] = useState([]);
         email: newAdmin.email,
         createdAt: new Date().toISOString().split('T')[0]
       }]);
+
       
       setNewAdmin({ email: '' });
       setShowModal(false);
-  
+      setSuccessMessage(` ${newAdmin.email} is now an admin.`);
     } catch (error) {
       console.error('Error adding admin:', error);
       setError(prev => ({ 
@@ -103,7 +115,7 @@ const [admins, setAdmins] = useState([]);
          <div className="overflow-x-auto">
       <div className="flex w-full items-center justify-between">
         <h2 className={`lg:text-xl md:text-md text-sm font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
-          Admin Management
+          Admins
         </h2>
         <button
           onClick={() => setShowModal(true)}
@@ -113,10 +125,23 @@ const [admins, setAdmins] = useState([]);
           Add Admin
         </button>
       </div>
-      {loading && <div className="text-center w-full text-sm text-gray-400 py-6">Loading users...</div>}
+      {loading && (
+  <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+    <div className="flex flex-col justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+      <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
+        Loading admins...
+      </p>
+    </div>
+  </div>
+)}
       {Aerror && <div className="text-center w-full text-sm text-red-500 py-6">{Aerror}</div>}
 
-      
+      {successMessage && (
+          <div className="text-center w-full text-sm text-green-500 py-6">
+            {successMessage}
+          </div>
+        )}
       {!loading && admins.length > 0 && (
         <div className="min-w-full inline-block align-middle mt-2">
                  <div className={`rounded-lg border ${darkmode ? 'border-neutral-800' : 'border-gray-200'} overflow-hidden`}>

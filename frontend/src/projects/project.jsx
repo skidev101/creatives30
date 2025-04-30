@@ -12,7 +12,7 @@ const UserProjectsID = () => {
   
    const [isSidebarOpen, setSidebarOpen] = useState(false);
  
-   const user = useSelector((state) => state.user); // Get user from Redux store
+   const user = useSelector((state) => state.user); 
    const isAdmin = user?.roles?.includes('Admin');
 
   return (

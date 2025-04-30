@@ -1,40 +1,45 @@
+/* eslint-disable no-unused-vars */
 import { FiCalendar } from "react-icons/fi";
+import { motion } from 'framer-motion';
 
-export const renderStreakGraph = (darkmode,projects) => {
-    const weeks = 5;
-    const daysPerWeek = 6;
-    const userData = {
-    
-      avatar: "https://avatars.githubusercontent.com/u/1?v=4",
-      streak: 28, // days
-      contributions: Array(30).fill(0).map(() => Math.floor(Math.random() * 5)), // mock contribution data
+export const renderStreakGraph = (darkmode,commitData, projects) => {
+
+  
+    const getColor = (hasCommits) => {
+      return hasCommits 
+        ? 'bg-blue-500' 
+        : darkmode 
+          ? 'bg-neutral-800' 
+          : 'bg-white';
     };
+  
     return (
       <div className="flex flex-col gap-1">
-        <div className="flex gap-1">
-          {Array.from({ length: weeks }).map((_, week) => (
-            <div key={week} className="flex flex-col gap-1">
-              {Array.from({ length: daysPerWeek }).map((_, day) => {
-                const level = Math.floor(Math.random() * 4); // 0-3
-                return (
-                  <div 
-                    key={day} 
-                    className={`w-3 h-3 rounded-sm ${
-                      level === 0 ? (darkmode ? 'bg-gray-800' : 'bg-gray-100') :
-                      level === 1 ? (darkmode ? 'bg-green-900' : 'bg-green-300') :
-                      level === 2 ? (darkmode ? 'bg-green-700' : 'bg-green-500') :
-                      (darkmode ? 'bg-green-500' : 'bg-green-700')
-                    }`}
-                    title={`${level} contributions`}
-                  />
-                );
-              })}
-            </div>
-          ))}
+      
+   {commitData.length > 0 ? (
+        <div className="mb-8 flex justify-center flex-col items-center">
+          <div className="grid grid-cols-5 gap-[4px] w-fit">
+          {[...commitData].reverse().map((day, index) => (
+              <motion.div
+                key={`day-${index}`}
+                whileHover={{ scale: 1.1 }}
+                className={`${getColor(day.commits)} w-3 h-3 rounded-sm border ${
+                  darkmode ? 'border-neutral-700' : 'border-gray-300'
+                }`}
+                title={`${day.date}: ${day.commits ? 'Commits made' : 'No commits'}`}
+                
+              />
+              
+            ))}
+            
+          </div>
         </div>
+      ) : (
+        <div className="text-center py-4">No commit data available</div>
+      )}
         <div className={`text-xs mt-2 ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
           <FiCalendar className="inline mr-1" />
-          {userData.streak} day streak • {projects.length} projects
+          30 day streak • {projects.length} projects
         </div>
       </div>
     );
