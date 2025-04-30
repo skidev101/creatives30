@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "../action";
@@ -6,29 +7,35 @@ import { FaCalendarCheck, FaMoon, FaSun, FaBullhorn, FaBug, FaTimes } from "reac
 import { CiMenuFries } from "react-icons/ci";
 import { BugModal } from "./bugmodal";
 import AnnouncementsModal from "./mod";
+import { authFetch } from "../utils/auth";
 
 const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
   const [showBugModal, setShowBugModal] = useState(false);
   const [bugDescription, setBugDescription] = useState("");
   const [showAnnouncements, setShowAnnouncements] = useState(false);
-  const [announcements, setAnnouncements] = useState([
-    // Sample data - replace with data from your API
-    {
-      id: 1,
-      title: "System Maintenance",
-      content: "There will be scheduled maintenance on Friday at 10 PM.",
-      isImportant: true,
-      date: "2023-11-20T10:00:00Z"
-    },
-    {
-      id: 2,
-      title: "New Feature Released",
-      content: "Check out our new dashboard features!",
-      isImportant: false,
-      date: "2023-11-15T09:30:00Z"
-    }
-  ]);
-
+   const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+const [announcements, setAnnouncements] = useState([]);
+useEffect(() => {
+    const fetchAnnouncements = async () => {
+      if (showAnnouncements) {
+        setIsLoading(true);
+        setError(null);
+        try {
+          const response = await authFetch('https://xen4-backend.vercel.app/announcements');
+          if (!response.ok) throw new Error('Failed to fetch announcements');
+          const data = await response.json();
+          setAnnouncements(data.announcements || []);
+        } catch (err) {
+          console.error("Error fetching announcements:", err);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchAnnouncements();
+  }, [showAnnouncements]);
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -76,10 +83,10 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
 >
   <FaBullhorn size={20} />
   <span className="sr-only">Announcements</span>
-  {announcements.filter(a => a.isImportant).length > 0 && (
+  {announcements.length > 0 && (
     <span className={`absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold 
       ${darkmode ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
-      {announcements.filter(a => a.isImportant).length}
+      {announcements.length || 0}
     </span>
   )}
 </button>
@@ -144,10 +151,12 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
 
 {showAnnouncements && (
   <AnnouncementsModal
-    showModal={showAnnouncements}
-    setShowModal={setShowAnnouncements}
-    announcements={announcements}
-    darkmode={darkmode}
+  showModal={showAnnouncements}
+  setShowModal={setShowAnnouncements}
+  darkmode={darkmode}
+  isLoading={isLoading}
+  error={error}
+  announcements={announcements}
   />
 )}
     </>
