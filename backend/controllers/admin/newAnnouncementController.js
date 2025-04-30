@@ -20,7 +20,7 @@ const createAnnouncement = async (req, res) => {
 	  const latestVersion = latestVersionDoc ? latestVersionDoc.version : null;
     
     const newAnnouncement = await Announcement.create({
-			username: announcerUsername,
+			createdBy: announcerUsername,
 			version: latestVersion,
 			announcement
     })
