@@ -2,40 +2,56 @@
 import { useEffect, useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode } from "../action";
+
 import { FaCalendarCheck, FaMoon, FaSun, FaBullhorn, FaBug, FaTimes } from "react-icons/fa";
 import { CiMenuFries } from "react-icons/ci";
-import { BugModal } from "./bugmodal";
-import AnnouncementsModal from "./mod";
-import { authFetch } from "../utils/auth";
+import { setMode } from "../../action";
+import BugReportsModal from "./modal";
+import AddAnnouncementModal from "./moda";
+import { authFetch } from "../../utils/auth";
+// import { BugModal } from "./bugmodal";
 
-const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
-  const [showBugModal, setShowBugModal] = useState(false);
-  const [bugDescription, setBugDescription] = useState("");
-  const [showAnnouncements, setShowAnnouncements] = useState(false);
-   const [isLoading, setIsLoading] = useState(false);
+const AdminNavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
+    const [showBugModal, setShowBugModal] = useState(false);
+    const [bugReports, setBugReports] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+    const [announcements, setAnnouncements] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-const [announcements, setAnnouncements] = useState([]);
-useEffect(() => {
-    const fetchAnnouncements = async () => {
-      if (showAnnouncements) {
-        setIsLoading(true);
-        setError(null);
-        try {
-          const response = await authFetch('https://xen4-backend.vercel.app/announcements');
-          if (!response.ok) throw new Error('Failed to fetch announcements');
-          const data = await response.json();
-          setAnnouncements(data.announcements || []);
-        } catch (err) {
-          console.error("Error fetching announcements:", err);
-          setError(err.message);
-        } finally {
-          setIsLoading(false);
+  
+
+
+  
+
+      useEffect(() => {
+        const fetchBugReports = async () => {
+          setIsLoading(true);
+          setError(null);
+          try {
+            const response = await authFetch('https://xen4-backend.vercel.app/bugs');
+            if (!response.ok) throw new Error('Failed to fetch bugs');
+            const data = await response.json();
+            console.log("bugs", data)
+            // Match backend response structure
+            setBugReports(data.bugs || []);
+            
+            // Calculate unread reports
+            const unread = (data.bugs || []).filter(report => !report.status || report.status === 'new').length;
+            setUnreadCount(unread);
+          } catch (error) {
+            console.error("Failed to fetch bug reports:", error);
+            setError(error.message);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+    
+        if (showBugModal) {
+          fetchBugReports();
         }
-      }
-    };
-    fetchAnnouncements();
-  }, [showAnnouncements]);
+      }, [showBugModal]);
+   
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -77,20 +93,14 @@ useEffect(() => {
 
           <div className="flex items-center gap-3 sm:gap-6">
          
-          <button 
-  onClick={() => setShowAnnouncements(true)}
+            <button 
+            onClick={() => setShowAnnouncementModal(true)}
   className={`p-2 rounded-full relative ${darkmode ? 'text-neutral-100 hover:bg-neutral-800' : 'text-blue-900 hover:bg-blue-100'}`}
 >
   <FaBullhorn size={20} />
   <span className="sr-only">Announcements</span>
-  {announcements.length > 0 && (
-    <span className={`absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold 
-      ${darkmode ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
-      {announcements.length || 0}
-    </span>
-  )}
+  
 </button>
-
 
         
             <button 
@@ -139,28 +149,24 @@ useEffect(() => {
 
      
       {showBugModal && (
-        <BugModal 
-       showBugModal={showBugModal}
-      
-       setBugDescription={setBugDescription}
-       setShowBugModal={setShowBugModal}
-       bugDescription={bugDescription}
-       darkmode={darkmode}
+        <BugReportsModal
+          showBugModal={showBugModal}
+          setShowBugModal={setShowBugModal}
+          bugReports={bugReports}
+          darkmode={darkmode}
         />
       )}
 
-{showAnnouncements && (
-  <AnnouncementsModal
-  showModal={showAnnouncements}
-  setShowModal={setShowAnnouncements}
-  darkmode={darkmode}
-  isLoading={isLoading}
-  error={error}
-  announcements={announcements}
+     {showAnnouncementModal && (
+  <AddAnnouncementModal
+    showModal={showAnnouncementModal}
+    setShowModal={setShowAnnouncementModal}
+    darkmode={darkmode}
+    
   />
 )}
     </>
   );
 };
 
-export default NavMenu;
+export default AdminNavMenu;

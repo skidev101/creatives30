@@ -4,6 +4,7 @@ import { useState } from "react";
 import NavMenu from "../../dashboard/navmenu";
 import Layout from "./layout";
 import AdminSidebar from "../dashboard/sidebar";
+import AdminNavMenu from "../dashboard/anav";
 
 
 
@@ -25,7 +26,7 @@ const Version = () => {
       </section>
 
     <section className=" flex-grow lg:w-[75%]"> 
-      <NavMenu
+      <AdminNavMenu
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
       
