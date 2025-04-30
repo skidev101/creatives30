@@ -10,7 +10,7 @@ const verifyAdmin = require('../middleware/verifyAdmin');
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send("Hello world, i am xen4")
+  res.send("Hello world")
 })
 
 firebaseInit();
