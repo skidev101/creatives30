@@ -18,7 +18,7 @@ const getCommitHistory = async (req, res) => {
     let version = requestedVersion;
     if (!version) {
 	    const latestVersionDoc = await VersionHistory.findOne().sort({ version: - 1 });
-      version = latestVersionDoc?.version;
+      version = latestVersionDoc.version;
     }
     
     const latestVersionDoc = await VersionHistory.findOne({ version });
@@ -52,7 +52,6 @@ const getCommitHistory = async (req, res) => {
 			commits: commitDates.includes(date)
     }));
     
-    //const versionData = foundUser.versions[0].find((v) => v.version === version);
     
     return res.status(200).json({
 	    day: currentDay,
