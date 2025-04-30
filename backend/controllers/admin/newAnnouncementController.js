@@ -20,12 +20,12 @@ const createAnnouncement = async (req, res) => {
 	  const latestVersion = latestVersionDoc ? latestVersionDoc.version : 1;
     
     const newAnnouncement = await Announcement.create({
-<<<<<<< HEAD
+
 			createdBy: announcerUsername,
-=======
+
       uid,
 			username: announcerUsername,
->>>>>>> cbdd6ceeb59a7234e8c656ffe9e55cdb08cc8ccc
+
 			version: latestVersion,
 			announcement
     })
