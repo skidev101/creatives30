@@ -51,7 +51,7 @@ const leaderboard = useSelector((state) => state.leaderboard);
     };
 
     return (
-        <section className={`w-full max-w-4xl mx-auto p-6 rounded-2xl ${darkMode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkMode ? 'border-neutral-800' : 'border-gray-200'}`}>
+        <section className={`w-full max-w-4xl mx-auto p-6 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} font-grotesk ${darkMode ? '' : ''}`}>
             <h3 className={`text-sm font-semibold mb-4 uppercase tracking-wider ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>Your Progress</h3>
             
             <div className="grid grid-cols-2 gap-4">

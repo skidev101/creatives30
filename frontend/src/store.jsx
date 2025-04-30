@@ -97,12 +97,14 @@ const reducer = (state = initialState, action) => {
           }
         }
       };
+      
      
       case "SET_REVIEW":
         return { ...state, review: action.payload };
     default:
       return state;
   }
+  
 };
 
 const persistConfig = {

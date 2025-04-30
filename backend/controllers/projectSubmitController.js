@@ -129,7 +129,11 @@ const handleProjectSubmit = async (req, res) => {
 		
   } catch(err) {
     console.log(err);
-    res.status(500).send('Internal server error');
+    
+	res.status(500).json({ 
+		error: 'Internal server error',
+		message: err.message 
+	  });
   }
 }
 

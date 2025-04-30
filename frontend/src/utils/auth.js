@@ -24,41 +24,47 @@ export const getToken = async (forceRefresh = false) => {
   };
 
 
-export const authFetch = async (url, options = {}) => {
+  export const authFetch = async (url, options = {}) => {
+    // Determine if we're sending FormData
+    const isFormData = options.body instanceof FormData;
+    
     const defaultOptions = {
-      method: 'GET', // default method
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...options
-    };
-  
-    try {
-      const token = await getToken();
-      // console.log("Sending token:", token)
-      const response = await fetch(url, {
-        ...defaultOptions,
+        method: 'GET',
         headers: {
-          ...defaultOptions.headers,
-          'Authorization': `Bearer ${token}`
-        }
-      });
-  
-      if (response.status === 401) {
-        const newToken = await getToken(true); // Force refresh
-        const retryResponse = await fetch(url, {
-          ...defaultOptions,
-          headers: {
-            ...defaultOptions.headers,
-            'Authorization': `Bearer ${newToken}`
-          }
+            // Only set JSON content type if not FormData
+            ...(!isFormData && { 'Content-Type': 'application/json' }),
+            ...options.headers
+        },
+        ...options
+    };
+
+    try {
+        const token = await getToken();
+        const response = await fetch(url, {
+            ...defaultOptions,
+            headers: {
+                // Don't overwrite Content-Type if it's FormData
+                ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+                ...defaultOptions.headers,
+                'Authorization': `Bearer ${token}`
+            }
         });
-        return retryResponse;
-      }
-  
-      return response;
+
+        if (response.status === 401) {
+            const newToken = await getToken(true);
+            const retryResponse = await fetch(url, {
+                ...defaultOptions,
+                headers: {
+                    ...defaultOptions.headers,
+                    'Authorization': `Bearer ${newToken}`
+                }
+            });
+            return retryResponse;
+        }
+
+        return response;
     } catch (error) {
-      console.error('API call failed:', error);
-      throw error;
+        console.error('API call failed:', error);
+        throw error;
     }
-  };
+};

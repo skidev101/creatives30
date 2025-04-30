@@ -10,9 +10,7 @@ export const setUser = (user) => ({
     payload:user
 })
 
-export const clearUser = (CLEAR_USER) => ({
-  type: CLEAR_USER
-});
+export const clearUser = () => ({ type: 'CLEAR_USER' });
 
 export const saveLeaderboardData = (version, data) => ({
     type: "SAVE_LEADERBOARD_DATA",
@@ -39,6 +37,15 @@ export const setRating = (userId, projectId, rating) => ({
     payload:count
     })
 
+    export const trackTodaysPositions = (version, date, positions) => ({
+      type:"TRACK_TODAYS_POSITIONS",
+      payload: { version, date, positions }
+    });
+    
+    export const setPositionHistory = (history) => ({
+      type: "SET_POSITION_HISTORY",
+      payload: history
+    });
   // export const addNewVersion = (version) => ({
   //   type: "ADD_NEW_VERSION",
   //   payload: version

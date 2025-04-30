@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from './landing/page';
@@ -41,29 +42,29 @@ function App() {
           }, 55 * 60 * 1000);
   
           // Only fetch user data if Firebase user matches Redux user
-          if (!user || user.uid !== firebaseUser.uid) {
-            try {
-              const token = await firebaseUser.getIdToken();
-              const response = await fetch('https://xen4-backend.vercel.app/user', {
-                headers: { 
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json'
-                }
-              });
+          // if (!user || user.uid !== firebaseUser.uid) {
+          //   try {
+          //     const token = await firebaseUser.getIdToken();
+          //     const response = await fetch('https://xen4-backend.vercel.app/user', {
+          //       headers: { 
+          //         'Authorization': `Bearer ${token}`,
+          //         'Content-Type': 'application/json'
+          //       }
+          //     });
   
-              if (!response.ok) throw new Error('Failed to fetch user data');
+          //     if (!response.ok) throw new Error('Failed to fetch user data');
               
-              const userData = await response.json();
-              dispatch(setUser({
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                ...userData
-              }));
-            } catch (error) {
-              console.error('User data load failed:', error);
-              dispatch(clearUser());
-            }
-          }
+          //     const userData = await response.json();
+          //     dispatch(setUser({
+          //       uid: firebaseUser.uid,
+          //       email: firebaseUser.email,
+          //       ...userData
+          //     }));
+          //   } catch (error) {
+          //     console.error('User data load failed:', error);
+          //     dispatch(clearUser());
+          //   }
+          // }
         } else {
           // No Firebase user - clear Redux state
           if (user) dispatch(clearUser());

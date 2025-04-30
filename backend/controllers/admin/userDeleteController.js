@@ -4,29 +4,37 @@ const Project = require('../../models/Project');
 const mongoose = require('mongoose');
 
 const deleteUser = async (req, res) => {
-	const { email, username } = req.body;
-	const query = email ? { email } : { username };
-	const value = email || username;
-	
-	try {
-		const foundUser = await User.findOne(query);
-		if (!foundUser) return res.status(404).json({ message: "user not found"});
-		const foundUserUid = foundUser.uid;
-		const [fbDelete, dbDelete] = await Promise.all([
-			admin.auth().deleteUser(foundUserUid),
-			User.findOneAndDelete({ uid: foundUserUid })
-		]);
-		if (fbDelete && dbDelete){
-				res.status(200).json({
-				message: `user ${value} deleted successfully`
-			});
-		}
-		
-	} catch (err) {
-		console.log(err);
-		res.status(500).send('Internal server error');
-	}
-	
+  const { email, username } = req.body;
+  const query = email ? { email } : { username };
+  const value = email || username;
+  
+  try {
+    const foundUser = await User.findOne(query);
+    if (!foundUser) {
+      return res.status(404).json({ 
+        message: "User not found",
+      });
+    }
+    
+    const foundUserUid = foundUser.uid;
+    
+    // Delete from Firebase Auth and MongoDB in parallel
+    await Promise.all([
+      admin.auth().deleteUser(foundUserUid),
+      User.findOneAndDelete({ uid: foundUserUid })
+    ]);
+    
+    // If we get here, both operations succeeded
+    return res.status(200).json({
+      message: `User ${value} deleted successfully`,
+    });
+    
+  } catch (err) {
+    console.error('Delete user error:', err);
+    return res.status(500).json({
+      error: err.message || "INTERNAL_SERVER_ERROR"
+    });
+  }
 }
 
-module.exports = { deleteUser }
+module.exports = { deleteUser };

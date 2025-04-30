@@ -5,7 +5,7 @@ import NavMenu from "../dashboard/navmenu";
 import Sidebar from "../dashboard/sidebar";
 import Layout from "../projects/layout";
 import { useSelector } from "react-redux";
-import AdminSidebar from "../admin/dashboard/side";
+import AdminSidebar from "../admin/dashboard/sidebar";
 
 
 const UserProjectsID = () => {

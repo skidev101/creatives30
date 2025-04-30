@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, GithubAuthProvider, linkWithPopup, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { 
+  getAuth, 
+  GithubAuthProvider, 
+  linkWithPopup, 
+  signInWithEmailAndPassword, 
+  signInWithPopup,
+  fetchSignInMethodsForEmail,
+  linkWithCredential
+} from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useDispatch } from 'react-redux';
 import {  setUser } from '../action';
@@ -18,267 +26,383 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const dispatch = useDispatch();
-
+    const [pendingGithubCredential, setPendingGithubCredential] = useState(null);
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
- 
     const handleGithubLogin = async (e) => {
       e.preventDefault();
       setLoading(true);
       setError({ general: '' });
     
       try {
-        const auth = getAuth();
-        // First check if user is already logged in with another provider
-        const currentUser = auth.currentUser;
-    
-        if (currentUser) {
-          // User is already logged in, link the GitHub credential
+          const auth = getAuth();
+          const currentUser = auth.currentUser;
           const githubProvider = new GithubAuthProvider();
-          const result = await linkWithPopup(currentUser, githubProvider);
-          const user = result.user;
-          const idToken = await user.getIdToken();
-    
-          // Proceed with your backend verification
-          const response = await fetch('https://xen4-backend.vercel.app/githubLogin', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`,
-            },
-            credentials: 'include',
-          });
-    
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'GitHub account linking failed');
+      
+          if (currentUser) {
+              // User is already logged in, link the GitHub credential
+              const result = await linkWithPopup(currentUser, githubProvider);
+              await handleSuccessfulAuth(result.user);
+          } else {
+              // No current user, proceed with normal GitHub login
+              try {
+                  const credential = await signInWithPopup(auth, githubProvider);
+                  await handleSuccessfulAuth(credential.user);
+              } catch (err) {
+                  if (err.code === 'auth/account-exists-with-different-credential') {
+                      // Store the GitHub credential for later use
+                      const pendingCredential = GithubAuthProvider.credentialFromError(err);
+                      const email = err.customData?.email;
+                      
+                      // Get available sign-in methods for this email
+                      const methods = await fetchSignInMethodsForEmail(auth, email);
+                      
+                      // Show UI to let user choose how to sign in
+                      setError({ 
+                          general: `An account already exists with email ${email}. Please sign in with your ${methods.join(' or ')} account first.`
+                      });
+                      
+                      // Store the pending credential in state
+                      setPendingGithubCredential({
+                          credential: pendingCredential,
+                          email: email,
+                          methods: methods
+                      });
+                      
+                      // Update email field to show the conflicting email
+                      setEmail(email);
+                  } else {
+                      throw err; // Re-throw other errors
+                  }
+              }
           }
-    
-          const data = await response.json();
-          
-          dispatch(setUser({
-            uid: user.uid,
-            email: user.email || data.email || '',
-            username: data.username || user.displayName || user.email?.split('@')[0] || 'github-user',
-            displayName: user.displayName || data.username || 'GitHub User',
-            photoURL: user.photoURL || data.profileImgURL || '',
-            roles: data.roles || [],
-            lastVerified: Date.now()
-          }));
-    
-          navigate(data.roles?.includes('Admin') ? '/addadmins' : '/submitproject');
-        } else {
-          // No current user, proceed with normal GitHub login
-          const credential = await signInWithPopup(auth, new GithubAuthProvider());
-          const user = credential.user;
-          const idToken = await user.getIdToken();
-    
-          const response = await fetch('https://xen4-backend.vercel.app/githubLogin', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`,
-            },
-            credentials: 'include',
-          });
-    
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'GitHub login failed');
-          }
-    
-          const data = await response.json();
-          
-          dispatch(setUser({
-            uid: user.uid,
-            email: user.email || data.email || '',
-            username: data.username || user.displayName || user.email?.split('@')[0] || 'github-user',
-            displayName: user.displayName || data.username || 'GitHub User',
-            photoURL: user.photoURL || data.profileImgURL || '',
-            roles: data.roles || [],
-            lastVerified: Date.now()
-          }));
-    
-          navigate(data.roles?.includes('Admin') ? '/addadmins' : '/submitproject');
-        }
       } catch (err) {
-        console.error("GitHub login error:", err);
-        
-        let errorMessage = "GitHub login failed. Please try again.";
-        
-        if (err.code === 'auth/account-exists-with-different-credential') {
-          // This error occurs when the email is already in use with another provider
-          errorMessage = "This email is already associated with another login method. Please sign in with that method first, then link your GitHub account.";
-        } else if (err.code) {
-          const errorMap = {
-            'auth/popup-closed-by-user': 'Login popup was closed before completing',
-            'auth/cancelled-popup-request': 'Login process was cancelled',
-            'auth/popup-blocked': 'Popup was blocked by browser'
-          };
-          errorMessage = errorMap[err.code] || err.message;
-        } else if (err.message) {
-          errorMessage = err.message;
-        }
-    
-        setError({ general: errorMessage });
+          console.error("GitHub login error:", err);
+          handleAuthError(err);
       } finally {
-        setLoading(false);
+          setLoading(false);
       }
-    };
-    
-    const handleGoogleLogin = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      setError({ general: '' });
-    
-      try {
-        // 1. Authenticate with Google
-        const credential = await signInWithPopup(auth, googleProvider);
-        const user = credential.user;
-        const idToken = await user.getIdToken();
-        
-        // 2. Verify with backend
-        const response = await fetch('https://xen4-backend.vercel.app/googleLogin', {
+  };
+
+  const handleSuccessfulAuth = async (user) => {
+      const idToken = await user.getIdToken();
+      
+      const response = await fetch('https://xen4-backend.vercel.app/githubLogin', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`,
           },
           credentials: 'include',
-        });
-    
-        if (!response.ok) {
+      });
+
+      if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Google login failed');
-        }
-    
-        const data = await response.json();
-        
-        // 3. Dispatch user data to Redux
-        dispatch(setUser({
+          throw new Error(errorData.message || 'Authentication failed');
+      }
+
+      const data = await response.json();
+      
+      dispatch(setUser({
           uid: user.uid,
           email: user.email || data.email || '',
-          username: data.username || user.displayName || user.email?.split('@')[0] || 'google-user',
-          displayName: user.displayName || data.username || 'Google User',
+          username: data.username || user.displayName || user.email?.split('@')[0] || 'github-user',
+          displayName: user.displayName || data.username || 'GitHub User',
           photoURL: user.photoURL || data.profileImgURL || '',
           roles: data.roles || [],
           lastVerified: Date.now()
-        }));
-    
-        // 4. Navigate based on role
-        const isAdmin = data.roles?.includes('Admin');
-        navigate(isAdmin ? '/addadmins' : '/submitproject');
-    
-      } catch (err) {
-        console.error("Google sign in error:", err);
-        
-        let errorMessage = "Google login failed. Please try again.";
-        
-        if (err.code) {
+      }));
+
+      navigate(data.roles?.includes('Admin') ? '/addadmins' : '/submitproject');
+  };
+
+  const handleAuthError = (err) => {
+      let errorMessage = "Authentication failed. Please try again.";
+      
+      if (err.code) {
           const errorMap = {
-            'auth/account-exists-with-different-credential': 'An account already exists with the same email but different sign-in method',
-            'auth/popup-closed-by-user': 'Login popup was closed before completing',
-            'auth/cancelled-popup-request': 'Login process was cancelled',
-            'auth/popup-blocked': 'Popup was blocked by browser'
+              'auth/account-exists-with-different-credential': 'An account already exists with the same email but different sign-in method',
+              'auth/popup-closed-by-user': 'Login popup was closed before completing',
+              'auth/cancelled-popup-request': 'Login process was cancelled',
+              'auth/popup-blocked': 'Popup was blocked by browser',
+              'auth/user-not-found': 'Invalid email or password',
+              'auth/wrong-password': 'Invalid email or password',
+              'auth/invalid-credential': 'Invalid credentials',
+              'auth/invalid-email': 'Invalid email address',
+              'auth/too-many-requests': 'Too many attempts. Account temporarily locked',
+              'auth/user-disabled': 'Account disabled'
           };
           errorMessage = errorMap[err.code] || err.message;
-        } else if (err.message) {
+      } else if (err.message) {
           errorMessage = err.message;
-        }
-    
-        setError({ general: errorMessage });
-      } finally {
-        setLoading(false);
       }
-    };
-   
 
+      setError(prev => ({
+          ...prev,
+          general: errorMessage
+      }));
+  };
 
+  const handleLinkAfterEmailLogin = async (user) => {
+      if (!pendingGithubCredential) return;
+      
+      try {
+          // Link the GitHub credential
+          await linkWithCredential(user, pendingGithubCredential.credential);
+          setPendingGithubCredential(null);
+          
+          // Now proceed with normal authentication flow
+          await handleSuccessfulAuth(user);
+      } catch (err) {
+          console.error("Account linking error:", err);
+          setError({ general: 'Failed to link GitHub account. Please try again.' });
+      }
+  };
 
-    const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
       e.preventDefault();
       setLoading(true);
       setError({ email: '', password: '', general: '' });
     
       // Validation
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setError(prev => ({ ...prev, email: "Please enter a valid email" }));
-        setLoading(false);
-        return;
+          setError(prev => ({ ...prev, email: "Please enter a valid email" }));
+          setLoading(false);
+          return;
       }
     
       try {
-        // 1. First authenticate with Firebase
-        const auth = getAuth();
-        const credential = await signInWithEmailAndPassword(auth, email, password);
-        const user = credential.user;
-        
-        // 2. Get the ID token
-        const idToken = await user.getIdToken();
-        
-        // 3. Now call your backend with the token
-        const response = await fetch('https://xen4-backend.vercel.app/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
-          },
-          body: JSON.stringify({
-            email,
-            pwd: password
-          }),
-        });
-    
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Login failed');
-        }
-    
-        const data = await response.json();
-        
-        // 4. Update Redux store with user data
-        dispatch(setUser({
-          uid: user.uid,
-          email: user.email,
-          username: data.username,
-          roles: data.roles,
-          profileImgURL: data.profileImgURL,
-          lastVerified: Date.now()
-        }));
-    
-        // 5. Navigate based on role
-        const isAdmin = data.roles?.includes('Admin');
-        navigate(isAdmin ? '/addadmins' : '/submitproject');
-    
+          // 1. First authenticate with Firebase
+          const auth = getAuth();
+          const credential = await signInWithEmailAndPassword(auth, email, password);
+          const user = credential.user;
+          
+          // 2. Check if we have a pending GitHub credential to link
+          if (pendingGithubCredential && pendingGithubCredential.email === email) {
+              await handleLinkAfterEmailLogin(user);
+              return;
+          }
+          
+          // 3. Get the ID token
+          const idToken = await user.getIdToken();
+          
+          // 4. Now call your backend with the token
+          const response = await fetch('https://xen4-backend.vercel.app/login', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}`
+              },
+              body: JSON.stringify({
+                  email,
+                  pwd: password
+              }),
+          });
+
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Login failed');
+          }
+
+          const data = await response.json();
+          
+          // 5. Update Redux store with user data
+          dispatch(setUser({
+              uid: user.uid,
+              email: user.email,
+              username: data.username,
+              roles: data.roles,
+              profileImgURL: data.profileImgURL,
+              lastVerified: Date.now()
+          }));
+
+          // 6. Navigate based on role
+          const isAdmin = data.roles?.includes('Admin');
+          navigate(isAdmin ? '/addadmins' : '/submitproject');
+
       } catch (error) {
-        // Enhanced error handling
-        let errorMessage = 'Login failed. Please try again.';
-        
-        if (error.code) {
-          const errorMap = {
-            'auth/user-not-found': 'Invalid email or password',
-            'auth/wrong-password': 'Invalid email or password',
-            'auth/invalid-credential': 'Invalid credentials',
-            'auth/invalid-email': 'Invalid email address',
-            'auth/too-many-requests': 'Too many attempts. Account temporarily locked',
-            'auth/user-disabled': 'Account disabled'
-          };
-          errorMessage = errorMap[error.code] || error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
+          handleAuthError(error);
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  const handleGoogleLogin = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setError({ general: '' });
     
-        setError(prev => ({
-          ...prev,
-          general: errorMessage
-        }));
+      try {
+          const credential = await signInWithPopup(auth, googleProvider);
+          const user = credential.user;
+          
+          // Check if we have a pending GitHub credential to link
+          if (pendingGithubCredential && pendingGithubCredential.email === user.email) {
+              await handleLinkAfterEmailLogin(user);
+              return;
+          }
+          
+          await handleSuccessfulAuth(user);
+      } catch (err) {
+          handleAuthError(err);
+      } finally {
+          setLoading(false);
+      }
+  };
+
+ 
+  
+    // const handleGoogleLogin = async (e) => {
+    //   e.preventDefault();
+    //   setLoading(true);
+    //   setError({ general: '' });
+    
+    //   try {
+    //     // 1. Authenticate with Google
+    //     const credential = await signInWithPopup(auth, googleProvider);
+    //     const user = credential.user;
+    //     const idToken = await user.getIdToken();
+        
+    //     // 2. Verify with backend
+    //     const response = await fetch('https://xen4-backend.vercel.app/googleLogin', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${idToken}`
+    //       },
+    //       credentials: 'include',
+    //     });
+    
+    //     if (!response.ok) {
+    //       const errorData = await response.json();
+    //       throw new Error(errorData.message || 'Google login failed');
+    //     }
+    
+    //     const data = await response.json();
+        
+    //     // 3. Dispatch user data to Redux
+    //     dispatch(setUser({
+    //       uid: user.uid,
+    //       email: user.email || data.email || '',
+    //       username: data.username || user.displayName || user.email?.split('@')[0] || 'google-user',
+    //       displayName: user.displayName || data.username || 'Google User',
+    //       photoURL: user.photoURL || data.profileImgURL || '',
+    //       roles: data.roles || [],
+    //       lastVerified: Date.now()
+    //     }));
+    
+    //     // 4. Navigate based on role
+    //     const isAdmin = data.roles?.includes('Admin');
+    //     navigate(isAdmin ? '/addadmins' : '/submitproject');
+    
+    //   } catch (err) {
+    //     console.error("Google sign in error:", err);
+        
+    //     let errorMessage = "Google login failed. Please try again.";
+        
+    //     if (err.code) {
+    //       const errorMap = {
+    //         'auth/account-exists-with-different-credential': 'An account already exists with the same email but different sign-in method',
+    //         'auth/popup-closed-by-user': 'Login popup was closed before completing',
+    //         'auth/cancelled-popup-request': 'Login process was cancelled',
+    //         'auth/popup-blocked': 'Popup was blocked by browser'
+    //       };
+    //       errorMessage = errorMap[err.code] || err.message;
+    //     } else if (err.message) {
+    //       errorMessage = err.message;
+    //     }
+    
+    //     setError({ general: errorMessage });
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+   
+
+    // const handleLogin = async (e) => {
+    //   e.preventDefault();
+    //   setLoading(true);
+    //   setError({ email: '', password: '', general: '' });
+    
+    //   // Validation
+    //   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    //     setError(prev => ({ ...prev, email: "Please enter a valid email" }));
+    //     setLoading(false);
+    //     return;
+    //   }
+    
+    //   try {
+    //     // 1. First authenticate with Firebase
+    //     const auth = getAuth();
+    //     const credential = await signInWithEmailAndPassword(auth, email, password);
+    //     const user = credential.user;
+        
+    //     // 2. Get the ID token
+    //     const idToken = await user.getIdToken();
+        
+    //     // 3. Now call your backend with the token
+    //     const response = await fetch('https://xen4-backend.vercel.app/login', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${idToken}`
+    //       },
+    //       body: JSON.stringify({
+    //         email,
+    //         pwd: password
+    //       }),
+    //     });
+    
+    //     if (!response.ok) {
+    //       const errorData = await response.json();
+    //       throw new Error(errorData.message || 'Login failed');
+    //     }
+    
+    //     const data = await response.json();
+        
+    //     // 4. Update Redux store with user data
+    //     dispatch(setUser({
+    //       uid: user.uid,
+    //       email: user.email,
+    //       username: data.username,
+    //       roles: data.roles,
+    //       profileImgURL: data.profileImgURL,
+    //       lastVerified: Date.now()
+    //     }));
+    
+    //     // 5. Navigate based on role
+    //     const isAdmin = data.roles?.includes('Admin');
+    //     navigate(isAdmin ? '/addadmins' : '/submitproject');
+    
+    //   } catch (error) {
+    //     // Enhanced error handling
+    //     let errorMessage = 'Login failed. Please try again.';
+        
+    //     if (error.code) {
+    //       const errorMap = {
+    //         'auth/user-not-found': 'Invalid email or password',
+    //         'auth/wrong-password': 'Invalid email or password',
+    //         'auth/invalid-credential': 'Invalid credentials',
+    //         'auth/invalid-email': 'Invalid email address',
+    //         'auth/too-many-requests': 'Too many attempts. Account temporarily locked',
+    //         'auth/user-disabled': 'Account disabled'
+    //       };
+    //       errorMessage = errorMap[error.code] || error.message;
+    //     } else if (error.message) {
+    //       errorMessage = error.message;
+    //     }
+    
+    //     setError(prev => ({
+    //       ...prev,
+    //       general: errorMessage
+    //     }));
     
        
-      } finally {
-        setLoading(false);
-      }
-    };
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
     
     return (
         <section className="bg-black min-h-screen flex justify-center items-center pt-10 pb-10 font-grotesk p-4">
@@ -353,7 +477,7 @@ export default function Login() {
       </span>
       {error.password && <span className="text-sm text-red-400">{error.password}</span>}
     </div>
-                    <a className="forgot-password-link text-blue-300 text-sm underline self-end" href="#">Forgot Password</a>
+                    <a className="forgot-password-link text-blue-300 text-sm underline self-end" href="/forgetpassword">Forgot Password</a>
                     <button 
     type="submit" 
     className={`flex justify-center items-center w-full py-3 px-4 rounded-md shadow-md text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} transition duration-200 ease-in-out`}

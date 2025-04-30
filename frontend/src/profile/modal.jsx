@@ -94,8 +94,8 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
             style={{ transition: 'opacity 0.3s ease' }}
         >
             <div
-                className={`relative rounded-lg shadow-lg p-6 w-full max-w-md mx-4 ${
-                    darkmode ? 'bg-neutral-900 text-white' : 'bg-white text-black'
+                className={`relative rounded-lg shadow-lg p-6 w-full max-w-md mx-4 border ${
+                    darkmode ? 'bg-neutral-900 text-white border-gray-700' : 'bg-white text-black border-gray-200'
                 }`}
             >
                 <button
@@ -115,7 +115,7 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Username"
-                            className="w-full p-2 rounded border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                            className="w-full p-2 rounded border  transition-all"
                             required
                         />
                     </div>
@@ -126,7 +126,7 @@ export const EditProfile = ({ isOpen, setIsOpen }) => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Email"
-                            className="w-full p-2 rounded border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                            className="w-full p-2 rounded border  transition-all"
                             required
                         />
                     </div>

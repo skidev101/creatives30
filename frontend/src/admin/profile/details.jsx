@@ -111,7 +111,7 @@ const VersionDetails = () => {
                     className={`${darkmode ? 'hover:bg-[#222]' : 'hover:bg-gray-50'}`}
                   >
                     <td className={`px-4 py-4 text-sm font-medium ${darkmode ? 'text-white' : 'text-gray-900'}`}>
-                      Version {version?.version}
+                      Ver {version?.version}
                     </td>
                     <td className="px-4 py-4">
                       {getStatusBadge(version)}
