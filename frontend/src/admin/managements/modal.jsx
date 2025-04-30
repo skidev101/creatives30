@@ -12,8 +12,8 @@ function AddAdminModal ({
     return(
         <>
           {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-10">
-                  <div className={`rounded-[14px] shadow-2xl ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 w-full max-w-md`}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center pt-2 bg-opacity-70 px-8">
+                  <div className={`rounded-[14px] shadow-2xl border ${darkmode ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'} p-6 w-full max-w-md`}>
                     <div className="flex items-center justify-between mb-4">
                       <h3 className={`text-lg font-bold ${darkmode ? 'text-white' : 'text-gray-900'}`}>
                         Add New Admin
@@ -68,7 +68,17 @@ function AddAdminModal ({
                       </button>
                       <button
                         onClick={handleAddAdmin}
-                        className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${darkmode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+                        className={`
+                          flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+                          bg-gradient-to-r ${darkmode ? 'from-indigo-600 to-blue-700' : 'from-blue-500 to-cyan-400'}
+                          ${darkmode ? 'backdrop-blur-lg bg-opacity-70' : 'backdrop-blur-md bg-opacity-85'}
+                          border ${darkmode ? 'border-indigo-400/30' : 'border-white/30'}
+                          shadow-lg ${darkmode ? 'shadow-indigo-900/30' : 'shadow-blue-300/30'}
+                          hover:shadow-xl hover:brightness-105
+                          transition-all duration-300
+                          text-white
+                          hover:scale-[1.02]
+                        `}
                       >
                         <FiCheck size={16} />
                         Add Admin
@@ -92,8 +102,8 @@ function DeleteUserModal({
   return (
       <>
           {confirmDeleteEmail && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-10">
-                  <div className={`rounded-[14px] shadow-2xl ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 w-full max-w-sm`}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center pt-2 bg-opacity-70 px-8">
+                  <div className={`rounded-[14px] shadow-2xl border ${darkmode ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'} p-6 w-full max-w-md`}>
                       <div className="flex items-center justify-between mb-4">
                       <h3 className={`text-sm font-semibold ${darkmode ? 'text-white' : 'text-gray-900'}`}>Are you sure you want to delete {confirmDeleteEmail}?  </h3>
                       <button
@@ -105,20 +115,43 @@ function DeleteUserModal({
                       </div>
 
                 
-<div className="flex gap-4 mt-4">
-                <button
-                  onClick={() => handleDeleteUser(confirmDeleteEmail)}
-                  className="px-4 py-2 bg-red-500 text-white text-sm rounded-md"
-                >
-                  Yes, Delete 
-                </button>
-                <button
-                  onClick={cancelDelete}
-                  className="px-4 py-2 bg-gray-200 text-sm text-gray-700 rounded-md"
-                >
-                  Cancel
-                </button>
-              </div>
+                      <div className="flex gap-4 mt-4">
+ 
+  <button
+    onClick={() => handleDeleteUser(confirmDeleteEmail)}
+    className={`
+      px-4 py-2 text-sm rounded-md
+      bg-gradient-to-r from-red-500 to-pink-600
+      backdrop-blur-sm bg-opacity-90
+      border border-red-400/30
+      shadow-lg shadow-red-900/20
+      hover:shadow-xl hover:brightness-110
+      transition-all duration-300
+      text-white
+      hover:scale-[1.02]
+    `}
+  >
+    Yes, Delete
+  </button>
+
+
+  <button
+    onClick={cancelDelete}
+    className={`
+      px-4 py-2 text-sm rounded-md
+      bg-gradient-to-r from-gray-100 to-gray-300
+      backdrop-blur-sm bg-opacity-80
+      border border-gray-300/50
+      shadow-lg shadow-gray-400/20
+      hover:shadow-md hover:brightness-95
+      transition-all duration-300
+      text-gray-700
+      hover:scale-[1.02]
+    `}
+  >
+    Cancel
+  </button>
+</div>
 
                     
                   </div>

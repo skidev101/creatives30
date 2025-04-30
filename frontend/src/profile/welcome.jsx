@@ -59,7 +59,7 @@ if (loading) {
       </section>
 
  
-      <div className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+      <div className={`w-full max-w-4xl mx-auto p-4 rounded-[14px] font-grotesk ${darkmode ? 'bg-[#111313]' : 'bg-white'}  ${darkmode ? '' : ''}`}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((item) => (
             <div key={item} className="space-y-2">
@@ -75,7 +75,7 @@ if (loading) {
 
     return (
         <div className="space-y-4 font-grotesk">
-            <section className={`w-full max-w-4xl mx-auto p-4 rounded-2xl ${darkmode ? 'bg-neutral-900' : 'bg-white'} shadow-sm border ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+            <section className={`w-full max-w-4xl mx-auto p-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
                 <div className="flex items-center space-x-4">
                     <div className="relative">
                         

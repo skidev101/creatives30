@@ -4,8 +4,9 @@ import { useState } from "react";
 import NavMenu from "../../dashboard/navmenu";
 
 
-import Sidebar from "../dashboard/sidebar";
+
 import Layout from "./layout";
+import AdminSidebar from "../dashboard/sidebar";
 
 
 
@@ -19,7 +20,7 @@ const Lead= () => {
 
     <section className="flex bg-[#09090b] h-screen w-[100%]">
       <section className=" h-screen lg:w-[20%]" >
-     < Sidebar
+     < AdminSidebar
       setSidebarOpen={setSidebarOpen}
       isSidebarOpen={isSidebarOpen}
      

@@ -118,12 +118,22 @@ const [admins, setAdmins] = useState([]);
           Admins
         </h2>
         <button
-          onClick={() => setShowModal(true)}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${darkmode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-        >
-          <FiPlus size={16} />
-          Add Admin
-        </button>
+  onClick={() => setShowModal(true)}
+  className={`
+    flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+    bg-gradient-to-r ${darkmode ? 'from-blue-600 to-purple-700' : 'from-blue-500 to-blue-400'}
+    backdrop-blur-md
+    border ${darkmode ? 'border-blue-400/30' : 'border-white/30'}
+    shadow-lg ${darkmode ? 'shadow-blue-900/30' : 'shadow-blue-300/30'}
+    hover:shadow-xl hover:brightness-110
+    transition-all duration-300
+    text-white
+  `}
+>
+  <FiPlus size={16} />
+  Add Admin
+</button>
+      
       </div>
       {loading && (
   <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>

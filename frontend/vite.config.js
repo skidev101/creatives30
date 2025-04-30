@@ -11,4 +11,8 @@ export default defineConfig({
 
 
   ],
+  server: {
+    host: true, // This allows external devices to access the dev server
+    port: 5173, // Or any port you prefer
+  },
 })

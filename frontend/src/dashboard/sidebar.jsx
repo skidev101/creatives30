@@ -1,6 +1,6 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, } from "react-router-dom";
 import { useSelector } from "react-redux";
-import LogoutModal from "../components/logoutmodal";
+import { LogoutModal } from "../components/logoutmodal";
 import { useState } from "react";
 import { FiCode } from 'react-icons/fi';
 import { 
@@ -12,24 +12,11 @@ import {
 } from "react-icons/hi";
 const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const darkmode = useSelector((state) => state.darkMode);
   
   const closeSidebar = () => setSidebarOpen(false);
   
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      setTimeout(() => {
-        setOpen(false);
-        navigate('/login');
-        setLoading(false);
-      }, 2000); 
-    } catch (error) {
-      console.error("Error logging out: ", error);
-    }
-  };
+
 
   return (
     <div className="relative h-full ">
@@ -138,7 +125,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
           </div>
 
     
-          <div className={`mt-auto p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+          <div className={`mt-auto relative lg:top-0 md:top-0 top-[-50px]  p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
             <ul className="space-y-2 font-medium">
               <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
                 Account
@@ -163,8 +150,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }) => {
       <LogoutModal
         open={open}
         onClose={() => setOpen(false)}
-        onLogout={handleLogout}
-        loading={loading}
+        
       />
     </div>
   );

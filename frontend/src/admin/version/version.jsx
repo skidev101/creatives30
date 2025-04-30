@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useDispatch, useSelector } from 'react-redux';
 import {  useState } from 'react';
 import { FiPlus, FiCheck } from 'react-icons/fi';
@@ -15,13 +16,16 @@ export default function VersionPage() {
 
   const navigate = useNavigate();
 
+  const Useremail = user?.email;
+  const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [newVersionName, setNewVersionName] = useState('');
   const [loadingC, setLoadingC] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [createdVersion, setCreatedVersion] = useState(null);
-
+  const leaderboard = useSelector((state) => state.leaderboard)
+  const currentVersion = leaderboard.currentVersion
   const handleCreateVersion = async () => {
     setLoadingC(true);
     setError(null);
@@ -65,7 +69,7 @@ export default function VersionPage() {
       setNewVersionName('');
       setShowVersionModal(false);
 
-      // Navigate after 1.5 seconds (allows user to see success message)
+  
       setTimeout(() => {
         navigate('/lead');
       }, 2500);
@@ -100,22 +104,35 @@ export default function VersionPage() {
   return (
     <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
       <div className={`flex items-center justify-between mb-4 border-b w-full ${darkMode ? 'border-neutral-800' : 'border-slate-200'}`}>
-        <img
-          src={img}
-          alt="Profile"
-          className="lg:h-15 lg:w-15 h-10 w-10 rounded-full object-cover mb-4"
-        />
-        <div className="flex flex-col pl-3 flex-grow">
-          <p className={`text-sm ${darkMode ? 'text-neutral-100' : 'text-gray-500'}`}>
-            Welcome Admin!
-          </p>
-          <p className={`text-sm ${darkMode ? 'text-neutral-100' : 'text-gray-500'}`}>
-            {user?.username || "guest"}
-          </p>
-        </div>
+      <div className={`
+  lg:h-10 lg:w-10 h-10 w-10 rounded-full 
+  ${darkMode ? 
+    'bg-gradient-to-br from-blue-600 to-indigo-700' : 
+    'bg-gradient-to-br from-blue-500 to-cyan-400'
+  }
+  ${darkMode ? 'backdrop-blur-sm' : 'backdrop-blur-xs'}
+  border ${darkMode ? 'border-indigo-400/30' : 'border-white/30'}
+  shadow-lg ${darkMode ? 'shadow-blue-900/30' : 'shadow-blue-300/20'}
+  flex items-center justify-center mb-4
+  text-white
+`}>
+  <span className='text-lg  font-medium'>
+    {currentVersion}
+  </span>
+</div>
+      
         <button
           onClick={() => setShowVersionModal(true)}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+          className={`
+            flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+            bg-gradient-to-r ${darkMode ? 'from-blue-600 to-purple-700' : 'from-blue-500 to-blue-400'}
+            backdrop-blur-md
+            border ${darkMode ? 'border-blue-400/30' : 'border-white/30'}
+            shadow-lg ${darkMode ? 'shadow-blue-900/30' : 'shadow-blue-300/30'}
+            hover:shadow-xl hover:brightness-110
+            transition-all duration-300
+            text-white
+          `}
           disabled={loadingC}
         >
           <FiPlus size={16} />

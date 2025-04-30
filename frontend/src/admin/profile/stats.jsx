@@ -9,7 +9,7 @@ export const TodayStats = () => {
     const leaderboard = useSelector((state) => state.leaderboard);
     const [dailyData, setDailyData] = useState(null);
 
-    // Initialize or update daily tracking
+    
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
         const savedData = JSON.parse(localStorage.getItem('leaderboardDailyStats')) || {};
@@ -56,7 +56,7 @@ export const TodayStats = () => {
 
         return {
             activeUsers: userCount,
-            newSubmissions,
+            newSubmissions:userCount,
             leaderboardChanges,
             versionPerformance,
             version: leaderboard.currentVersion
