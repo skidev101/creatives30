@@ -1,3 +1,8 @@
+const admin = require('firebase-admin');
+const User = require('../../models/User');
+const Project = require('../../models/Project');
+const mongoose = require('mongoose');
+
 const deleteUser = async (req, res) => {
 	const { email, username } = req.body;
 	const query = email ? { email } : { username };
@@ -42,3 +47,5 @@ const deleteUser = async (req, res) => {
 	  });
 	}
   }
+
+module.exports = { deleteUser }
