@@ -58,7 +58,7 @@ const handleProjectSubmit = async (req, res) => {
 			livelink,
 			day,
 			repolink,
-			languages,
+			languages: JSON.parse(languages),
 			framework,
 			description,
 			images: imageUrls
