@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import img from '../assets/image.png';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -6,76 +6,125 @@ import { MessageAlert } from './success';
 
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../utils/auth';
-//import { storage } from '../firebase';
-//import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function SubmitPage() {
-  const navigate = useNavigate()
-  const user = useSelector((state)=> state.user)
-  const Useremail = user?.email
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
+  const Useremail = user?.email;
   const Userimg = Useremail ? Useremail.charAt(0).toUpperCase() : '';
-  const [loading, setLoading] = useState(false)
-  //const [screenshots, setScreenshots] = useState([]);
-  const [form , setForm] = useState({
-    title:'',
-    livelink :'',
-    day:'',
-    repolink:'',
-    languages:'',
-    framework:'',
-    description:''
-  })
-  const [error, setError] = useState({ 
-    title:'',
-    livelink:'',
-    day:'',
-    repolink:'',
-    languages:'',
-    description:'',
-    general:''
+  const [loading, setLoading] = useState(false);
+  const [screenshots, setScreenshots] = useState([]);
+  const [form, setForm] = useState({
+    title: '',
+    livelink: '',
+    day: '',
+    repolink: '',
+    languages: '',
+    framework: '',
+    description: '',
+    screenshots: []
+  });
+  const [error, setError] = useState({
+    title: '',
+    livelink: '',
+    day: '',
+    repolink: '',
+    languages: '',
+    description: '',
+    general: ''
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const darkmode = useSelector((state) => state.darkMode);
+
+  // Clean up object URLs when component unmounts or screenshots change
+  useEffect(() => {
+    return () => {
+      screenshots.forEach(screenshot => {
+        if (screenshot.preview) {
+          URL.revokeObjectURL(screenshot.preview);
+        }
+      });
+    };
+  }, [screenshots]);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
+    // Clear error when user starts typing
+    if (error[name]) {
+      setError(prev => ({ ...prev, [name]: '' }));
+    }
   };
-console.log("user", user)
-  // const handleScreenshotChange = async (event) => {
-  //   try {
-		//	const files = Array.from(event.target.files);
-	 //   const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024); // Filter files larger than 2MB
-	 //   const screenshotURL = await Promise.all(validFiles.map((file) => {
-		//		const storageRef = ref(storage, `Projects/images/${Date.now()}/${file.name}`);
-		//		await uploadBytes(storageRef, file);
-		//		const downloadURL = await getDownloadURL(storageRef);
-		//		return downloadURL;
-	 //   }));
-	 //   setScreenshots(prevScreenshots => [...prevScreenshots, ...downloadURL]);
-  //   } catch (err) {
-		//	console.log("Image Processing error,": err)
-  //   }
-  // };
-  
 
-  // const handleRemoveScreenshot = (index) => {
-  //   setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
-  // };
+  const handleScreenshotChange = async (event) => {
+    try {
+      const files = Array.from(event.target.files);
+      const validFiles = files.filter(file => {
+        // Check file size (2MB max) and type (images only)
+        return file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/');
+      });
 
-  
+      if (files.length > validFiles.length) {
+        setError(prev => ({ ...prev, general: 'Some files were invalid (max 2MB, images only)' }));
+      }
+
+      const filesWithPreview = validFiles.map(file => ({
+        file,
+        preview: URL.createObjectURL(file)
+      }));
+
+      setScreenshots(prevScreenshots => [...prevScreenshots, ...filesWithPreview]);
+    } catch (err) {
+      console.log("Image Processing error", err);
+      setError(prev => ({ ...prev, general: 'Error processing images' }));
+    }
+  };
+
+  const handleRemoveScreenshot = (index) => {
+    const screenshotToRemove = screenshots[index];
+    if (screenshotToRemove.preview) {
+      URL.revokeObjectURL(screenshotToRemove.preview);
+    }
+    setScreenshots(prevScreenshots => prevScreenshots.filter((_, i) => i !== index));
+  };
+
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError({ livelink: '', day: '', repolink: '', languages: '',title:'', description: '', general: '' });
+    // Reset all errors including general
+    setError({ 
+      livelink: '', 
+      day: '', 
+      repolink: '', 
+      languages: '', 
+      title: '', 
+      description: '', 
+      general: '' 
+    });
   
     // Validate form
     const errors = {};
-    if (!form.title) errors.title = "Provide your project title";
-    if (!form.livelink) errors.livelink = "Provide your hosted URL";
-    if (!form.day) errors.day = "Provide your day of submission";
-    if (!form.repolink) errors.repolink = "Provide your repo URL";
-    if (!form.languages) errors.languages = "Provide languages used";
-    if (!form.description) errors.description = "Provide description";
+    if (!form.title.trim()) errors.title = "Project title is required";
+    if (!form.livelink.trim() || !isValidUrl(form.livelink)) {
+      errors.livelink = "Valid hosted URL is required (e.g., https://example.com)";
+    }
+    if (!form.day || isNaN(form.day) || form.day < 1 || form.day > 30) {
+      errors.day = "Day must be between 1 and 30";
+    }
+    if (!form.repolink.trim() || !isValidUrl(form.repolink)) {
+      errors.repolink = "Valid repository URL is required (e.g., https://github.com/user/repo)";
+    }
+    if (!form.languages.trim()) errors.languages = "Languages used are required";
+    if (!form.description.trim()) errors.description = "Project description is required";
   
     if (Object.keys(errors).length > 0) {
       setError(errors);
@@ -84,46 +133,80 @@ console.log("user", user)
     }
   
     try {
-     
+      const formData = new FormData();
+      formData.append('uid', user.uid);
+      formData.append('title', form.title);
+      formData.append('livelink', form.livelink);
+      formData.append('day', form.day);
+      formData.append('repolink', form.repolink);
+      formData.append('languages', form.languages);
+      formData.append('framework', form.framework);
+      formData.append('description', form.description);
+      
+      screenshots.forEach((screenshot) => {
+        formData.append('files', screenshot.file);
+      });
   
-      //  Submit project
       const submitResponse = await authFetch('https://xen4-backend.vercel.app/project/submit', {
         method: 'POST',
-        
-        body: JSON.stringify({
-          uid: user.uid,
-          ...form
-        })
+        body: formData
       });
   
-      if (!submitResponse.ok) {
-        const error = await submitResponse.json();
-        throw new Error(error.message || "Project submission failed");
+      // Handle potential non-JSON responses
+      let responseData;
+      const contentType = submitResponse.headers.get('content-type') || '';
+      
+      if (contentType.includes('application/json')) {
+        responseData = await submitResponse.json();
+      } else {
+        const text = await submitResponse.text();
+        throw new Error(text || 'Server returned unexpected response');
       }
   
+      if (!submitResponse.ok) {
+        throw new Error(
+          responseData.message || 
+          responseData.error || 
+          'Project submission failed'
+        );
+      }
   
-      // Success
-      navigate('/leaderboard');
-      setForm({
-        title:'',
-        livelink: '',
-        day: '',
-        repolink: '',
-        languages: '',
-        framework: '',
-        description: ''
-      });
+      // Success handling
+      setSuccessMessage("Project submitted successfully!");
+      setTimeout(() => {
+        navigate('/leaderboard');
+        setForm({
+          title: '',
+          livelink: '',
+          day: '',
+          repolink: '',
+          languages: '',
+          framework: '',
+          description: ''
+        });
+        setScreenshots([]);
+      }, 1500);
   
     } catch (error) {
-      setError(prev => ({ ...prev, general: error.message }));
+      let errorMessage = error.message;
+      
+      // Handle specific error cases
+      if (errorMessage.includes('Internal server error')) {
+        errorMessage = 'Server error occurred. Please try again later.';
+      } else if (errorMessage.startsWith('<!DOCTYPE html>')) {
+        errorMessage = 'Server returned an HTML error page';
+      }
+  
+      setError(prev => ({ 
+        ...prev, 
+        general: errorMessage 
+      }));
+      
       console.error("Submission error:", error);
     } finally {
       setLoading(false);
     }
   };
-  
-  
-  const darkmode = useSelector((state)=> state.darkMode)
  
   return (
     <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
@@ -298,42 +381,48 @@ console.log("user", user)
       
       </div>
   
-      {/*<div className="flex justify-between items-center">
-        <h3 className={`text-md font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>Upload Screenshots</h3>
-        <label htmlFor="screenshot-upload" className="cursor-pointer flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg">
-          <FaPlus className="mr-2" />
-          Upload
-        </label>
-        <input
-          id="screenshot-upload"
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleScreenshotChange}
-          className="hidden"
-        />
-      </div>
-  
-      {screenshots.length > 0 && (
-        <div className="mt-4 grid grid-cols-4 gap-4">
-          {screenshots.map((screenshot, index) => (
-            <div key={index} className="relative">
-              <img
-               src={screenshot} 
-               alt={`Screenshot ${index + 1}`}
-               className="rounded-lg object-cover h-25 w-full"
-               />
-              <button
-                type="button"
-                onClick={() => handleRemoveScreenshot(index)}
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-              >
-                <FaTimes />
-              </button>
-            </div>
-          ))}
+      <div className="flex justify-between items-center">
+          <h3 className={`text-md font-medium ${darkmode ? 'text-neutral-100' : 'text-gray-700'}`}>
+            Upload Screenshots (Max 5)
+          </h3>
+          {screenshots.length < 5 && (
+            <label htmlFor="screenshot-upload" className="cursor-pointer flex items-center bg-blue-500 text-white py-2 px-4 rounded-lg">
+              <FaPlus className="mr-2" />
+              Upload
+              <input
+                id="screenshot-upload"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleScreenshotChange}
+                className="hidden"
+                disabled={screenshots.length >= 5}
+              />
+            </label>
+          )}
         </div>
-      )}*/}
+
+        {screenshots.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {screenshots.map((screenshot, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={screenshot.preview}
+                  alt={`Screenshot ${index + 1}`}
+                  className="rounded-lg object-cover h-32 w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveScreenshot(index)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-opacity opacity-0 group-hover:opacity-100"
+                >
+                  <FaTimes size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
       <div className='md:hidden flex justify-end'>
       <button 
     type="submit"

@@ -25,6 +25,7 @@ export default function ProjectsPage() {
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
   const [commitData, setCommitData] = useState([]);
+  const [streak, setStreak] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [authRequired, setAuthRequired] = useState(false);
 
@@ -66,6 +67,10 @@ export default function ProjectsPage() {
         }
         setProjects(data.projects);
         setCommitData(data.commitHistory )
+        const streaks = data.streaks || [];
+const latestStreakObj = streaks[streaks.length - 1];
+const streakCount = latestStreakObj?.streak?.count || 0;
+setStreak(streakCount);
       } catch (err) {
         if (err.message === 'You must be logged in to fetch') {
           setAuthRequired(true);
@@ -143,7 +148,7 @@ export default function ProjectsPage() {
             </div>
             
             <div className="sm:ml-auto">
-              {renderStreakGraph(darkmode, commitData, projects)}
+              {renderStreakGraph(darkmode, commitData, projects, streak)}
             </div>
           </div>
 

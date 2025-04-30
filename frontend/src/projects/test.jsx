@@ -2,7 +2,7 @@
 import { FiCalendar } from "react-icons/fi";
 import { motion } from 'framer-motion';
 
-export const renderStreakGraph = (darkmode,commitData, projects) => {
+export const renderStreakGraph = (darkmode,commitData, projects, streak) => {
 
   
     const getColor = (hasCommits) => {
@@ -12,7 +12,9 @@ export const renderStreakGraph = (darkmode,commitData, projects) => {
           ? 'bg-neutral-800' 
           : 'bg-white';
     };
-    
+    // Safely get the last streak object
+
+
   
     return (
       <div className="flex flex-col gap-1">
@@ -40,7 +42,7 @@ export const renderStreakGraph = (darkmode,commitData, projects) => {
       )}
         <div className={`text-xs mt-2 ${darkmode ? 'text-gray-400' : 'text-gray-600'}`}>
           <FiCalendar className="inline mr-1" />
-          30 day streak • {projects.length} projects
+          {streak}  day streak • {projects.length} projects
         </div>
       </div>
     );

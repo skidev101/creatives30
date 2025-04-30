@@ -29,17 +29,16 @@ const UsersList = () => {
   // toggle status
   const [togglingEmail, setTogglingEmail] = useState(null);
 
-useEffect(() => {
-  if (error || successMessage) {
-    const timer = setTimeout(() => {
-      setError(null);
-      setSuccessMessage(null);
-    }, 3000); 
+  useEffect(() => {
+    if (error || successMessage) {
+      const timer = setTimeout(() => {
+        setError(null);
+        setSuccessMessage(null);
+      }, 3000); 
 
-    return () => clearTimeout(timer); 
-  }
-}, [error, successMessage]);
-
+      return () => clearTimeout(timer); 
+    }
+  }, [error, successMessage]);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -48,13 +47,7 @@ useEffect(() => {
         const data = await fetchUsers(currentPage, rowsPerPage);
         console.log("users", data);
         
-        // Initialize all users as enabled 
-        const usersWithStatus = data.data.map(user => ({
-          ...user,
-          enabled: user.enabled !== undefined ? user.enabled : true
-        }));
-        
-        setUsers(usersWithStatus);
+        setUsers(data.data);
         setTotalUsers(data.totalUsers);
         setError(null);
       } catch (err) {
@@ -73,13 +66,7 @@ useEffect(() => {
       await deleteUser(email);
       const data = await fetchUsers(currentPage, rowsPerPage);
       
-      // Initialize status for new users
-      const usersWithStatus = data.data.map(user => ({
-        ...user,
-        enabled: user.enabled !== undefined ? user.enabled : true
-      }));
-      
-      setUsers(usersWithStatus);
+      setUsers(data.data);
       setTotalUsers(data.totalUsers);
       setError(null);
       setSuccessMessage(`User with email ${email} has been successfully deleted.`);
@@ -99,23 +86,23 @@ useEffect(() => {
     setConfirmDeleteEmail(null); 
   };
 
-  const toggleUserStatus = async (email, currentStatus) => {
+  const toggleUserStatus = async (email, isCurrentlyDisabled) => {
     try {
       setTogglingEmail(email);
       
-      if (currentStatus) {
-        await disableUser(email);
-      } else {
+      if (isCurrentlyDisabled) {
         await enableUser(email);
+      } else {
+        await disableUser(email);
       }
       
       setUsers(users.map(user => 
         user.email === email 
-          ? { ...user, enabled: !currentStatus } 
+          ? { ...user, disabled: !isCurrentlyDisabled } 
           : user
       ));
       
-      setSuccessMessage(`User has been ${currentStatus ? 'disabled' : 'enabled'} successfully.`);
+      setSuccessMessage(`User has been ${isCurrentlyDisabled ? 'enabled' : 'disabled'} successfully.`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -134,16 +121,15 @@ useEffect(() => {
         </div>
 
         {loading && (
-  <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
-    <div className="flex flex-col justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
-      <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
-        Loading users...
-      </p>
-    </div>
-  </div>
-)}
-
+          <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
+            <div className="flex flex-col justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+              <p className={`text-sm ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
+                Loading users...
+              </p>
+            </div>
+          </div>
+        )}
 
         {error && !loading && (
           <div className="text-center w-full text-sm text-red-500 py-6">{error}</div>
@@ -163,7 +149,6 @@ useEffect(() => {
                   <tr>
                     <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>User</th>
                     <th className={`px-4 py-3 text-left text-xs font-medium hidden md:table-cell ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Email</th>
-
                     <th className={`px-4 py-3 text-left text-xs font-medium ${darkmode ? 'text-neutral-400' : 'text-gray-500'} uppercase`}>Actions</th>
                   </tr>
                 </thead>
@@ -172,25 +157,25 @@ useEffect(() => {
                     <tr key={user.id} className={`${darkmode ? 'hover:bg-[#222]' : 'hover:bg-gray-50'}`}>
                       <td className={`px-4 py-4 text-sm font-medium ${darkmode ? 'text-white' : 'text-gray-900'}`}>
                         <div className="flex items-center gap-3 truncate">
-                        <div className={`p-2 rounded-full ${darkmode ? 'bg-neutral-800' : 'bg-gray-100'} relative`}>
-  <FiUser className={user.enabled ? 
-    (darkmode ? 'text-green-400' : 'text-green-600') : 
-    (darkmode ? 'text-red-400' : 'text-red-600')} 
-  />
-  {user.enabled ? (
-    <FiCheckCircle 
-      className={`absolute -bottom-1 -right-1 text-xs ${
-        darkmode ? 'text-green-400' : 'text-green-600'
-      } bg-white bg-neutral-800 rounded-full`} 
-    />
-  ) : (
-    <FiXCircle 
-      className={`absolute -bottom-1 -right-1 text-xs ${
-        darkmode ? 'text-red-400' : 'text-red-600'
-      } bg-white bg-neutral-800 rounded-full`} 
-    />
-  )}
-</div>
+                          <div className={`p-2 rounded-full ${darkmode ? 'bg-neutral-800' : 'bg-gray-100'} relative`}>
+                            <FiUser className={!user.disabled ? 
+                              (darkmode ? 'text-green-400' : 'text-green-600') : 
+                              (darkmode ? 'text-red-400' : 'text-red-600')} 
+                            />
+                            {!user.disabled ? (
+                              <FiCheckCircle 
+                                className={`absolute -bottom-1 -right-1 text-xs ${
+                                  darkmode ? 'text-green-400' : 'text-green-600'
+                                } bg-white bg-neutral-800 rounded-full`} 
+                              />
+                            ) : (
+                              <FiXCircle 
+                                className={`absolute -bottom-1 -right-1 text-xs ${
+                                  darkmode ? 'text-red-400' : 'text-red-600'
+                                } bg-white bg-neutral-800 rounded-full`} 
+                              />
+                            )}
+                          </div>
                           <div className="truncate">
                             <div className="font-medium truncate max-w-[150px]">{user.username || ''}</div>
                             <div className={`text-xs ${darkmode ? 'text-neutral-400' : 'text-gray-500'}`}>
@@ -207,21 +192,19 @@ useEffect(() => {
                         </div>
                       </td>
 
-                   
-
                       <td className="px-4 py-4 text-sm font-medium">
                         <div className="flex items-center gap-3">
                           <button
-                            onClick={() => toggleUserStatus(user.email, user.enabled)}
+                            onClick={() => toggleUserStatus(user.email, user.disabled)}
                             className={`p-2 rounded-lg ${
                               darkmode
                                 ? 'hover:bg-neutral-800'
                                 : 'hover:bg-gray-100'
                             }`}
-                            title={user.enabled ? 'Disable user' : 'Enable user'}
+                            title={user.disabled ? 'Enable user' : 'Disable user'}
                             disabled={togglingEmail === user.email}
                           >
-                            {user.enabled ? (
+                            {!user.disabled ? (
                               <FiToggleRight size={16} className="text-green-500" />
                             ) : (
                               <FiToggleLeft size={16} className="text-red-500" />
@@ -336,7 +319,6 @@ useEffect(() => {
 
 export default UsersList;
 
-// ✅ Safe and formatted
 function formatDate(dateString) {
   if (!dateString) return 'Unknown date';
   const date = new Date(dateString);
