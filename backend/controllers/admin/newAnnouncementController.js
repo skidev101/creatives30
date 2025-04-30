@@ -17,7 +17,7 @@ const createAnnouncement = async (req, res) => {
     if (!foundUser) return res.status(404).json({ message: 'user not found' });
     const announcerUsername = foundUser.username;
     const latestVersionDoc = await VersionHistory.findOne().sort({  version: - 1 });
-	  const latestVersion = latestVersionDoc ? latestVersionDoc.version : null;
+	  const latestVersion = latestVersionDoc ? latestVersionDoc.version : 1;
     
     const newAnnouncement = await Announcement.create({
       uid,
