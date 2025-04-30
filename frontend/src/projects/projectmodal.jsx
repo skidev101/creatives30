@@ -101,14 +101,14 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
         }
       };
   
-      const handleLike = (reviewId) => {
-        // Implement like functionality if needed
-        setReviews(prevReviews =>
-          prevReviews.map(review =>
-            review.id === reviewId ? { ...review, likes: review.likes + 1 } : review
-          )
-        );
-      };
+      // const handleLike = (reviewId) => {
+      //   // Implement like functionality if needed
+      //   setReviews(prevReviews =>
+      //     prevReviews.map(review =>
+      //       review.id === reviewId ? { ...review, likes: review.likes + 1 } : review
+      //     )
+      //   );
+      // };
   
     return (
       <AnimatePresence>
@@ -303,7 +303,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
     </p>
   ) : (
                   reviews.map((review) => (
-                    <Review key={review.id} review={review} darkmode={darkmode} onLike={handleLike} />
+                    <Review key={review.id} review={review} darkmode={darkmode}  />
                   ))
                 )}
                 </div>

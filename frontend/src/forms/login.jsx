@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
@@ -30,60 +31,60 @@ export default function Login() {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    const handleGithubLogin = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      setError({ general: '' });
+  //   const handleGithubLogin = async (e) => {
+  //     e.preventDefault();
+  //     setLoading(true);
+  //     setError({ general: '' });
     
-      try {
-          const auth = getAuth();
-          const currentUser = auth.currentUser;
-          const githubProvider = new GithubAuthProvider();
+  //     try {
+  //         const auth = getAuth();
+  //         const currentUser = auth.currentUser;
+  //         const githubProvider = new GithubAuthProvider();
       
-          if (currentUser) {
-              // User is already logged in, link the GitHub credential
-              const result = await linkWithPopup(currentUser, githubProvider);
-              await handleSuccessfulAuth(result.user);
-          } else {
-              // No current user, proceed with normal GitHub login
-              try {
-                  const credential = await signInWithPopup(auth, githubProvider);
-                  await handleSuccessfulAuth(credential.user);
-              } catch (err) {
-                  if (err.code === 'auth/account-exists-with-different-credential') {
-                      // Store the GitHub credential for later use
-                      const pendingCredential = GithubAuthProvider.credentialFromError(err);
-                      const email = err.customData?.email;
+  //         if (currentUser) {
+  //             // User is already logged in, link the GitHub credential
+  //             const result = await linkWithPopup(currentUser, githubProvider);
+  //             await handleSuccessfulAuth(result.user);
+  //         } else {
+  //             // No current user, proceed with normal GitHub login
+  //             try {
+  //                 const credential = await signInWithPopup(auth, githubProvider);
+  //                 await handleSuccessfulAuth(credential.user);
+  //             } catch (err) {
+  //                 if (err.code === 'auth/account-exists-with-different-credential') {
+  //                     // Store the GitHub credential for later use
+  //                     const pendingCredential = GithubAuthProvider.credentialFromError(err);
+  //                     const email = err.customData?.email;
                       
-                      // Get available sign-in methods for this email
-                      const methods = await fetchSignInMethodsForEmail(auth, email);
+  //                     // Get available sign-in methods for this email
+  //                     const methods = await fetchSignInMethodsForEmail(auth, email);
                       
-                      // Show UI to let user choose how to sign in
-                      setError({ 
-                          general: `An account already exists with email ${email}. Please sign in with your ${methods.join(' or ')} account first.`
-                      });
+  //                     // Show UI to let user choose how to sign in
+  //                     setError({ 
+  //                         general: `An account already exists with email ${email}. Please sign in with your ${methods.join(' or ')} account first.`
+  //                     });
                       
-                      // Store the pending credential in state
-                      setPendingGithubCredential({
-                          credential: pendingCredential,
-                          email: email,
-                          methods: methods
-                      });
+  //                     // Store the pending credential in state
+  //                     setPendingGithubCredential({
+  //                         credential: pendingCredential,
+  //                         email: email,
+  //                         methods: methods
+  //                     });
                       
-                      // Update email field to show the conflicting email
-                      setEmail(email);
-                  } else {
-                      throw err; // Re-throw other errors
-                  }
-              }
-          }
-      } catch (err) {
-          console.error("GitHub login error:", err);
-          handleAuthError(err);
-      } finally {
-          setLoading(false);
-      }
-  };
+  //                     // Update email field to show the conflicting email
+  //                     setEmail(email);
+  //                 } else {
+  //                     throw err; // Re-throw other errors
+  //                 }
+  //             }
+  //         }
+  //     } catch (err) {
+  //         console.error("GitHub login error:", err);
+  //         handleAuthError(err);
+  //     } finally {
+  //         setLoading(false);
+  //     }
+  // };
 
   const handleSuccessfulAuth = async (user) => {
       const idToken = await user.getIdToken();
@@ -422,12 +423,12 @@ export default function Login() {
     </svg>
     <span>Sign in with Google</span>
   </button>
-  <button onClick={handleGithubLogin} className="social-button flex justify-center items-center w-full text-[#fcf7f8] border-gray-500 border py-3 px-4 gap-2 rounded-md shadow-md">
+  {/* <button onClick={handleGithubLogin} className="social-button flex justify-center items-center w-full text-[#fcf7f8] border-gray-500 border py-3 px-4 gap-2 rounded-md shadow-md">
     <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
       <path fillRule="evenodd" fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
     </svg>
     <span>Sign in with GitHub</span>
-  </button>
+  </button> */}
 </div>
 
                 <div className="relative flex items-center font-grotesk ">
