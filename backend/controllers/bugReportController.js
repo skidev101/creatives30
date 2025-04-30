@@ -4,9 +4,9 @@ const VersionHistory = require('../models/VersionHistory');
 const mongoose = require('mongoose');
 
 const reportBug = async (req, res) => {
-  const { report, uid } = req.body;
+  const { report } = req.body;
   if (!report) return res.status(400).json({ message: 'Empty request' });
-  //const { uid } = req.user;
+  const { uid } = req.user;
   console.log(req.user);
   
   console.log(`uid: ${uid}, bug: ${report}`);
