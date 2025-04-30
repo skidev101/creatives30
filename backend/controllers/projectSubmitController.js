@@ -14,7 +14,7 @@ const uploadToSupabase = async (files, uid) => {
 	for (let i = 0; i < files.length; i++) {
 		const file = files[i];
 		const fileExt = path.extname(file.originalname);
-		const fileName = `project_${uid}_${Date.now()}_${i}_${fileExt}`;
+		const fileName = `projects/project_${uid}_${Date.now()}_${i}_${fileExt}`;
 		
 		const { error } = await supabase.storage
 			.from('creatives30')
@@ -37,9 +37,9 @@ const uploadToSupabase = async (files, uid) => {
 
 
 const handleProjectSubmit = async (req, res) => {
-  const { uid, title, livelink, day, repolink, languages, framework, description } = req.body;
+  const { title, livelink, day, repolink, languages, framework, description } = req.body;
   if (!livelink || !day || !languages || !description) return res.status(400).send("Empty request");
-  //const { uid } = req.user;
+  const { uid } = req.user;
   console.log(`uid: ${uid}, title: ${title}, livelink: ${livelink}, languages: ${languages}, description: ${description}`);
   console.log(req);
   

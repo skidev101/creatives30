@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 
 const getUserStreak = async (req, res) => {
-  const { uid } = req.body;
+  const { uid } = req.user;
   console.log(`uid: ${uid}`);
   
   try {
