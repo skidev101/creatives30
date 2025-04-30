@@ -17,7 +17,7 @@ const getAllUsers = async (req, res) => {
 		const users = await User.find({ roles: { $in: ['User'] } })
 			.skip((page - 1) * limit)
 			.limit(limit)
-			.select('username email roles createdAt versions')
+			.select('username email roles createdAt versions disabled')
 			.lean();
 		console.log(users);
 		
@@ -27,7 +27,8 @@ const getAllUsers = async (req, res) => {
 				roles: user.roles,
 				version: user.version,
 				createdAt: user.createdAt,
-				commitStreaks: user.versions
+				commitStreaks: user.versions,
+				disabled: user.disabled
 			}));
 			
 		

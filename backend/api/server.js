@@ -23,7 +23,6 @@ app.use(express.json());
 app.use('/leaderboard', require('../routes/leaderboard'));
 app.use('/users', require('../routes/userProfile'));
 
-
 app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));

@@ -35,6 +35,7 @@ const userProfile = async (req, res) => {
 			email: foundUser.email,
 			profileImgURL: foundUser.profileImgURL,
 			projects: foundUserProjects ? foundUserProjects.projects : [],
+			streaks: foundUser.versions,
 			commitHistory: commitHistory
     });
 		console.log(foundUser);
