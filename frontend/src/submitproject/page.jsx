@@ -49,7 +49,7 @@ export default function SubmitPage() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setForm((prevUpdate) => ({ ...prevUpdate, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (error[name]) {
       setError(prev => ({ ...prev, [name]: '' }));
@@ -123,7 +123,9 @@ export default function SubmitPage() {
     if (!form.repolink.trim() || !isValidUrl(form.repolink)) {
       errors.repolink = "Valid repository URL is required (e.g., https://github.com/user/repo)";
     }
-    if (!form.languages.trim()) errors.languages = "Languages used are required";
+    if (!form.languages.trim()) {
+      errors.languages = "At least one language is required";
+    }
     if (!form.description.trim()) errors.description = "Project description is required";
   
     if (Object.keys(errors).length > 0) {
@@ -139,7 +141,10 @@ export default function SubmitPage() {
       formData.append('livelink', form.livelink);
       formData.append('day', form.day);
       formData.append('repolink', form.repolink);
-      formData.append('languages', form.languages);
+ // Convert comma-separated string to JSON array string
+// Convert comma-separated to array then to JSON string
+const langsArray = form.languages.split(',').map(lang => lang.trim());
+formData.append('languages', JSON.stringify(form.languages));
       formData.append('framework', form.framework);
       formData.append('description', form.description);
       

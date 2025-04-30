@@ -259,26 +259,41 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                     </div>
                   </div>
                 )}
-                {project.images?.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className={`text-lg font-semibold mb-3 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>Project Screenshots</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {project.images.map((img, idx) => (
-                        <motion.div 
-                          key={idx}
-                          whileHover={{ scale: 1.03 }}
-                          className="overflow-hidden rounded-lg cursor-pointer"
-                        >
-                          <img
-                            src={img}
-                            alt={`Screenshot ${idx + 1}`}
-                            className="w-full h-32 md:h-40 object-cover"
-                          />
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              {project.images?.length > 0 && (
+  <div className="mb-6">
+    <h3 className={`text-lg font-semibold mb-3 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+      Project Screenshots
+    </h3>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {project.images.map((img, idx) => {
+        const isSvg = img?.endsWith('.svg') || img?.includes('.svg?');
+        
+        return (
+          <motion.div 
+            key={idx}
+            whileHover={{ scale: 1.03 }}
+            className={`overflow-hidden rounded-lg cursor-pointer ${isSvg ? 'bg-white p-2' : ''}`}
+          >
+            {isSvg ? (
+              <div 
+                className="w-full h-32 md:h-40 flex items-center justify-center"
+                dangerouslySetInnerHTML={{
+                  __html: `<img src="${img}" class="w-full h-full object-contain" />`
+                }}
+              />
+            ) : (
+              <img
+                src={img}
+                alt={`Screenshot ${idx + 1}`}
+                className="w-full h-32 md:h-40 object-cover"
+              />
+            )}
+          </motion.div>
+        );
+      })}
+    </div>
+  </div>
+)}
 
                 <div className="mb-6">
                   <h3 className={`text-lg font-semibold mb-2 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>Reviews  ({reviews.length})</h3>
