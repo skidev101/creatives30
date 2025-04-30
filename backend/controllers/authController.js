@@ -2,12 +2,10 @@ const User = require('../models/User');
 const mongoose = require('mongoose');
 
 const handleLogin = async (req, res) => {
-  const { email, pwd } = req.body;
-  if (!email || !pwd) return res.status(400).json({ message: 'Empty request' });
   const { uid } = req.user;
   console.log(req.user);
   
-  console.log(`uid: ${uid}, email: ${email}, pwd: ${pwd}`);
+  console.log(`uid: ${uid}, email: ${email}`);
   
   
   try {

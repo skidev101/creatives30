@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema({
 		enum: ['User', 'Admin'],
 		default: ['User']
   }],
-  password: {
-    type: String,
-    select: false
-  },
   profileImgURL: {
 		type: String
   },

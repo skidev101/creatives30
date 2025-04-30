@@ -33,7 +33,7 @@ const uploadToSupabase = async (files, uid) => {
 
 
 const updateProfile = async (req, res) => {
-	const { email, pwd, username } = req.body;
+	const { email, username } = req.body;
 	const { uid } = req.user;
 	
 	let imageUrls = [];
@@ -45,10 +45,6 @@ const updateProfile = async (req, res) => {
 	if (email) updates.email = email;
 	if (username) updates.username = username;
 	if (imageUrls.length > 0) updates.profileImgURL = imageUrls[0];
-	if (pwd) {
-		const hashedPwd = await bcrypt.hash(pwd, 10);
-		updates.password = hashedPwd;
-	}
 	
 	if (Object.keys(updates).length === 0) {
 		return res.status(400).send('invalid request');
