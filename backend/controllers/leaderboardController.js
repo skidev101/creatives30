@@ -1,7 +1,8 @@
+const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const VersionHistory = require('../models/VersionHistory');
 const ArchivedProject = require('../models/ArchivedProject');
-const mongoose = require('mongoose');
+const moment = require('moment');
 
 const getLeaderboard = async (req, res) => {
 	let { ver, page = 1, limit = 15 } = req.query;
@@ -15,6 +16,19 @@ const getLeaderboard = async (req, res) => {
 	
 	try {
 		let projects;
+		const latestVer = await VersionHistory.findOne().sort({ version: - 1 });
+		const startDate = moment(latestVer.startDate);
+		const endDate = moment(startDate).add(30, 'days');
+		const currentDate = moment();
+		let currentDay;
+		
+		if (currentDate.isBefore(startDate)) {
+			currentDay = 0
+		} else if (currentDate.isAfter(endDate)) {
+			currentDay = 30
+		} else {
+			currentDay = currentDate.diff(startDate, 'days') + 1;
+		}
 		
 		if (ver) {
 			projects = await ArchivedProject.find({version: ver});
@@ -23,8 +37,8 @@ const getLeaderboard = async (req, res) => {
 		}
 		console.log(projects)
 		if (!projects.length) {
-			const latestVer = await VersionHistory.findOne().sort({ version: - 1 });
 			return res.status(404).json({ 
+				day: currentDay,
 				version: latestVer.version,
 				data: [],
 				message: 'no projects found for this version' 
@@ -44,6 +58,7 @@ const getLeaderboard = async (req, res) => {
 		
 		res.status(200).json({
 			page,
+			day: currentDay,
 			data: paginated,
 			limit,
 			totalProjects: sorted.length

@@ -13,6 +13,10 @@ const versionHistorySchema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
+	startDate: {
+		type: String,
+		required: true
+	},
 	createdBy: {
 		type: String,
 		required: true

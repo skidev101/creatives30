@@ -37,9 +37,9 @@ const uploadToSupabase = async (files, uid) => {
 
 
 const handleProjectSubmit = async (req, res) => {
-  const { title, livelink, day, repolink, languages, framework, description } = req.body;
+  const { uid, title, livelink, day, repolink, languages, framework, description } = req.body;
   if (!livelink || !day || !languages || !description) return res.status(400).send("Empty request");
-  const { uid } = req.user;
+  //const { uid } = req.user;
   console.log(`uid: ${uid}, title: ${title}, livelink: ${livelink}, languages: ${languages}, description: ${description}`);
   console.log(req);
   
@@ -58,10 +58,11 @@ const handleProjectSubmit = async (req, res) => {
 			livelink,
 			day,
 			repolink,
-			languages: JSON.parse(languages),
+			languages,
 			framework,
 			description,
-			images: imageUrls
+			images: imageUrls,
+			createdAt: new Date()
 	}
 	  
 	  const latestVersion = await VersionHistory.findOne().sort({  version: - 1 });

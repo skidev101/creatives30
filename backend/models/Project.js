@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const singleProjectSchema = new mongoose.Schema({
+	title: String,
+	livelink: String,
+	day: String,
+	repolink: String,
+	languages: String,
+	framework: String,
+	description: String,
+	images: [{ type: String }],
+	createdAt: {
+		type: Date,
+		default: Date.now
+	}
+}, { _id: false }); // prevent creating extra _id for each subdocument unless needed
+
 const projectSchema = new mongoose.Schema({
 	uid: {
 		type: String,
@@ -14,20 +29,7 @@ const projectSchema = new mongoose.Schema({
 		required: true,
 		default: 0
 	},
-	projects: [{
-		title: String,
-		livelink: String,
-		day: String,
-		repolink: String,
-		languages: String,
-		framework: String,
-		description: String,
-		images: [{ type: String }],
-		createdAt: {
-			type: Date,
-			default: Date.now
-		}
-	}]
-})
+	projects: [singleProjectSchema]
+}, { timestamps: true }); // adds createdAt/updatedAt at root level
 
 module.exports = mongoose.model('Project', projectSchema)

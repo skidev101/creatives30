@@ -23,7 +23,7 @@ app.use(express.json());
 app.use('/leaderboard', require('../routes/leaderboard'));
 app.use('/users', require('../routes/userProfile'));
 
-app.use(verifyIdToken);
+//app.use(verifyIdToken);
 app.use('/register', require('../routes/register'));
 app.use('/login', require('../routes/login'));
 app.use('/googleLogin', require('../routes/googleLogin'));
@@ -38,7 +38,7 @@ app.use('/bugs', require('../routes/bugReport'));
 
 
 // Admin routes
-app.use(verifyAdmin);
+//app.use(verifyAdmin);
 app.use('/admin/newVersion', require('../routes/admin/newVersion'));
 app.use('/admin/addAdmin', require('../routes/admin/addAdmin'));
 app.use('/admin/versionStat', require('../routes/admin/versionStat'));
