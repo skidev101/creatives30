@@ -1,16 +1,52 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode } from "../action";
+
 import { FaCalendarCheck, FaMoon, FaSun, FaBullhorn, FaBug, FaTimes } from "react-icons/fa";
 import { CiMenuFries } from "react-icons/ci";
-import { BugModal } from "./bugmodal";
+import { setMode } from "../../action";
+import BugReportsModal from "./modal";
+import AddAnnouncementModal from "./moda";
+// import { BugModal } from "./bugmodal";
 
-const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
-  const [showBugModal, setShowBugModal] = useState(false);
-  const [bugDescription, setBugDescription] = useState("");
-  const [activeRole, setActiveRole] = useState('User'); // Default to User role
+const AdminNavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
+    const [showBugModal, setShowBugModal] = useState(false);
+    const [bugReports, setBugReports] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+    const [announcements, setAnnouncements] = useState([]);
 
+
+
+    const handleAddAnnouncement = (newAnnouncement) => {
+        // Here you would typically send to your API
+        console.log("New announcement:", newAnnouncement);
+        setAnnouncements(prev => [...prev, newAnnouncement]);
+      };
+
+
+    // Fetch bug reports from your API
+    useEffect(() => {
+      const fetchBugReports = async () => {
+        try {
+         
+          const response = await fetch('/api/bug-reports');
+          const data = await response.json();
+          setBugReports(data);
+          
+          // Calculate unread reports
+          const unread = data.filter(report => report.status === 'new').length;
+          setUnreadCount(unread);
+        } catch (error) {
+          console.error("Failed to fetch bug reports:", error);
+        }
+      };
+  
+      if (showBugModal) {
+        fetchBugReports();
+      }
+    }, [showBugModal]);
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -31,9 +67,7 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
 
  
 
-  const user = useSelector((state) => state.user); 
-  const isUser = user?.roles?.includes('User');
-  const showUserIcons = isUser && activeRole === 'User';
+
   return (
     <>
       <section className={`fixed top-0 inset-x-0 z-10 w-full border-b px-4 py-2 lg:py-4 ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
@@ -53,20 +87,16 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
           </button>
 
           <div className="flex items-center gap-3 sm:gap-6">
-          {showUserIcons && (
+         
             <button 
+            onClick={() => setShowAnnouncementModal(true)}
   className={`p-2 rounded-full relative ${darkmode ? 'text-neutral-100 hover:bg-neutral-800' : 'text-blue-900 hover:bg-blue-100'}`}
 >
   <FaBullhorn size={20} />
   <span className="sr-only">Announcements</span>
   
-
-  <span className={`absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold 
-    ${darkmode ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
-    2
-  </span>
 </button>
-)}
+
         
             <button 
               onClick={() => setShowBugModal(true)}
@@ -114,19 +144,24 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
 
      
       {showBugModal && (
-        <BugModal 
-       showBugModal={showBugModal}
-      
-       setBugDescription={setBugDescription}
-       setShowBugModal={setShowBugModal}
-       bugDescription={bugDescription}
-       darkmode={darkmode}
+        <BugReportsModal
+          showBugModal={showBugModal}
+          setShowBugModal={setShowBugModal}
+          bugReports={bugReports}
+          darkmode={darkmode}
         />
       )}
 
-     
+     {showAnnouncementModal && (
+  <AddAnnouncementModal
+    showModal={showAnnouncementModal}
+    setShowModal={setShowAnnouncementModal}
+    darkmode={darkmode}
+    onAddAnnouncement={handleAddAnnouncement}
+  />
+)}
     </>
   );
 };
 
-export default NavMenu;
+export default AdminNavMenu;
