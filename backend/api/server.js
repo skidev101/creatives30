@@ -35,7 +35,7 @@ app.use('/user/commitHistory', require('../routes/commitHistory'));
 app.use('/project/comment', require('../routes/comments'));
 app.use('/project/rate', require('../routes/rating'));
 app.use('/bugs', require('../routes/bugReport'));
-
+app.use('/announcements', require('../routes/getAnnouncements'));
 
 // Admin routes
 app.use(verifyAdmin);
@@ -47,7 +47,7 @@ app.use('/admin/allAdmins', require('../routes/admin/getAdmins'));
 app.use('/admin/user/delete', require('../routes/admin/deleteUser'));
 app.use('/admin/user/enable', require('../routes/admin/enable'));
 app.use('/admin/user/disable', require('../routes/admin/disable'));
-
+app.use('/admin/createAnnouncement', require('../routes/admin/announce'));
 
 dbConn()
     .then(() => {

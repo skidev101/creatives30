@@ -1,12 +1,12 @@
-const User = require('../models/User');
-const Announcement = require('../models/Announcement');
-const VersionHistory = require('../models/VersionHistory');
+const User = require('../../models/User');
+const Announcement = require('../../models/Announcement');
+const VersionHistory = require('../../models/VersionHistory');
 const mongoose = require('mongoose');
 
 const createAnnouncement = async (req, res) => {
-  const { announcement, uid } = req.body;
+  const { announcement } = req.body;
   if (!announcement) return res.status(400).json({ message: 'Empty request' });
-  //const { uid } = req.user;
+  const { uid } = req.user;
   console.log(req.user);
   
   console.log(`uid: ${uid}, announcement: ${announcement}`);
