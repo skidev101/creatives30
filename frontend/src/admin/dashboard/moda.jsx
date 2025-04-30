@@ -76,7 +76,7 @@ const AddAnnouncementModal = ({
             </button>
             
             <h2 className={`text-xl font-semibold mb-4 ${darkmode ? 'text-neutral-100' : 'text-gray-800'}`}>
-              {success ? 'Success!' : 'Create New Announcement'}
+              {success ? 'Success!' : 'Create Announcement'}
             </h2>
             
             {success ? (
@@ -153,7 +153,7 @@ const AddAnnouncementModal = ({
                         Posting...
                       </>
                     ) : (
-                      'Post Announcement'
+                      'Post '
                     )}
                   </button>
                 </div>
