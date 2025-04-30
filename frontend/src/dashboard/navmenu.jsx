@@ -5,11 +5,29 @@ import { setMode } from "../action";
 import { FaCalendarCheck, FaMoon, FaSun, FaBullhorn, FaBug, FaTimes } from "react-icons/fa";
 import { CiMenuFries } from "react-icons/ci";
 import { BugModal } from "./bugmodal";
+import AnnouncementsModal from "./mod";
 
 const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
   const [showBugModal, setShowBugModal] = useState(false);
   const [bugDescription, setBugDescription] = useState("");
-  const [activeRole, setActiveRole] = useState('User'); // Default to User role
+  const [showAnnouncements, setShowAnnouncements] = useState(false);
+  const [announcements, setAnnouncements] = useState([
+    // Sample data - replace with data from your API
+    {
+      id: 1,
+      title: "System Maintenance",
+      content: "There will be scheduled maintenance on Friday at 10 PM.",
+      isImportant: true,
+      date: "2023-11-20T10:00:00Z"
+    },
+    {
+      id: 2,
+      title: "New Feature Released",
+      content: "Check out our new dashboard features!",
+      isImportant: false,
+      date: "2023-11-15T09:30:00Z"
+    }
+  ]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -31,9 +49,7 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
 
  
 
-  const user = useSelector((state) => state.user); 
-  const isUser = user?.roles?.includes('User');
-  const showUserIcons = isUser && activeRole === 'User';
+
   return (
     <>
       <section className={`fixed top-0 inset-x-0 z-10 w-full border-b px-4 py-2 lg:py-4 ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
@@ -53,20 +69,22 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
           </button>
 
           <div className="flex items-center gap-3 sm:gap-6">
-          {showUserIcons && (
-            <button 
+         
+          <button 
+  onClick={() => setShowAnnouncements(true)}
   className={`p-2 rounded-full relative ${darkmode ? 'text-neutral-100 hover:bg-neutral-800' : 'text-blue-900 hover:bg-blue-100'}`}
 >
   <FaBullhorn size={20} />
   <span className="sr-only">Announcements</span>
-  
-
-  <span className={`absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold 
-    ${darkmode ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
-    2
-  </span>
+  {announcements.filter(a => a.isImportant).length > 0 && (
+    <span className={`absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold 
+      ${darkmode ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
+      {announcements.filter(a => a.isImportant).length}
+    </span>
+  )}
 </button>
-)}
+
+
         
             <button 
               onClick={() => setShowBugModal(true)}
@@ -124,7 +142,14 @@ const NavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
         />
       )}
 
-     
+{showAnnouncements && (
+  <AnnouncementsModal
+    showModal={showAnnouncements}
+    setShowModal={setShowAnnouncements}
+    announcements={announcements}
+    darkmode={darkmode}
+  />
+)}
     </>
   );
 };

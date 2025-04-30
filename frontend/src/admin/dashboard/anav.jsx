@@ -8,6 +8,7 @@ import { CiMenuFries } from "react-icons/ci";
 import { setMode } from "../../action";
 import BugReportsModal from "./modal";
 import AddAnnouncementModal from "./moda";
+import { authFetch } from "../../utils/auth";
 // import { BugModal } from "./bugmodal";
 
 const AdminNavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
@@ -16,37 +17,41 @@ const AdminNavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
     const [announcements, setAnnouncements] = useState([]);
-
-
-
-    const handleAddAnnouncement = (newAnnouncement) => {
-        // Here you would typically send to your API
-        console.log("New announcement:", newAnnouncement);
-        setAnnouncements(prev => [...prev, newAnnouncement]);
-      };
-
-
-    // Fetch bug reports from your API
-    useEffect(() => {
-      const fetchBugReports = async () => {
-        try {
-         
-          const response = await fetch('/api/bug-reports');
-          const data = await response.json();
-          setBugReports(data);
-          
-          // Calculate unread reports
-          const unread = data.filter(report => report.status === 'new').length;
-          setUnreadCount(unread);
-        } catch (error) {
-          console.error("Failed to fetch bug reports:", error);
-        }
-      };
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
   
-      if (showBugModal) {
-        fetchBugReports();
-      }
-    }, [showBugModal]);
+
+
+  
+
+      useEffect(() => {
+        const fetchBugReports = async () => {
+          setIsLoading(true);
+          setError(null);
+          try {
+            const response = await authFetch('https://xen4-backend.vercel.app/bugs');
+            if (!response.ok) throw new Error('Failed to fetch bugs');
+            const data = await response.json();
+            console.log("bugs", data)
+            // Match backend response structure
+            setBugReports(data.bugs || []);
+            
+            // Calculate unread reports
+            const unread = (data.bugs || []).filter(report => !report.status || report.status === 'new').length;
+            setUnreadCount(unread);
+          } catch (error) {
+            console.error("Failed to fetch bug reports:", error);
+            setError(error.message);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+    
+        if (showBugModal) {
+          fetchBugReports();
+        }
+      }, [showBugModal]);
+   
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
@@ -157,7 +162,7 @@ const AdminNavMenu = ({ currentPage, setSidebarOpen, isSidebarOpen }) => {
     showModal={showAnnouncementModal}
     setShowModal={setShowAnnouncementModal}
     darkmode={darkmode}
-    onAddAnnouncement={handleAddAnnouncement}
+    
   />
 )}
     </>
