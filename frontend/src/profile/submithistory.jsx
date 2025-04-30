@@ -93,7 +93,7 @@ const SubmitHistory = () => {
       {commitData.length > 0 ? (
         <div className="mb-8 flex justify-center flex-col items-center">
           <div className="grid grid-cols-5 gap-[8px] w-fit">
-          {[...commitData].reverse().map((day, index) => (
+          {[...commitData].map((day, index) => (
               <motion.div
                 key={`day-${index}`}
                 whileHover={{ scale: 1.1 }}

@@ -169,18 +169,24 @@ console.log("user", user)
        
     </>
     <form className="w-full space-y-6" onSubmit={handleSubmit}>
-      <div className='hidden md:flex justify-end'>
-        <button type="submit" 
-        className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
-        disabled={loading}
-        >
-          {loading ?
-          'Processing':
-
-          ' Submit Project'
-          }
-        </button>
-      </div>
+    <div className='hidden md:flex justify-end'>
+  <button 
+    type="submit"
+    className={`
+      mb-4 py-2 px-4 rounded-lg 
+      ${loading ? 
+        `${darkmode ? "bg-gray-700/50 text-gray-400" : "bg-gray-300/50"} cursor-not-allowed` : 
+        `text-white bg-gradient-to-r from-blue-500 to-purple-600 backdrop-blur-md`
+      }
+      border ${darkmode ? "border-gray-600/30" : "border-white/30"}
+      shadow-lg ${darkmode ? "shadow-gray-900/30" : "shadow-blue-200/30"}
+      transition-all duration-300 hover:shadow-xl
+    `}
+    disabled={loading}
+  >
+    {loading ? 'Processing' : 'Submit Project'}
+  </button>
+</div>
   
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -329,16 +335,22 @@ console.log("user", user)
         </div>
       )}*/}
       <div className='md:hidden flex justify-end'>
-        <button type="submit" 
-        className={`mb-4 ${loading ? `${darkmode ? "bg-gray-700 text-gray-400":"bg-gray-300 "} cursor-not-allowed`:'bg-blue-500 text-white'}  py-2 px-4 rounded-lg`}
-        disabled={loading}
-        >
-          {loading ?
-          'Processing':
-
-          ' Submit Project'
-          }
-        </button>
+      <button 
+    type="submit"
+    className={`
+      mb-4 py-2 px-4 rounded-lg 
+      ${loading ? 
+        `${darkmode ? "bg-gray-700/50 text-gray-400" : "bg-gray-300/50"} cursor-not-allowed` : 
+        `text-white bg-gradient-to-r from-blue-500 to-purple-600 backdrop-blur-md`
+      }
+      border ${darkmode ? "border-gray-600/30" : "border-white/30"}
+      shadow-lg ${darkmode ? "shadow-gray-900/30" : "shadow-blue-200/30"}
+      transition-all duration-300 hover:shadow-xl
+    `}
+    disabled={loading}
+  >
+    {loading ? 'Processing' : 'Submit Project'}
+  </button>
       </div>
     </form>
   </div>

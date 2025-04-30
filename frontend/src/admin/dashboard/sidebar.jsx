@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, } from "react-router-dom";
+import { NavLink,  } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
@@ -13,27 +13,13 @@ import {
   HiOutlineCube 
 } from "react-icons/hi";
 import { LogoutModal } from "../../components/logoutmodal";
-const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
+const AdminSidebar = ({isSidebarOpen,setSidebarOpen}) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
   const darkmode = useSelector((state)=> state.darkMode)
   const closeSidebar = () => {
     setSidebarOpen(false); 
   };
    
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      setTimeout(() => {
-        setOpen(false);
-        navigate('/login');
-        setLoading(false);
-      }, 2000); // Reduced from 5s to 2s for better UX
-    } catch (error) {
-      console.error("Error logging out: ", error);
-    }
-  };
 
 
  
@@ -46,7 +32,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
     } md:${isSidebarOpen ? "block" : "hidden"} lg:translate-x-0 lg:block`}
   >
 
-       <div className={`h-full flex flex-col ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
+       <div className={`md:h-full h-screen  flex flex-col ${darkmode ? 'bg-[#111313] border-neutral-800' : 'bg-neutral-50 border-slate-200'}`}>
     
               <div className={`p-4  lg:p pt-7 border-b ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
               <div className="flex items-center justify-between relative top-[-5px] px-2">
@@ -71,7 +57,7 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
               </div>
     
     
-              <div className="flex-1 overflow-y-auto py-4">
+              <div className="flex-1   py-4">
                 <ul className="space-y-2 font-medium px-4">
                   <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
                     Menu
@@ -161,11 +147,11 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
                     </NavLink>
                   </li>
                 </ul>
+              
               </div>
     
-        
-              <div className={`mt-auto p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
-                <ul className="space-y-2 font-medium">
+              <div className={` relative lg:top-0 md:top-0 top-[-50px] p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+                <ul className="space- font-medium">
                   <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
                     Account
                   </li>
@@ -183,18 +169,35 @@ const Sidebar = ({isSidebarOpen,setSidebarOpen}) => {
                   </li>
                 </ul>
               </div>
+              {/* <div className={`-mt-4 p-4 border-t ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
+                <ul className="space-y-2 font-medium">
+                  <li className="text-sm mb-2" style={{ color: darkmode ? '#bfdbfe' : '#1e3a8a' }}>
+                    Account
+                  </li>
+                  <li onClick={() => { closeSidebar(); setOpen(true); }}>
+                    <button
+                      className={`flex items-center w-full p-3 rounded-lg transition-colors ${
+                        darkmode 
+                          ? 'text-red-400 hover:bg-gray-700' 
+                          : 'text-red-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      <MdLogout className="mr-3" />
+                      <span>Logout</span>
+                    </button>
+                  </li>
+                </ul>
+              </div> */}
             </div>
    
   </aside>
       <LogoutModal
           open={open}
           onClose={() => setOpen(false)}
-          onLogout={handleLogout}
-          loading={loading}
         />
 </div>
 
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

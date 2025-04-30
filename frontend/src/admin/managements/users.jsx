@@ -156,7 +156,7 @@ useEffect(() => {
         )}
 
         {!loading && users.length > 0 && (
-          <div className="min-w-full inline-block align-middle">
+          <div className="min-w-full inline-block align-middle mt-2">
             <div className={`rounded-lg border ${darkmode ? 'border-neutral-800' : 'border-gray-200'} overflow-hidden`}>
               <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-800">
                 <thead className={darkmode ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>

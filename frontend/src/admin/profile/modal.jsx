@@ -96,7 +96,7 @@ export default function DetailsModal({
                                     </div>
                                 )}
 
-                                {/* Statistics Section */}
+                               
                                 <div className={`p-4 rounded-lg ${darkmode ? 'bg-[#222]' : 'bg-gray-50'}`}>
                                     <h4 className={`text-sm font-medium mb-2 ${darkmode ? 'text-neutral-300' : 'text-gray-700'}`}>Statistics</h4>
                                     <div className="grid grid-cols-2 gap-4">

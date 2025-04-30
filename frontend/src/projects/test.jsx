@@ -12,6 +12,7 @@ export const renderStreakGraph = (darkmode,commitData, projects) => {
           ? 'bg-neutral-800' 
           : 'bg-white';
     };
+    
   
     return (
       <div className="flex flex-col gap-1">
@@ -19,7 +20,7 @@ export const renderStreakGraph = (darkmode,commitData, projects) => {
    {commitData.length > 0 ? (
         <div className="mb-8 flex justify-center flex-col items-center">
           <div className="grid grid-cols-5 gap-[4px] w-fit">
-          {[...commitData].reverse().map((day, index) => (
+          {[...commitData].map((day, index) => (
               <motion.div
                 key={`day-${index}`}
                 whileHover={{ scale: 1.1 }}
