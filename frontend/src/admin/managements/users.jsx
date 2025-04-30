@@ -63,21 +63,22 @@ const UsersList = () => {
   const handleDeleteUser = async (email) => {
     try {
       setDeletingEmail(email);
-      await deleteUser(email);
+      const { message } = await deleteUser(email);
       const data = await fetchUsers(currentPage, rowsPerPage);
       
       setUsers(data.data);
       setTotalUsers(data.totalUsers);
       setError(null);
-      setSuccessMessage(`User with email ${email} has been successfully deleted.`);
+      setSuccessMessage(message);
     } catch (err) {
-      setError(err.message);
+      setError(err.message.includes('User not found') 
+        ? 'User not found' 
+        : 'Failed to delete user');
     } finally {
       setDeletingEmail(null);
       setConfirmDeleteEmail(null);
     }
   };
-
   const handleConfirmDelete = (email) => {
     setConfirmDeleteEmail(email); 
   };

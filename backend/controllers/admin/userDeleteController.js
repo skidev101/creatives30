@@ -1,32 +1,44 @@
-const admin = require('firebase-admin');
-const User = require('../../models/User');
-const Project = require('../../models/Project');
-const mongoose = require('mongoose');
-
 const deleteUser = async (req, res) => {
 	const { email, username } = req.body;
 	const query = email ? { email } : { username };
 	const value = email || username;
 	
 	try {
-		const foundUser = await User.findOne(query);
-		if (!foundUser) return res.status(404).json({ message: "user not found"});
-		const foundUserUid = foundUser.uid;
-		const [fbDelete, dbDelete] = await Promise.all([
-			admin.auth().deleteUser(foundUserUid),
-			User.findOneAndDelete({ uid: foundUserUid })
-		]);
-		if (fbDelete && dbDelete){
-				res.status(200).json({
-				message: `user ${value} deleted successfully`
-			});
-		}
-		
+	  const foundUser = await User.findOne(query);
+	  if (!foundUser) {
+		return res.status(404).json({ 
+		  success: false,
+		  message: "User not found",
+		  error: "USER_NOT_FOUND"
+		});
+	  }
+	  
+	  const foundUserUid = foundUser.uid;
+	  const [fbDelete, dbDelete] = await Promise.all([
+		admin.auth().deleteUser(foundUserUid),
+		User.findOneAndDelete({ uid: foundUserUid })
+	  ]);
+	  
+	  if (fbDelete && dbDelete) {
+		return res.status(200).json({
+		  success: true,
+		  message: `User ${value} deleted successfully`,
+		  deletedUser: {
+			email: foundUser.email,
+			username: foundUser.username,
+			uid: foundUser.uid
+		  }
+		});
+	  }
+	  
+	  throw new Error("Partial deletion occurred");
+	  
 	} catch (err) {
-		console.log(err);
-		res.status(500).send('Internal server error');
+	  console.error('Delete user error:', err);
+	  return res.status(500).json({
+		success: false,
+		message: 'Failed to delete user',
+		error: err.message || "INTERNAL_SERVER_ERROR"
+	  });
 	}
-	
-}
-
-module.exports = { deleteUser }
+  }

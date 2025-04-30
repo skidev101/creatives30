@@ -63,25 +63,20 @@ export const fetchUsers = async (page = 1, limit = 15) => {
 export const deleteUser = async (email) => {
   try {
     const response = await authFetch(
-      'https://xen4-backend.vercel.app/admin/user/delete',
+      'https://xen4-backend.vercel.app/admin/user/delete/',
       {
         method: 'DELETE',
         body: JSON.stringify({ email })
       }
     );
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete user");
+      throw new Error(data.message || "Failed to delete user");
     }
 
-    // Handle the backend's response format
-    const result = await response.json();
-    return {
-      success: true,
-      email: email,
-      message: result.message || "User deleted successfully"
-    };
+    return data;
     
   } catch (error) {
     console.error('Error deleting user:', error);
