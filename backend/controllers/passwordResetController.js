@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 
 const forgotPassword = async (req, res) => {
 	const { email, newPwd } = req.body;
-	if (!pwd) return res.status(400).json({ message: empty request });
+	if (!pwd) return res.status(400).json({ message: 'empty request' });
 	
 	
 	try {
