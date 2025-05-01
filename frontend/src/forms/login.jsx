@@ -222,7 +222,6 @@ export default function Login() {
         const response = await fetch('https://xen4-backend.vercel.app/login', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${idToken}`
           },
        

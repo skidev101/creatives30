@@ -5,7 +5,7 @@ const handleLogin = async (req, res) => {
   const { uid } = req.user;
   console.log(req.user);
   
-  console.log(`uid: ${uid}, email: ${email}`);
+  console.log(`uid: ${uid}`);
   
   
   try {
