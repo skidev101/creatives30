@@ -24,6 +24,11 @@ const SubmitHistory = () => {
   useEffect(() => {
     const fetchCommitData = async () => {
       try {
+        if (!currentVersion) {
+          setCommitData([]);
+          setLoading(false);
+          return;
+        }
         const response = await authFetch('https://xen4-backend.vercel.app/user/commitHistory',{
           method:"POST",
           body: JSON.stringify({currentVersion})
@@ -109,7 +114,7 @@ const SubmitHistory = () => {
           </div>
         </div>
       ) : (
-        <div className="text-center py-4">No commit data available</div>
+        <div className={`${darkmode ? " text-gray-300 ":"text-gray-200"}text-center py-4`}>No commit data available</div>
       )}
     </section>
   );
