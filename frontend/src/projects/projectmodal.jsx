@@ -43,6 +43,7 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
     }
   }, [project]);
   
+  console.log("proid", project?._id)
   const loadComments = async () => {
     try {
       setLoading(true);
@@ -233,7 +234,11 @@ export const ProjectModal = ({ project, darkmode, onClose }) => {
                   <div className="mb-6">
                     <h3 className={`text-lg font-semibold mb-2 ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>Languages & Technologies</h3>
                     <div className="flex flex-wrap gap-2">
-                      {project.languages.split(',').map((language, index) => (
+                      {project.languages
+                      .replace(/^"|"$/g, '') // Remove surrounding quotes if present
+                      .split(',') // Split by commas
+                      .filter(lang => lang.trim() !== '') 
+                      .map((language, index) => (
                         <span 
                           key={index}
                           className={`px-3 py-1 rounded-full text-sm ${darkmode ? 'bg-gray-700 text-blue-400' : 'bg-blue-100 text-blue-800'}`}

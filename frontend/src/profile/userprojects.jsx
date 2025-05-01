@@ -108,7 +108,40 @@ const UserProjects = () => {
             >
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full md:w-32 h-32 bg-gray-200 rounded-lg overflow-hidden">
-                  <img src={img} alt={project.title} className="w-full h-full object-cover" />
+                {project.images?.length > 0 && (
+  <div className="mb-6">
+ 
+    <div className="grid grid-cols-1 gap-3">
+      {(() => {
+        const img = project.images[0];
+        const isSvg = img?.endsWith('.svg') || img?.includes('.svg?');
+        
+        return (
+          <motion.div 
+            key={0}
+            whileHover={{ scale: 1.03 }}
+            className={`overflow-hidden rounded-lg cursor-pointer ${isSvg ? 'bg-white p-2' : ''}`}
+          >
+            {isSvg ? (
+              <div 
+                className="w-full h-32 md:h-40 flex items-center justify-center"
+                dangerouslySetInnerHTML={{
+                  __html: `<img src="${img}" class="w-full h-full object-contain" />`
+                }}
+              />
+            ) : (
+              <img
+                src={img}
+                alt="Project screenshot"
+                className="w-full h-32 md:h-40 object-cover"
+              />
+            )}
+          </motion.div>
+        );
+      })()}
+    </div>
+  </div>
+)}
                 </div>
                 <div className="flex-1">
                   <h3 className={` text-md mb-1 ${darkmode ? "text-neutral-100":''}`}> {project.title.toUpperCase()}</h3>

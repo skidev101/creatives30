@@ -77,15 +77,22 @@ export const ProjectCard = ({ project, darkmode, onView }) => {
     </div>
   
     <div className="mt-3 flex flex-wrap gap-2">
-      {project.languages.split(',').map((language, index) => (
-        <span
-          key={index}
-          className={`px-2 py-1 rounded-full text-xs ${darkmode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
-        >
-          {language.trim()}
-        </span>
-      ))}
-    </div>
+  {project.languages
+    .replace(/^"|"$/g, '') // Remove surrounding quotes if present
+    .split(',') // Split by commas
+    .filter(lang => lang.trim() !== '') // Filter out empty strings
+    .map((language, index) => (
+      <span
+        key={index}
+        className={`px-2 py-1 rounded-full text-xs ${
+          darkmode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+        }`}
+      >
+        {language.trim()}
+      </span>
+    ))}
+</div>
+
   
     <div className="mt-4 flex flex-row justify-between items-start  gap-2">
       <a

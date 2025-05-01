@@ -92,7 +92,7 @@ setStreak(streakCount);
 
   const UserInitial = targetUsername ? targetUsername.charAt(0).toUpperCase() : '';
 
-
+ console.log("pro",projects)
   return (
     <div className={`w-full max-w-6xl mx-auto mt-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-4 md:p-6 font-grotesk`}>
       
