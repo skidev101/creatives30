@@ -30,6 +30,11 @@ export default function LeaderboardPage() {
     });
   
     const fetchLeaderboard = async () => {
+      if (availableVersions.length === 0) {
+        setEmptyMessage('No versions available yet');
+        setLoading(false);
+        return;
+      }
         try {
           setLoading(true);
           setError(null);
