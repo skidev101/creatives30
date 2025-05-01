@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const createNewComment = async (req, res) => {
 	const { projectId } = req.params;
+	if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) return res.status(400).json({ message: 'no or invalid projectId'})
   const { comment } = req.body;
   console.log(req.params);
   if (!projectId || !comment) return res.status(400).json({ message: 'Empty request' });
@@ -27,7 +28,7 @@ const createNewComment = async (req, res) => {
     });
   } catch(err) {
     console.log(err);
-    res.status(500).send('Internal server error');
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
@@ -42,7 +43,7 @@ const getProjectComments = async (req, res) => {
     res.status(200).json(comments);
   } catch(err) {
     console.log(err);
-    res.status(500).send('Internal server error');
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 

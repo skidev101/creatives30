@@ -43,7 +43,7 @@ const getAllUsers = async (req, res) => {
 		
 	} catch (err) {
 		console.log(err);
-		res.status(500).send('internal server error');
+		res.status(500).json({ message: 'Internal server error' });
 	}
 }
 

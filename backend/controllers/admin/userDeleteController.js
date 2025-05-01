@@ -30,10 +30,8 @@ const deleteUser = async (req, res) => {
     });
     
   } catch (err) {
-    console.error('Delete user error:', err);
-    return res.status(500).json({
-      error: err.message || "INTERNAL_SERVER_ERROR"
-    });
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 

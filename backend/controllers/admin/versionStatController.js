@@ -77,7 +77,7 @@ const getVersionStatistics = async (req, res) => {
 		res.status(200).json(versionStat);
 	} catch (err) {
 		console.log(err);
-		res.status(500).send('Internal server error');
+		res.status(500).json({ message: 'Internal server error' });
 	}
 }
 
