@@ -47,7 +47,7 @@ Try it out — submit a project or browse what others are building!
 ## 📦 Running Locally
 
 ```bash
-git clone https://github.com/your-username/xenox.git
+git clone https://github.com/skidev101/xenox.git
 cd xenox
 npm install
 npm run dev
