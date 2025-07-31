@@ -7,9 +7,6 @@ const mongoose = require('mongoose');
 
 const userProfile = async (req, res) => {
   const { user } = req.params;
-  console.log(user);
-  
-  console.log(`username: ${user}`);
   
   try {
     const foundUser = await User.findOne({ username: user });

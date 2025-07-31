@@ -13,8 +13,7 @@ const singleProjectSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	}
-}, { _id: false }); // prevent creating extra _id for each subdocument unless needed
-
+}); 
 const projectSchema = new mongoose.Schema({
 	uid: {
 		type: String,

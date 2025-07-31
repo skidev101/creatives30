@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const handleNewUser = async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.status(400).send("Empty request");
+  if (!email) return res.status(400).json({ message: "Empty request" });
   const { uid } = req.user;
   
   console.log(`uid: ${uid}, email: ${email}`);
