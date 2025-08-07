@@ -67,7 +67,8 @@ const Achievements = () => {
 
   if (loading) {
     return (
-      <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+      <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk relative group overflow-hidden`}>
+                <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkmode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
         <h2 className={`text-lg font-semibold mb-6 ${darkmode ? 'text-white' : 'text-gray-800'}`}>
           <SkeletonLoader width={180} height={24} />
         </h2>
@@ -108,7 +109,8 @@ const Achievements = () => {
   }
 
   return (
-    <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+    <div className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk relative group overflow-hidden`}>
+              <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkmode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
       <h2 className={`text-lg font-semibold mb-6 ${darkmode ? 'text-white' : 'text-gray-800'}`}>
         Your Achievements
       </h2>

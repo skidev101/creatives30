@@ -51,7 +51,8 @@ const leaderboard = useSelector((state) => state.leaderboard);
     };
 
     return (
-        <section className={`w-full max-w-4xl mx-auto p-6 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} font-grotesk ${darkMode ? '' : ''}`}>
+        <section className={`w-full max-w-4xl mx-auto p-6 rounded-[14px] ${darkMode ? 'bg-[#111313]' : 'bg-white'} font-grotesk relative group overflow-hidden ${darkMode ? '' : ''}`}>
+                    <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkMode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
             <h3 className={`text-sm font-semibold mb-4 uppercase tracking-wider ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>Your Progress</h3>
             
             <div className="grid grid-cols-2 gap-4">

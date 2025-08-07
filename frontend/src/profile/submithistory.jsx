@@ -106,13 +106,13 @@ const SubmitHistory = () => {
     );
   }
 
-  if (error) {
-    return (
-      <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
-        <div className="text-red-500">Error: {error}</div>
-      </section>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+  //       <div className="text-red-500">Error: {error}</div>
+  //     </section>
+  //   );
+  // }
   const displayData = Array.from({ length: 30 }).map((_, index) => {
     // If we have commit data for this index, use it, otherwise create empty day
     return commitData[index] || { 
@@ -121,7 +121,8 @@ const SubmitHistory = () => {
     };
   });
   return (
-    <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk`}>
+    <section className={`w-full max-w-4xl mx-auto p-4 ${darkmode ? 'bg-[#111313]' : 'bg-white'} rounded-[14px] font-grotesk relative group overflow-hidden`}>
+              <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkmode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
       <h3 className={`text-[12px] font-semibold mb-4 uppercase tracking-wider ${
         darkmode ? 'text-neutral-400' : 'text-gray-500'
       }`}>Commit Activity</h3>
