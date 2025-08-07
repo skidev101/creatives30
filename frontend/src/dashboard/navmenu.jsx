@@ -108,22 +108,75 @@ useEffect(() => {
               </span>
             </div>
 
-            <div className="hidden md:flex">
-              <label className="inline-flex items-center relative cursor-pointer">
-                <input
-                  className="peer hidden"
-                  id="toggle"
-                  type="checkbox"
-                  onChange={toggledark}
-                />
-                <div className={`relative w-[100px] h-[40px] rounded-full transition-colors duration-300 ${darkmode ? 'bg-zinc-500' : 'bg-gray-200'}`}>
-                  <div className={`absolute w-[40px] h-[30px] rounded-full top-[5px] left-[5px] transition-all duration-300 ${darkmode ? '' : 'bg-gradient-to-r from-blue-500 to-blue-400 peer-checked:left-[55px]'}`}></div>
-                </div>
-                <FaSun className={`${darkmode ? "fill-gray-400": "fill-white"} absolute w-6 h-6 left-[13px] transition-opacity duration-300`}/>
-                <FaMoon className="fill-gray-400 z-10 opacity-60 absolute w-6 h-6 right-[13px] transition-opacity duration-300" />
-                <div className={`absolute w-[40px] h-[30px] left-[55px] ${darkmode ? 'bg-gradient-to-r from-gray-900 to-gray-600  peer-checked:left-[55px]' : ''} rounded-full top-[5px] left-[5px] transition-all duration-300 `}></div>
-              </label>
-            </div>
+
+  <div className="hidden md:flex items-center">
+  <label className="relative inline-flex items-center cursor-pointer group">
+    <input
+      type="checkbox"
+      className="sr-only peer"
+      checked={darkmode}
+      onChange={toggledark}
+    />
+    
+
+    <div className={`
+      relative w-16 h-8 rounded-full transition-all duration-300 ease-out
+      group-hover:scale-[1.02] group-active:scale-[0.98]
+      ${darkmode 
+        ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 shadow-inner shadow-slate-800/50' 
+        : 'bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 shadow-inner shadow-blue-200/80'
+      }
+      border ${darkmode ? 'border-slate-600/50' : 'border-blue-200/60'}
+    `}>
+      
+    
+      <div className={`
+        absolute top-0.5 w-7 h-7 rounded-full transition-all duration-300 ease-out
+        shadow-lg backdrop-blur-sm
+        ${darkmode 
+          ? 'left-8 bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/30' 
+          : 'left-0.5 bg-gradient-to-br from-orange-400 to-yellow-500 shadow-orange-400/40'
+        }
+      `}>
+        
+  
+        <div className="flex items-center justify-center w-full h-full">
+          {darkmode ? (
+            <FaMoon className="w-3.5 h-3.5 text-white drop-shadow-sm" />
+          ) : (
+            <FaSun className="w-3.5 h-3.5 text-white drop-shadow-sm" />
+          )}
+        </div>
+        
+    
+        <div className={`
+          absolute inset-0 rounded-full opacity-60 blur-[1px]
+          ${darkmode 
+            ? 'bg-gradient-to-br from-indigo-400 to-purple-500' 
+            : 'bg-gradient-to-br from-orange-300 to-yellow-400'
+          }
+        `}></div>
+      </div>
+      
+     
+      <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
+        <FaSun className={`w-3 h-3 transition-opacity duration-300 ${
+          !darkmode ? 'opacity-0' : 'opacity-30 text-slate-400'
+        }`} />
+        <FaMoon className={`w-3 h-3 transition-opacity duration-300 ${
+          darkmode ? 'opacity-0' : 'opacity-30 text-blue-400'
+        }`} />
+      </div>
+    </div>
+    
+ 
+    <div className={`
+      absolute inset-0 rounded-full opacity-0 transition-opacity duration-200
+      peer-focus-visible:opacity-100 ring-2 ring-offset-2 ring-offset-transparent
+      ${darkmode ? 'ring-indigo-500' : 'ring-orange-400'}
+    `}></div>
+  </label>
+</div>
 
             <div className="md:hidden">
               <span
