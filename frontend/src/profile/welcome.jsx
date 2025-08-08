@@ -75,7 +75,8 @@ if (loading) {
 
     return (
         <div className="space-y-4 font-grotesk">
-            <section className={`w-full max-w-4xl mx-auto p-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+            <section className={`w-full relative group overflow-hidden max-w-4xl mx-auto p-4 rounded-[14px] ${darkmode ? 'bg-[#111313]' : 'bg-white'} ${darkmode ? 'border-neutral-800' : 'border-gray-200'}`}>
+                        <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkmode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
                 <div className="flex items-center space-x-4">
                     <div className="relative">
                         

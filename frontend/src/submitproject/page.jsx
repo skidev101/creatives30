@@ -143,7 +143,7 @@ export default function SubmitPage() {
       formData.append('repolink', form.repolink);
  // Convert comma-separated string to JSON array string
 // Convert comma-separated to array then to JSON string
-const langsArray = form.languages.split(',').map(lang => lang.trim());
+// const langsArray = form.languages.split(',').map(lang => lang.trim());
 formData.append('languages', JSON.stringify(form.languages));
       formData.append('framework', form.framework);
       formData.append('description', form.description);
@@ -214,7 +214,8 @@ formData.append('languages', JSON.stringify(form.languages));
   };
  
   return (
-    <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk`}>
+    <div className={`inline-flex w-full flex-col items-start border-b justify-start rounded-[14px] border ${darkmode ? 'border-neutral-800' : 'border-slate-100'} ${darkmode ? 'bg-[#111313]' : 'bg-white'} p-6 space-y-6 font-grotesk relative group overflow-hidden`}>
+              <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-r ${darkmode ? 'via-neutral-200/20' : 'via-gray-300/50'} from-transparent to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out`}></div>
     <div className={`flex flex-start items-center flex-row mb-4 border-b w-full ${darkmode ? 'border-neutral-800' : 'border-slate-200'}`}>
       {Userimg ? 
          <div className="lg:h-15 lg:w-15 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-4">
