@@ -34,7 +34,7 @@ const Hero = () => {
 <Nav />
 </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto md:px-4 top-20 lg:top-[-20px]">
+      <div className="relative z-10 max-w-7xl mx-auto md:px-4 top-20">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8">
           <FadeLeft>
             <p className="text-sm uppercase tracking-widest text-blue-500 mb-2">
