@@ -6,11 +6,11 @@ import Nav from './nav';
 import { useEffect, useState } from 'react';
 
 const Hero = () => {
-  const [isClient, setIsClient] = useState(false);
+  // const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true); // avoids hydration mismatches and heavy initial load
-  }, []);
+  // useEffect(() => {
+  //   setIsClient(true); // avoids hydration mismatches and heavy initial load
+  // }, []);
   
   return (
     <section
@@ -57,7 +57,7 @@ const Hero = () => {
             </div>
           </FadeLeft>
 
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <FadeRight>
             {isClient && (
                 <DotLottieReact
@@ -68,7 +68,7 @@ const Hero = () => {
                 />
               )}
             </FadeRight>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
