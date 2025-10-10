@@ -6,11 +6,11 @@ import Nav from './nav';
 import { useEffect, useState } from 'react';
 
 const Hero = () => {
-  // const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // useEffect(() => {
-  //   setIsClient(true); // avoids hydration mismatches and heavy initial load
-  // }, []);
+  useEffect(() => {
+    setIsClient(true); // avoids hydration mismatches and heavy initial load
+  }, []);
   
   return (
     <section
@@ -34,7 +34,7 @@ const Hero = () => {
 <Nav />
 </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto md:px-4 top-20">
+      <div className="relative z-10 max-w-7xl mx-auto md:px-4 top-20 lg:top-[-20px]">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8">
           <FadeLeft>
             <p className="text-sm uppercase tracking-widest text-blue-500 mb-2">
@@ -57,7 +57,7 @@ const Hero = () => {
             </div>
           </FadeLeft>
 
-          {/* <div className="flex justify-center">
+         <div className="flex justify-center">
             <FadeRight>
             {isClient && (
                 <DotLottieReact
@@ -68,7 +68,7 @@ const Hero = () => {
                 />
               )}
             </FadeRight>
-          </div> */}
+          </div> 
         </div>
       </div>
     </section>
